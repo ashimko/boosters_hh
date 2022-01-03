@@ -1,0 +1,8 @@
+schema: '2.0'
+stages:
+  main:
+    cmd: python main.py
+    outs:
+    - path: scores/scores.json
+      md5: d2f54bb69de236fd2f059df7101d3d77
+      size: 226

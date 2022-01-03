@@ -1,0 +1,6 @@
+stages:
+  main:
+    cmd: python main.py
+    metrics:
+    - scores/scores.json:
+        cache: false
