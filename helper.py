@@ -1,13 +1,13 @@
 import json
 import os
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 from numpy import mean, ndarray
 from pandas import DataFrame, Series, read_csv, read_pickle
 from sklearn.metrics import precision_recall_curve, roc_curve
 from sklearn.pipeline import Pipeline
 
-from config import (METRICS, MODEL_PATH, ORIGINAL_DATA_PATH,
+from config import (METRICS, MODEL_PATH, OOF_PATH, ORIGINAL_DATA_PATH,
                     PREPARED_DATA_PATH, SCORES_PATH, SUBMITIONS_PATH)
 from utils import save_to_pickle
 
@@ -85,7 +85,7 @@ def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame) -> None:
             )
 
 
-def save_predicted_labels(pred_labels: DataFrame) -> None:
+def save_predicted_labels(pred_labels: DataFrame, mode: str = 'test') -> None:
     def _process_pred_labels(x: Series) -> str:
         n = int(x.sum())
         if n == 0:
@@ -93,11 +93,22 @@ def save_predicted_labels(pred_labels: DataFrame) -> None:
         return ','.join(map(str, x.nlargest(n).index))
 
     pred_labels['target'] = pred_labels.apply(_process_pred_labels, axis=1)
-    pred_labels['target'].to_csv(os.path.join(SUBMITIONS_PATH, 'submit_labels.csv'))
+    pred_labels = pred_labels['target']
+    if mode == 'test':
+        pred_labels.to_csv(os.path.join(SUBMITIONS_PATH, 'submit_labels.csv'))
+    elif mode == 'test':
+        pred_labels.to_csv(os.path.join(OOF_PATH, 'submit_labels.csv'))
+    else:
+        raise NotImplementedError()
 
 
-def save_predicted_proba(pred_proba: DataFrame) -> None:
-    pred_proba.to_csv(os.path.join(SUBMITIONS_PATH, 'pred_proba.csv'))
+def save_predicted_proba(pred_proba: DataFrame, mode: str = 'test') -> None:
+    if mode == 'test':
+        pred_proba.to_csv(os.path.join(SUBMITIONS_PATH, 'pred_proba.csv'))
+    elif mode == 'test':
+        pred_proba.to_csv(os.path.join(OOF_PATH, 'pred_proba.csv'))
+    else:
+        raise NotImplementedError()
 
 def save_fitted_model(model: Pipeline) -> None:
     save_to_pickle(model, os.path.join(MODEL_PATH, 'whole_train_model.pkl'))
