@@ -66,11 +66,15 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         
         test_pred_labels += model.predict(test)
         if has_predict_proba:
-
             test_pred_proba += _process_pred_proba(model.predict_proba(test))
+    
+    model.fit(train, target)
+    test_pred_labels += model.predict(test)
+    if has_predict_proba:
+        test_pred_proba += _process_pred_proba(model.predict_proba(test))
         
 
-    test_pred_labels /= n_splits
-    test_pred_proba /= n_splits
+    test_pred_labels /= (n_splits + 1)
+    test_pred_proba /= (n_splits + 1)
 
     return cv_results, oof_pred_labels, oof_pred_proba, test_pred_labels, test_pred_proba
