@@ -7,14 +7,14 @@ from pandas import DataFrame, Series, read_csv, read_pickle
 from sklearn.metrics import precision_recall_curve, roc_curve
 from sklearn.pipeline import Pipeline
 
-from config import (METRICS, MODEL_PATH, OOF_PATH, ORIGINAL_DATA_PATH,
+from config import (METRICS, MODEL_PATH, OOF_PATH, ORIGINAL_DATA_PATH, PLOTS_PATH,
                     PREPARED_DATA_PATH, SCORES_PATH, SUBMITIONS_PATH)
 from utils import save_to_pickle
 
 
-def process_cv_results(cv_results: Dict) -> Tuple[Dict, List]:
+def process_cv_results(cv_results: Dict, metrics: List) -> Tuple[Dict, List]:
     estimators = cv_results.pop('estimator', [])
-    for metric in METRICS:
+    for metric in metrics:
         cv_results[f'avg_{metric}'] = mean(cv_results[f'test_{metric}'])
     return cv_results, estimators
 
@@ -58,25 +58,23 @@ def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame) -> None:
         precision, recall, prc_thresholds = precision_recall_curve(true_labels[col], pred_proba[col])
         fpr, tpr, roc_thresholds = roc_curve(true_labels[col], pred_proba[col])
 
-        nth_point = len(prc_thresholds) // 1000
-        prc_points = list(zip(precision, recall, prc_thresholds))[::nth_point]
-        with open(os.path.join(SCORES_PATH, f'prc_{col}'), "w") as fd:
+        with open(os.path.join(PLOTS_PATH, f'prc_{col}'), "w") as fd:
             json.dump(
                 {
                     "prc": [
-                        {"precision": p, "recall": r, "threshold": t}
-                        for p, r, t in prc_points
+                        {"precision": float(p), "recall": float(r), "threshold": float(t)}
+                        for p, r, t in zip(precision, recall, prc_thresholds)
                     ]
                 },
                 fd,
                 indent=4,
             )
 
-        with open(os.path.join(SCORES_PATH, f'roc_{col}'), "w") as fd:
+        with open(os.path.join(PLOTS_PATH, f'roc_{col}'), "w") as fd:
             json.dump(
                 {
                     "roc": [
-                        {"fpr": fp, "tpr": tp, "threshold": t}
+                        {"fpr": float(fp), "tpr": float(tp), "threshold": float(t)}
                         for fp, tp, t in zip(fpr, tpr, roc_thresholds)
                     ]
                 },
@@ -96,7 +94,7 @@ def save_predicted_labels(pred_labels: DataFrame, mode: str = 'test') -> None:
     pred_labels = pred_labels['target']
     if mode == 'test':
         pred_labels.to_csv(os.path.join(SUBMITIONS_PATH, 'submit_labels.csv'))
-    elif mode == 'test':
+    elif mode == 'train':
         pred_labels.to_csv(os.path.join(OOF_PATH, 'submit_labels.csv'))
     else:
         raise NotImplementedError()
@@ -105,7 +103,7 @@ def save_predicted_labels(pred_labels: DataFrame, mode: str = 'test') -> None:
 def save_predicted_proba(pred_proba: DataFrame, mode: str = 'test') -> None:
     if mode == 'test':
         pred_proba.to_csv(os.path.join(SUBMITIONS_PATH, 'pred_proba.csv'))
-    elif mode == 'test':
+    elif mode == 'train':
         pred_proba.to_csv(os.path.join(OOF_PATH, 'pred_proba.csv'))
     else:
         raise NotImplementedError()

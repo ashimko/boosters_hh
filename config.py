@@ -29,6 +29,7 @@ ORIGINAL_DATA_PATH = os.path.join(DATA_PATH, 'original')
 PREPARED_DATA_PATH = os.path.join(DATA_PATH, 'prepared')
 MODEL_PATH = os.path.join(ABS_PREFIX, 'models')
 SCORES_PATH = os.path.join(ABS_PREFIX, 'scores')
+PLOTS_PATH = os.path.join(ABS_PREFIX, 'plots')
 SUBMITIONS_PATH = os.path.join(ABS_PREFIX, 'submitions')
 OOF_PATH = os.path.join(ABS_PREFIX, 'oof_predictions')
 
