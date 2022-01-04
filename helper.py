@@ -7,8 +7,8 @@ from pandas import DataFrame, Series, read_csv, read_pickle
 from sklearn.metrics import precision_recall_curve, roc_curve
 from sklearn.pipeline import Pipeline
 
-from config import (METRICS, MODEL_PATH, OOF_PATH, ORIGINAL_DATA_PATH, PLOTS_PATH,
-                    PREPARED_DATA_PATH, SCORES_PATH, SUBMITIONS_PATH)
+from config import (MODEL_PATH, OOF_PATH, PLOTS_PATH, PREPARED_DATA_PATH,
+                    SCORES_PATH, SUBMITIONS_PATH)
 from utils import save_to_pickle
 
 
