@@ -8,7 +8,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.svm import LinearSVC, SVC
 from sklearn.feature_selection import chi2, SelectPercentile
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import RidgeClassifier
+from sklearn.linear_model import SGDClassifier
 
 from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES
 
@@ -25,7 +25,7 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
         ('ordered_categories', 'passthrough', ORDERED_CATEGORIES),
         ('unordered_categories', OneHotEncoder(dtype=int32, handle_unknown='ignore'), UNORDERED_CATEGORIES)
     ])
-    base_estimator = RidgeClassifier()
+    base_estimator = SGDClassifier(random_state=random_state)
     model = Pipeline(memory='.cache', verbose=True, steps=[
         ('get_features', features_generation),
         ('model', MultiOutputClassifier(
