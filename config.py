@@ -23,7 +23,7 @@ ORDERED_CATEGORIES = [SALARY_RATING, TEAM_RATING, MANAGMENT_RATING, CAREER_RATIN
 TEXT_COLS = [POSITIVE, NEGATIVE]
 
 # PATH
-ABS_PREFIX = '/Users/alexey.shimko/my_repositories/boosters_hh'
+ABS_PREFIX = '.'
 DATA_PATH = os.path.join(ABS_PREFIX, 'data')
 ORIGINAL_DATA_PATH = os.path.join(DATA_PATH, 'original')
 PREPARED_DATA_PATH = os.path.join(DATA_PATH, 'prepared')

@@ -3,6 +3,60 @@ stages:
   main:
     cmd: python main.py
     outs:
+    - path: plots/prc_0
+      md5: 06d31d1f2dbac17e933d5919bb7903f6
+      size: 7545503
+    - path: plots/prc_1
+      md5: 19f6423aac7db04f2960d4568c78ec1e
+      size: 7676382
+    - path: plots/prc_2
+      md5: eb828f668e6475dd2b9e0a11571862b2
+      size: 7481646
+    - path: plots/prc_3
+      md5: 7679c6bbf06e1ac427dff35b073f1a87
+      size: 7695388
+    - path: plots/prc_4
+      md5: d520be0f41626c717c81392a1aa1a3e8
+      size: 6994690
+    - path: plots/prc_5
+      md5: f88b59d784b3174d8c8eaa9b922a5e17
+      size: 7693299
+    - path: plots/prc_6
+      md5: 1961dbe422dade393043b5aed022cfd4
+      size: 7750530
+    - path: plots/prc_7
+      md5: 0cfbc8c193cac5957d0ae9f50fe4fc85
+      size: 7498545
+    - path: plots/prc_8
+      md5: ac35ca3a48225add967a5bad084fa042
+      size: 7565748
+    - path: plots/roc_0
+      md5: d99ab2531f7276cd87e8da2a2f299412
+      size: 1650987
+    - path: plots/roc_1
+      md5: 4aa33ab9bc6a688be0bceddee87d6e79
+      size: 736733
+    - path: plots/roc_2
+      md5: 95269ff8f2df42f30b9a2ba4a5a682e3
+      size: 127578
+    - path: plots/roc_3
+      md5: 14d755fa57aab17f2e28f61796eb9442
+      size: 270513
+    - path: plots/roc_4
+      md5: 11642e68bec82ec11471d2dc289ab478
+      size: 106162
+    - path: plots/roc_5
+      md5: 6a9218f8b6d7ac30ab55da343e019e5e
+      size: 180924
+    - path: plots/roc_6
+      md5: 5b0f9ff9901457b58f85e094d56f31d3
+      size: 344495
+    - path: plots/roc_7
+      md5: cba0df72f08915429503330f9a12b85d
+      size: 174209
+    - path: plots/roc_8
+      md5: 75127c922797b6523181b6a0dd5df40b
+      size: 1996457
     - path: scores/scores.json
-      md5: 3ed6bc15934de109fc0c5d84bfbef57d
-      size: 139
+      md5: 9ae82ecfb3848ca565868e3829b15db8
+      size: 226

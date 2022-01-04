@@ -4,3 +4,40 @@ stages:
     metrics:
     - scores/scores.json:
         cache: false
+    plots:
+    - plots/prc_0:
+        cache: false
+    - plots/prc_1:
+        cache: false
+    - plots/prc_2:
+        cache: false
+    - plots/prc_3:
+        cache: false
+    - plots/prc_4:
+        cache: false
+    - plots/prc_5:
+        cache: false
+    - plots/prc_6:
+        cache: false
+    - plots/prc_7:
+        cache: false
+    - plots/prc_8:
+        cache: false
+    - plots/roc_0:
+        cache: false
+    - plots/roc_1:
+        cache: false
+    - plots/roc_2:
+        cache: false
+    - plots/roc_3:
+        cache: false
+    - plots/roc_4:
+        cache: false
+    - plots/roc_5:
+        cache: false
+    - plots/roc_6:
+        cache: false
+    - plots/roc_7:
+        cache: false
+    - plots/roc_8:
+        cache: false
