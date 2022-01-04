@@ -24,7 +24,7 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
         ('ordered_categories', 'passthrough', ORDERED_CATEGORIES),
         ('unordered_categories', OneHotEncoder(dtype=int32, handle_unknown='ignore'), UNORDERED_CATEGORIES)
     ])
-    base_estimator = SVC(kernel='poly', degree=4)
+    base_estimator = SVC(kernel='poly', degree=2)
     model = Pipeline(memory='.cache', verbose=True, steps=[
         ('get_features', features_generation),
         ('model', MultiOutputClassifier(
