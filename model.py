@@ -10,6 +10,8 @@ from sklearn.svm import LinearSVC
 from sklearn.feature_selection import chi2, SelectPercentile
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.linear_model import LogisticRegressionCV
+from sklearn.ensemble import RandomForestClassifier
+from lightgbm import LGBMClassifier
 
 from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES
 
@@ -28,13 +30,9 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
         ('unordered_categories', OneHotEncoder(dtype=int32, handle_unknown='ignore'), UNORDERED_CATEGORIES)
     ])
 
-    base_estimator = LogisticRegressionCV(n_jobs=-1)
+    base_estimator = LGBMClassifier(random_state=random_state)
     model = Pipeline(memory='.cache', verbose=True, steps=[
         ('get_features', features_generation),
-        ('model', ClassifierChain(
-            base_estimator=base_estimator,
-            order='random', 
-            cv=n_splits, 
-            random_state=random_state))
+        ('model', MultiOutputClassifier(estimator=base_estimator, n_jobs=-1))
     ])
     return model, hasattr(base_estimator, 'predict_proba')
