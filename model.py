@@ -1,6 +1,6 @@
 from typing import Tuple
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
-from numpy import int32, vectorize
+from numpy import int32, vectorize, bool_
 from sklearn.compose import ColumnTransformer
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, TfidfVectorizer
 from sklearn.multioutput import ClassifierChain, MultiOutputClassifier
@@ -19,9 +19,9 @@ from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES
 def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, bool]:
     text_processing = Pipeline(memory='.cache', verbose=True, steps=[
         ('vectorize', FeatureUnion(n_jobs=-1, transformer_list=[
-            ('count_vec_word', CountVectorizer(analyzer='word', dtype=int32)),
-            ('count_vec_char_wb', CountVectorizer(analyzer='char_wb', dtype=int32))
-            ])),
+            ('count_vec_char_wb', CountVectorizer(analyzer='char_wb', dtype=int32)),
+            ('count_vec_word', CountVectorizer(analyzer='word', dtype=int32))])
+            ),
         ('select_features', SelectPercentile(chi2, percentile=35)),
         ('tfidf', TfidfTransformer())
     ])
@@ -29,8 +29,9 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
     features_generation = ColumnTransformer(n_jobs=-1, verbose=True, transformers=[
         ('positive_col', text_processing, POSITIVE),
         ('negative_col', text_processing, NEGATIVE),
-        ('ordered_categories', 'passthrough', ORDERED_CATEGORIES),
-        ('unordered_categories', OneHotEncoder(dtype=int32, handle_unknown='ignore'), UNORDERED_CATEGORIES)
+        ('ordered_categories_as_is', 'passthrough', ORDERED_CATEGORIES),
+        ('ordered_categories_ohe', OneHotEncoder(dtype=bool_, handle_unknown='ignore'), ORDERED_CATEGORIES),
+        ('unordered_categories', OneHotEncoder(dtype=bool_, handle_unknown='ignore'), UNORDERED_CATEGORIES)
     ])
 
     base_estimator = LinearSVC()
