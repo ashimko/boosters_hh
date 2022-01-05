@@ -7,7 +7,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.svm import LinearSVC
 from sklearn.feature_selection import chi2, SelectPercentile
-from lightgbm import LGBMClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.linear_model import RidgeClassifier
 
 from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES
 
@@ -24,9 +25,9 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
         ('ordered_categories', 'passthrough', ORDERED_CATEGORIES),
         ('unordered_categories', OneHotEncoder(dtype=int32, handle_unknown='ignore'), UNORDERED_CATEGORIES)
     ])
-    base_estimator = LGBMClassifier()
+    base_estimator = AdaBoostClassifier(base_estimator=RidgeClassifier(), algorithm='SAMME', random_state=random_state)
     model = Pipeline(memory='.cache', verbose=True, steps=[
         ('get_features', features_generation),
-        ('model', MultiOutputClassifier(estimator=base_estimator, n_jobs=1))
+        ('model', MultiOutputClassifier(estimator=base_estimator, n_jobs=-1))
     ])
     return model, hasattr(base_estimator, 'predict_proba')
