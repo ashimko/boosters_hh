@@ -5,6 +5,7 @@ from numpy import float32, int8, ndarray, zeros_like, zeros
 from numpy.core.shape_base import hstack, vstack
 from pandas import DataFrame, Series
 from sklearn.model_selection import KFold, cross_validate
+from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import roc_auc_score, f1_score, log_loss, recall_score, precision_score
 
@@ -32,7 +33,7 @@ def _process_pred_proba(pred_proba: Union[ndarray, list]) -> ndarray:
 
 def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame, 
              n_splits: int, random_state: int = 42, metrics: List = None, has_predict_proba: bool = True) -> Dict:
-    cv = KFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+    cv = MultilabelStratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
 
     oof_pred_labels = DataFrame(data=zeros_like(target, dtype=int8), index=target.index, columns=target.columns)
     oof_pred_proba = DataFrame(data=zeros_like(target, dtype=float32), index=target.index, columns=target.columns)
@@ -42,7 +43,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
     test_pred_proba = DataFrame(data=zeros(shape=test_shape, dtype=float32), index=test.index, columns=target.columns)
 
     cv_results = defaultdict(list)
-    for train_idx, test_idx in cv.split(train):
+    for train_idx, test_idx in cv.split(X=train, y=target):
         model.fit(train.iloc[train_idx], target.iloc[train_idx])
         cv_results['estimator'].append(model)
 

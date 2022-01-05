@@ -1,4 +1,5 @@
 from typing import Tuple
+from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from numpy import int32, vectorize
 from sklearn.compose import ColumnTransformer
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, TfidfVectorizer
