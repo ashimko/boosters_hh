@@ -58,7 +58,7 @@ def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame) -> None:
         precision, recall, prc_thresholds = precision_recall_curve(true_labels[col], pred_proba[col])
         fpr, tpr, roc_thresholds = roc_curve(true_labels[col], pred_proba[col])
 
-        with open(os.path.join(PLOTS_PATH, f'prc_{col}'), "w") as fd:
+        with open(os.path.join(PLOTS_PATH, f'prc_{col}'.json), "w") as fd:
             json.dump(
                 {
                     "prc": [
@@ -70,7 +70,7 @@ def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame) -> None:
                 indent=4,
             )
 
-        with open(os.path.join(PLOTS_PATH, f'roc_{col}'), "w") as fd:
+        with open(os.path.join(PLOTS_PATH, f'roc_{col}'.json), "w") as fd:
             json.dump(
                 {
                     "roc": [
@@ -85,7 +85,7 @@ def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame) -> None:
 
 def save_predicted_labels(pred_labels: DataFrame, mode: str = 'test') -> None:
     def _process_pred_labels(x: Series) -> str:
-        n = int((x > 0.5).sum()) # if more than halve estimators predicted then predict at final
+        n = int((x >= 0.5).sum()) # if more than halve estimators predicted then predict at final
         if n == 0:
             return '0'
         return ','.join(map(str, x.nlargest(n).index))
