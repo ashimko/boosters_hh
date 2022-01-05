@@ -85,7 +85,7 @@ def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame) -> None:
 
 def save_predicted_labels(pred_labels: DataFrame, mode: str = 'test') -> None:
     def _process_pred_labels(x: Series) -> str:
-        n = int((x > 0).sum())
+        n = int((x > 0.5).sum()) # if more than halve estimators predicted then predict at final
         if n == 0:
             return '0'
         return ','.join(map(str, x.nlargest(n).index))
