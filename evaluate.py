@@ -73,7 +73,6 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
     if has_predict_proba:
         test_pred_proba += _process_pred_proba(model.predict_proba(test))
         
-
     test_pred_labels /= (n_splits + 1)
     test_pred_proba /= (n_splits + 1)
 
