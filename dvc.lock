@@ -58,5 +58,5 @@ stages:
       md5: 24d4c31f72a5477e3a5836e836f2ace4
       size: 217
     - path: scores/scores.json
-      md5: a8cf1af9e5b026f01f52dd6189705041
+      md5: 91b7d22eb3ea7395107eb20c7dfaa6a6
       size: 139
