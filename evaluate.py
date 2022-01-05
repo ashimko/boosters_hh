@@ -8,6 +8,8 @@ from sklearn.model_selection import KFold, cross_validate
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import roc_auc_score, f1_score, log_loss, recall_score, precision_score
 
+from helper import save_fitted_model
+
 def update_with_label_metrics(y_true: DataFrame, y_pred: DataFrame, 
                       cv_results: DefaultDict, mode: str = 'test') -> DataFrame:
     cv_results[f'{mode}_f1_samples'].append(f1_score(y_true, y_pred, average='samples'))
@@ -69,6 +71,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
             test_pred_proba += _process_pred_proba(model.predict_proba(test))
     
     model.fit(train, target)
+    save_fitted_model(model)
     test_pred_labels += model.predict(test)
     if has_predict_proba:
         test_pred_proba += _process_pred_proba(model.predict_proba(test))
