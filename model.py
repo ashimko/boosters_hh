@@ -16,30 +16,13 @@ from sklearn.decomposition import TruncatedSVD
 import category_encoders as ce
 from catboost import CatBoostClassifier
 
-from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES
+from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES, TEXT_COLS
 
 
 def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, bool]:
-    text_processing = Pipeline(memory='.cache', verbose=True, steps=[
-        ('vectorize', FeatureUnion(n_jobs=-1, transformer_list=[
-            ('count_vec_char_wb', CountVectorizer(analyzer='char_wb', ngram_range=(1,5), dtype=int32)),
-            ('count_vec_word', CountVectorizer(analyzer='word', ngram_range=(1,3), dtype=int32))])
-            ),
-        ('select_features', SelectPercentile(chi2, percentile=35)),
-        ('tfidf', TfidfTransformer()),
-    ])
-
-    features_generation = ColumnTransformer(n_jobs=-1, verbose=True, transformers=[
-        ('ordered_categories_as_is', 'passthrough', ORDERED_CATEGORIES),
-        ('positive_col', text_processing, POSITIVE),
-        ('negative_col', text_processing, NEGATIVE),
-        ('ordered_categories_ohe', OneHotEncoder(dtype=int8, handle_unknown='ignore'), ORDERED_CATEGORIES),
-        ('unordered_categories', OneHotEncoder(dtype=int8, handle_unknown='ignore'), UNORDERED_CATEGORIES),
-    ])
-    
-    base_estimator = LogisticRegressionCV(Cs=20, n_jobs=-1, cv=n_splits, scoring='f1_samples', random_state=random_state)
-    model = Pipeline(memory='.cache', verbose=True, steps=[
-        ('get_features', features_generation),
-        ('model', MultiOutputClassifier(estimator=base_estimator, n_jobs=-1))
-    ])
+    base_estimator = CatBoostClassifier(
+        cat_features=ORDERED_CATEGORIES+UNORDERED_CATEGORIES,
+        text_features=TEXT_COLS,
+        random_state=random_state)
+    model = MultiOutputClassifier(estimator=base_estimator, n_jobs=1)
     return model, hasattr(base_estimator, 'predict_proba')
