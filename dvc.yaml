@@ -5,39 +5,75 @@ stages:
     - scores/scores.json:
         cache: false
     plots:
-    - plots/prc_0:
+    - plots/prc_0.json:
         cache: false
-    - plots/prc_1:
+        x: recall
+        y: precision
+    - plots/prc_1.json:
         cache: false
-    - plots/prc_2:
+        x: recall
+        y: precision
+    - plots/prc_2.json:
         cache: false
-    - plots/prc_3:
+        x: recall
+        y: precision
+    - plots/prc_3.json:
         cache: false
-    - plots/prc_4:
+        x: recall
+        y: precision
+    - plots/prc_4.json:
         cache: false
-    - plots/prc_5:
+        x: recall
+        y: precision
+    - plots/prc_5.json:
         cache: false
-    - plots/prc_6:
+        x: recall
+        y: precision
+    - plots/prc_6.json:
         cache: false
-    - plots/prc_7:
+        x: recall
+        y: precision
+    - plots/prc_7.json:
         cache: false
-    - plots/prc_8:
+        x: recall
+        y: precision
+    - plots/prc_8.json:
         cache: false
-    - plots/roc_0:
+        x: recall
+        y: precision
+    - plots/roc_0.json:
         cache: false
-    - plots/roc_1:
+        x: fpr
+        y: tpr
+    - plots/roc_1.json:
         cache: false
-    - plots/roc_2:
+        x: fpr
+        y: tpr
+    - plots/roc_2.json:
         cache: false
-    - plots/roc_3:
+        x: fpr
+        y: tpr
+    - plots/roc_3.json:
         cache: false
-    - plots/roc_4:
+        x: fpr
+        y: tpr
+    - plots/roc_4.json:
         cache: false
-    - plots/roc_5:
+        x: fpr
+        y: tpr
+    - plots/roc_5.json:
         cache: false
-    - plots/roc_6:
+        x: fpr
+        y: tpr
+    - plots/roc_6.json:
         cache: false
-    - plots/roc_7:
+        x: fpr
+        y: tpr
+    - plots/roc_7.json:
         cache: false
-    - plots/roc_8:
+        x: fpr
+        y: tpr
+    - plots/roc_8.json:
         cache: false
+        x: fpr
+        y: tpr

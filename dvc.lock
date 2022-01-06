@@ -3,60 +3,60 @@ stages:
   main:
     cmd: python main.py
     outs:
-    - path: plots/prc_0
-      md5: ee343b279ae18068b83b8437c1557ffd
-      size: 141
-    - path: plots/prc_1
-      md5: 0d382bb68af471912c0e14db1efe4aee
-      size: 144
-    - path: plots/prc_2
-      md5: 52924da1420a211f8cac37db6f5f0d76
-      size: 146
-    - path: plots/prc_3
-      md5: e3550cbf73da9e99535dc1750317e9f2
-      size: 145
-    - path: plots/prc_4
-      md5: 111ff289b85796a014957f21a9caa3f9
-      size: 146
-    - path: plots/prc_5
-      md5: ca9f405f874e2f939b3a0e98f52d7c8d
-      size: 145
-    - path: plots/prc_6
-      md5: fe7eda46736fbd1f3feec5d05d1d0eef
-      size: 145
-    - path: plots/prc_7
-      md5: 9cca85f876ccad12deb2187b0836439d
-      size: 146
-    - path: plots/prc_8
-      md5: 96f9ec32821b7914edff1fc2293f8e82
-      size: 143
-    - path: plots/roc_0
-      md5: 24d4c31f72a5477e3a5836e836f2ace4
-      size: 217
-    - path: plots/roc_1
-      md5: 24d4c31f72a5477e3a5836e836f2ace4
-      size: 217
-    - path: plots/roc_2
-      md5: 24d4c31f72a5477e3a5836e836f2ace4
-      size: 217
-    - path: plots/roc_3
-      md5: 24d4c31f72a5477e3a5836e836f2ace4
-      size: 217
-    - path: plots/roc_4
-      md5: 24d4c31f72a5477e3a5836e836f2ace4
-      size: 217
-    - path: plots/roc_5
-      md5: 24d4c31f72a5477e3a5836e836f2ace4
-      size: 217
-    - path: plots/roc_6
-      md5: 24d4c31f72a5477e3a5836e836f2ace4
-      size: 217
-    - path: plots/roc_7
-      md5: 24d4c31f72a5477e3a5836e836f2ace4
-      size: 217
-    - path: plots/roc_8
-      md5: 24d4c31f72a5477e3a5836e836f2ace4
-      size: 217
+    - path: plots/prc_0.json
+      md5: 229e53e1b4a0c5853510f844352d54c4
+      size: 7344904
+    - path: plots/prc_1.json
+      md5: e5912df78622138a089baa0ea4ca364a
+      size: 7857060
+    - path: plots/prc_2.json
+      md5: fef474663a4b8132640a4fa1f79aa8fe
+      size: 6340899
+    - path: plots/prc_3.json
+      md5: 405ad8c51f39b9d0f226193248370d47
+      size: 7922705
+    - path: plots/prc_4.json
+      md5: 47abc8d244fbe3a25f4ded485574fd06
+      size: 7418938
+    - path: plots/prc_5.json
+      md5: 9c50d481f3abea2a1513717aa75fc351
+      size: 7866591
+    - path: plots/prc_6.json
+      md5: 710a249363b820279aafd33f655269e4
+      size: 7796121
+    - path: plots/prc_7.json
+      md5: 0c9e20ea3390a8a0bd232e2cba31970c
+      size: 7306492
+    - path: plots/prc_8.json
+      md5: fd731fc94e58fbdd11fb57676705f97f
+      size: 7732477
+    - path: plots/roc_0.json
+      md5: a2aa39a7c8e1e52c280f6eb1f1c6989b
+      size: 1333254
+    - path: plots/roc_1.json
+      md5: fd1d0aad5fe1d629bcf688481c37de3b
+      size: 662958
+    - path: plots/roc_2.json
+      md5: 3283bb09fe03fbd7052ff92bec0d7a09
+      size: 1142841
+    - path: plots/roc_3.json
+      md5: 063b25ad12257118a7868b266e73219c
+      size: 170953
+    - path: plots/roc_4.json
+      md5: 34572c47674018263bacce19df071029
+      size: 444107
+    - path: plots/roc_5.json
+      md5: ab7a02dea49c33411f3f12bff0159a70
+      size: 106989
+    - path: plots/roc_6.json
+      md5: d7fec45dbd9082e2b2a6b289471817e3
+      size: 270112
+    - path: plots/roc_7.json
+      md5: 9842579f7959a0fe04f36d24bec866e5
+      size: 101981
+    - path: plots/roc_8.json
+      md5: dded475619404dffe9a8160609c73164
+      size: 1760904
     - path: scores/scores.json
-      md5: 91b7d22eb3ea7395107eb20c7dfaa6a6
-      size: 139
+      md5: dae33991901f2375635cd801b2c09ee3
+      size: 225
