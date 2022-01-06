@@ -11,13 +11,13 @@ from evaluate import evaluate
 
 def main(n_splits: int = 5, random_state: int = 42):
     train, target, = get_train_data()
-    model = make_model(n_splits=n_splits, random_state=random_state)
+    model = make_model(random_state=random_state)
 
-    cv_results, train_pred_labels = evaluate(
+    cv_results, oof_pred_labels = evaluate(
         X=train, y=target, model=model, metrics=METRICS,
         random_state=random_state, n_splits=n_splits)
 
-    save_predicted_labels(train_pred_labels, mode='train')
+    save_predicted_labels(oof_pred_labels, mode='train')
 
     cv_results, estimators = process_cv_results(cv_results, METRICS)
     save_models(estimators)
