@@ -25,11 +25,9 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
         ('ordered_categories', 'passthrough', ORDERED_CATEGORIES),
         ('unordered_categories', OneHotEncoder(dtype=int32, handle_unknown='ignore'), UNORDERED_CATEGORIES)
     ])
-    base_estimator = Perceptron(n_jobs=-1)
+    base_estimator = RandomForestClassifier(n_jobs=-1, max_depth=10, n_estimators=10)
     model = Pipeline(memory='.cache', verbose=True, steps=[
         ('get_features', features_generation),
-        ('model', MultiOutputClassifier(
-            estimator=base_estimator,
-            n_jobs=-1))
+        ('model', base_estimator)
     ])
-    return model, hasattr(base_estimator, 'predict_proba')
+    return model

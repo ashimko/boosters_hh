@@ -33,4 +33,4 @@ PLOTS_PATH = os.path.join(ABS_PREFIX, 'plots')
 SUBMITIONS_PATH = os.path.join(ABS_PREFIX, 'submitions')
 OOF_PATH = os.path.join(ABS_PREFIX, 'oof_predictions')
 
-METRICS = ('f1_samples', 'precision_samples', 'recall_samples', 'roc_auc_ovo', 'neg_log_loss')
+METRICS = ('f1_samples', 'precision_samples', 'recall_samples')
