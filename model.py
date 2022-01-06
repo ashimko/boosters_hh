@@ -13,7 +13,6 @@ from sklearn.linear_model import LogisticRegressionCV
 from sklearn.ensemble import RandomForestClassifier
 from lightgbm import LGBMClassifier
 from sklearn.decomposition import TruncatedSVD
-import category_encoders as ce
 from catboost import CatBoostClassifier
 
 from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES
@@ -40,6 +39,6 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
     base_estimator = LogisticRegressionCV(Cs=20, n_jobs=-1, cv=n_splits, scoring='f1_samples', random_state=random_state)
     model = Pipeline(memory='.cache', verbose=True, steps=[
         ('get_features', features_generation),
-        ('model', MultiOutputClassifier(estimator=base_estimator, n_jobs=-1))
+        ('model', MultiOutputClassifier(estimator=base_estimator, n_jobs=1))
     ])
     return model, hasattr(base_estimator, 'predict_proba')
