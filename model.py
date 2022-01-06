@@ -24,7 +24,7 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
             ('count_vec_char_wb', CountVectorizer(analyzer='char_wb', ngram_range=(1,5), dtype=int32)),
             ('count_vec_word', CountVectorizer(analyzer='word', ngram_range=(1,3), dtype=int32))])
             ),
-        ('select_features', SelectPercentile(chi2, percentile=35)),
+        ('select_features', SelectPercentile(chi2, percentile=10)),
         ('tfidf', TfidfTransformer()),
     ])
 

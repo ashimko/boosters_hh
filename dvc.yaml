@@ -5,39 +5,39 @@ stages:
     - scores/scores.json:
         cache: false
     plots:
-    - plots/prc_0:
+    - plots/prc_0.json:
         cache: false
-    - plots/prc_1:
+    - plots/prc_1.json:
         cache: false
-    - plots/prc_2:
+    - plots/prc_2.json:
         cache: false
-    - plots/prc_3:
+    - plots/prc_3.json:
         cache: false
-    - plots/prc_4:
+    - plots/prc_4.json:
         cache: false
-    - plots/prc_5:
+    - plots/prc_5.json:
         cache: false
-    - plots/prc_6:
+    - plots/prc_6.json:
         cache: false
-    - plots/prc_7:
+    - plots/prc_7.json:
         cache: false
-    - plots/prc_8:
+    - plots/prc_8.json:
         cache: false
-    - plots/roc_0:
+    - plots/roc_0.json:
         cache: false
-    - plots/roc_1:
+    - plots/roc_1.json:
         cache: false
-    - plots/roc_2:
+    - plots/roc_2.json:
         cache: false
-    - plots/roc_3:
+    - plots/roc_3.json:
         cache: false
-    - plots/roc_4:
+    - plots/roc_4.json:
         cache: false
-    - plots/roc_5:
+    - plots/roc_5.json:
         cache: false
-    - plots/roc_6:
+    - plots/roc_6.json:
         cache: false
-    - plots/roc_7:
+    - plots/roc_7.json:
         cache: false
-    - plots/roc_8:
+    - plots/roc_8.json:
         cache: false
