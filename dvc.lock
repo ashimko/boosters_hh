@@ -4,5 +4,5 @@ stages:
     cmd: python main.py
     outs:
     - path: scores/scores.json
-      md5: 17f3bba88bb35c128760451041ae3b76
+      md5: 16064c2913d0c4ab5d1c8e98760d52b7
       size: 139
