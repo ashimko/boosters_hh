@@ -19,14 +19,12 @@ def prepare_data(train: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
 
     X = pd.concat((train.drop(TARGET, axis=1), test))
     for ordered_category in ORDERED_CATEGORIES:
+        X[ordered_category] = X[ordered_category].fillna(-1)
         X[ordered_category] = X[ordered_category].astype('category').cat.as_ordered()
     
-    # translate_table = str.maketrans('', '', string.punctuation)
-    # def _process_unordered_categories(s: str) -> str:
-    #     str(s).translate(translate_table).lower()
-    
-    # X[UNORDERED_CATEGORIES] = X[UNORDERED_CATEGORIES].applymap(_process_unordered_categories)
+    X[UNORDERED_CATEGORIES] = X[UNORDERED_CATEGORIES].fillna('NA')
     X[UNORDERED_CATEGORIES] = X[UNORDERED_CATEGORIES].astype('category')
+    
     X[TEXT_COLS] = X[TEXT_COLS].fillna('NA').astype('str')
 
     return X.loc[train_idx], X.loc[test_idx], y

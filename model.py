@@ -23,6 +23,8 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
     base_estimator = CatBoostClassifier(
         cat_features=ORDERED_CATEGORIES+UNORDERED_CATEGORIES,
         text_features=TEXT_COLS,
-        random_state=random_state)
+        random_state=random_state,
+        early_stopping_rounds=25,
+        verbose=10)
     model = MultiOutputClassifier(estimator=base_estimator, n_jobs=1)
     return model, hasattr(base_estimator, 'predict_proba')

@@ -8,6 +8,7 @@ from sklearn.model_selection import KFold, cross_validate
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import roc_auc_score, f1_score, log_loss, recall_score, precision_score
+import pickle
 
 from helper import save_fitted_model
 
@@ -45,6 +46,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
     test_pred_proba = DataFrame(data=zeros(shape=test_shape, dtype=float32), index=test.index, columns=target.columns)
 
     cv_results = defaultdict(list)
+    fold = 0
     for train_idx, test_idx in cv.split(X=train, y=target):
         model.fit(train.iloc[train_idx], target.iloc[train_idx])
         cv_results['estimator'].append(model)
@@ -70,6 +72,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         test_pred_labels += model.predict(test)
         if has_predict_proba:
             test_pred_proba += _process_pred_proba(model.predict_proba(test))
+        fold += 1
     
     model.fit(train, target)
     save_fitted_model(model)
