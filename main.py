@@ -9,7 +9,7 @@ from model import make_model
 from evaluate import evaluate
 
 
-def main(n_splits: int = 5, random_state: int = 42):
+def main(n_splits: int = 2, random_state: int = 42):
     train, target, = get_train_data()
     model = make_model(random_state=random_state)
 

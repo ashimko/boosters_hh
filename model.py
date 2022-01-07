@@ -26,8 +26,8 @@ def make_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
             ('vec_word', CountVectorizer(analyzer='word', dtype=int32, ngram_range=(1,3))),
             ('vec_char', CountVectorizer(analyzer='char_wb', dtype=int32, ngram_range=(1, 5))),
             ])),
-        ('select_features', 'passthrough'),
-        ('tfidf', 'passthrough'),
+        ('select_features', SelectPercentile(chi2, percentile=40)),
+        ('tfidf', TfidfTransformer()),
     ])
     features_generation = ColumnTransformer(n_jobs=-1, verbose=True, transformers=[
         ('positive_col', text_processing, POSITIVE),
@@ -45,18 +45,18 @@ def make_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
         ('model', base_estimator)
     ])
 
-    param_grid = {} # 'model__estimator__C': random.uniform(0.1, 10, 3)
-    for text_col in TEXT_COLS:
-        param_grid.update({f'get_features__{text_col.lower()}_col__select_features': [
-                'passthrough', SelectPercentile(chi2, percentile=5), 
-                SelectPercentile(chi2, percentile=25), SelectPercentile(chi2, percentile=50)],
-            f'get_features__{text_col.lower()}_col__tfidf': ['passthrough', TfidfTransformer()]})
+    param_grid = {'model__estimator__C': random.uniform(0.1, 10, 5)}
+    # for text_col in TEXT_COLS:
+    #     param_grid.update({f'get_features__{text_col.lower()}_col__select_features': [
+    #             'passthrough', SelectPercentile(chi2, percentile=5), 
+    #             SelectPercentile(chi2, percentile=25), SelectPercentile(chi2, percentile=50)],
+    #         f'get_features__{text_col.lower()}_col__tfidf': ['passthrough', TfidfTransformer()]})
 
     model = GridSearchCV(
         estimator=base_pipe,
         param_grid=param_grid,
         cv=cv, verbose=3,
         scoring='f1_samples',
-        n_jobs=-1
+        n_jobs=2
     )
     return model
