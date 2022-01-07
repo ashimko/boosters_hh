@@ -21,38 +21,50 @@ from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES,
 
 def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, bool]:
     text_processing_options = {
-    "tokenizers" : [{
-        "tokenizer_id" : "Space",
-        "delimiter" : " ",
-        "lowercasing" : "true"
-    }],
-
-    "dictionaries" : [{
-        "dictionary_id" : "BiGram",
-        "gram_order" : "2"
-    }, {
-        "dictionary_id" : "Word",
-        "gram_order" : "1"
-    }],
-
-    "feature_processing" : {
-        "default" : [{
-            "dictionaries_names" : ["Word"],
-            "feature_calcers" : ["BoW"],
-            "tokenizers_names" : ["Space"]
+        "tokenizers" : [{
+            "tokenizer_id" : "Sense",
+            "lowercasing" : "true",
+            'separator_type': 'BySense'
         }],
-        
-        "1" : [{
-            "tokenizers_names" : ["Space"],
-            "dictionaries_names" : ["BiGram", "Word"],
-            "feature_calcers" : ["BoW"]
-        }, {
-            "tokenizers_names" : ["Space"],
-            "dictionaries_names" : ["Word"],
-            "feature_calcers" : ["NaiveBayes"]
-        }]
+
+        "dictionaries" : [{
+            "dictionary_id" : "1-GramWord",
+            "token_level_type": "Word",
+            "gram_order" : "1"
+        },{
+            "dictionary_id" : "2-GramWord",
+            "token_level_type": "Word",
+            "gram_order" : "2"
+        },{
+            "dictionary_id" : "3-GramWord",
+            "token_level_type": "Word",
+            "gram_order" : "3"
+        },{
+            "dictionary_id" : "1-GramLetter",
+            "token_level_type": "Letter",
+            "gram_order" : "1"
+        },{
+            "dictionary_id" : "2-GramLetter",
+            "token_level_type": "Letter",
+            "gram_order" : "2"
+        },{
+            "dictionary_id" : "3-GramLetter",
+            "token_level_type": "Letter",
+            "gram_order" : "3"
+        },{
+            "dictionary_id" : "4-GramLetter",
+            "token_level_type": "Letter",
+            "gram_order" : "4"
+        }],
+
+        "feature_processing" : {
+            "default" : [{
+                "dictionaries_names" : ["1-GramWord", "2-GramWord", "3-GramWord", "1-GramLetter", "2-GramLetter", "3-GramLetter", "4-GramLetter"],
+                "feature_calcers" : ["BoW", "NaiveBayes", "BM25"],
+                "tokenizers_names" : ["Sense"]
+            }]
+        }
     }
-}
 
     base_estimator = CatBoostClassifier(
         cat_features=ORDERED_CATEGORIES+UNORDERED_CATEGORIES,
