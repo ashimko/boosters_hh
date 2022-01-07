@@ -37,7 +37,7 @@ def make_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
         ('unordered_categories_ohe', OneHotEncoder(dtype=bool_, handle_unknown='ignore'), UNORDERED_CATEGORIES)
     ])
     base_estimator = MultiOutputClassifier(
-        estimator=LinearSVC(random_state=random_state),
+        estimator=LinearSVC(C=1.6445845403801216, random_state=random_state),
         n_jobs=-1)
     
     base_pipe = Pipeline(memory='.cache', verbose=True, steps=[
@@ -45,12 +45,13 @@ def make_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
         ('model', base_estimator)
     ])
 
-    param_grid = {'model__estimator__C': random.uniform(0.1, 10, 5)}
-    # for text_col in TEXT_COLS:
-    #     param_grid.update({f'get_features__{text_col.lower()}_col__select_features': [
-    #             'passthrough', SelectPercentile(chi2, percentile=5), 
-    #             SelectPercentile(chi2, percentile=25), SelectPercentile(chi2, percentile=50)],
-    #         f'get_features__{text_col.lower()}_col__tfidf': ['passthrough', TfidfTransformer()]})
+    param_grid = {} # 'model__estimator__C': random.uniform(0.1, 10, 5)
+    for text_col in TEXT_COLS:
+        param_grid.update({f'get_features__{text_col.lower()}_col__select_features': [
+                'passthrough', SelectPercentile(chi2, percentile=5), 
+                SelectPercentile(chi2, percentile=25), SelectPercentile(chi2, percentile=50)],
+            })
+            #f'get_features__{text_col.lower()}_col__tfidf': ['passthrough', TfidfTransformer()]
 
     model = GridSearchCV(
         estimator=base_pipe,
