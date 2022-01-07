@@ -12,7 +12,7 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.linear_model import LogisticRegressionCV
 from sklearn.ensemble import RandomForestClassifier
 from lightgbm import LGBMClassifier
-from sklearn.decomposition import TruncatedSVD
+from sklearn.decomposition import TruncatedSVD, NMF
 from catboost import CatBoostClassifier
 
 from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES
@@ -24,9 +24,9 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
             ('count_vec_char_wb', CountVectorizer(analyzer='char_wb', ngram_range=(1,5), dtype=int32)),
             ('count_vec_word', CountVectorizer(analyzer='word', ngram_range=(1,3), dtype=int32))])
             ),
-        ('select_features', SelectPercentile(chi2, percentile=10)),
-        ('tfidf', TfidfTransformer()),
-    ])
+        ('select_features', SelectPercentile(chi2, percentile=5)),
+        ('tfidf', TfidfTransformer())
+        ])
 
     features_generation = ColumnTransformer(n_jobs=-1, verbose=True, transformers=[
         ('ordered_categories_as_is', 'passthrough', ORDERED_CATEGORIES),
