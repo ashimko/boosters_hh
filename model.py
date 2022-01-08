@@ -55,11 +55,17 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
             "dictionary_id" : "4-GramLetter",
             "token_level_type": "Letter",
             "gram_order" : "4"
+        },{
+            "dictionary_id" : "5-GramLetter",
+            "token_level_type": "Letter",
+            "gram_order" : "5"
         }],
 
         "feature_processing" : {
             "default" : [{
-                "dictionaries_names" : ["1-GramWord", "2-GramWord", "3-GramWord", "1-GramLetter", "2-GramLetter", "3-GramLetter", "4-GramLetter"],
+                "dictionaries_names" : [
+                    "1-GramWord", "2-GramWord", "3-GramWord", 
+                    "1-GramLetter", "2-GramLetter", "3-GramLetter", "4-GramLetter", "5-GramLetter"],
                 "feature_calcers" : ["BoW", "NaiveBayes", "BM25"],
                 "tokenizers_names" : ["Sense"]
             }]
@@ -70,9 +76,11 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
         cat_features=ORDERED_CATEGORIES+UNORDERED_CATEGORIES,
         text_features=TEXT_COLS,
         random_state=random_state,
+        max_depth=10,
         text_processing=text_processing_options,
         task_type="GPU",
         devices='0:1',
         verbose=10)
     model = MultiOutputClassifier(estimator=base_estimator, n_jobs=1)
+
     return model, hasattr(base_estimator, 'predict_proba')
