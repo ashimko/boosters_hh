@@ -13,6 +13,7 @@ from sklearn.linear_model import Perceptron
 from sklearn.model_selection import GridSearchCV
 from sklearn.decomposition import NMF, TruncatedSVD, SparsePCA
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 
 from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, TEXT_COLS, UNORDERED_CATEGORIES
 
@@ -37,7 +38,7 @@ def make_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
         ('ordered_categories_ohe', OneHotEncoder(dtype=bool_, handle_unknown='ignore'), ORDERED_CATEGORIES),
         ('unordered_categories_ohe', OneHotEncoder(dtype=bool_, handle_unknown='ignore'), UNORDERED_CATEGORIES)
     ])
-    base_estimator = KNeighborsClassifier(n_jobs=-1)
+    base_estimator = MultiOutputClassifier(GradientBoostingClassifier(), n_jobs=-1)
     
     base_pipe = Pipeline(memory='.cache', verbose=True, steps=[
         ('get_features', features_generation),
@@ -45,9 +46,9 @@ def make_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
     ])
 
     param_grid = {
-        'model__n_neighbors':[3,5,7,10], 
-        'model__weights': ['uniform', 'distance'],
-        'model__p': [1,2,3]} 
+        'model__estimator__learning_rate': random.uniform(0.05, 1.0, 3), 
+        'model__estimator__subsample': random.uniform(0.5, 1, 3),
+        'model__estimator__max_depth': [3,5,7]} 
     
 
     model = GridSearchCV(
