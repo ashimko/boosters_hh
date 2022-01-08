@@ -14,6 +14,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.decomposition import NMF, TruncatedSVD, SparsePCA
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import GradientBoostingClassifier
+from xgboost import XGBClassifier
 
 from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, TEXT_COLS, UNORDERED_CATEGORIES
 
@@ -38,7 +39,7 @@ def make_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
         ('ordered_categories_ohe', OneHotEncoder(dtype=bool_, handle_unknown='ignore'), ORDERED_CATEGORIES),
         ('unordered_categories_ohe', OneHotEncoder(dtype=bool_, handle_unknown='ignore'), UNORDERED_CATEGORIES)
     ])
-    base_estimator = MultiOutputClassifier(GradientBoostingClassifier(), n_jobs=-1)
+    base_estimator = MultiOutputClassifier(XGBClassifier(), n_jobs=1)
     
     base_pipe = Pipeline(memory='.cache', verbose=True, steps=[
         ('get_features', features_generation),
