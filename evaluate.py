@@ -4,11 +4,12 @@ from collections import defaultdict
 from numpy import float32, int8, ndarray, zeros_like, zeros
 from numpy.core.shape_base import hstack, vstack
 from pandas import DataFrame, Series
-from sklearn.model_selection import KFold, cross_validate
+from sklearn.model_selection import KFold, cross_validate, train_test_split
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import roc_auc_score, f1_score, log_loss, recall_score, precision_score
 import pickle
+from config import CITY
 
 from helper import save_fitted_model
 
@@ -36,7 +37,8 @@ def _process_pred_proba(pred_proba: Union[ndarray, list]) -> ndarray:
 
 def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame, 
              n_splits: int, random_state: int = 42, metrics: List = None, has_predict_proba: bool = True) -> Dict:
-    cv = MultilabelStratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+    n_splits = 1
+    train_idx, test_idx = train_test_split(list(range(len(train))), test_size=0.33, shuffle=True, random_state=random_state)
 
     oof_pred_labels = DataFrame(data=zeros_like(target, dtype=int8), index=target.index, columns=target.columns)
     oof_pred_proba = DataFrame(data=zeros_like(target, dtype=float32), index=target.index, columns=target.columns)
@@ -46,33 +48,31 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
     test_pred_proba = DataFrame(data=zeros(shape=test_shape, dtype=float32), index=test.index, columns=target.columns)
 
     cv_results = defaultdict(list)
-    fold = 0
-    for train_idx, test_idx in cv.split(X=train, y=target):
-        model.fit(train.iloc[train_idx], target.iloc[train_idx])
-        cv_results['estimator'].append(model)
+    fold = 'train'
+    model.fit(train.iloc[train_idx], target.iloc[train_idx])
+    cv_results['estimator'].append(model)
 
-        oof_pred_labels.iloc[test_idx] = model.predict(train.iloc[test_idx])
-        cv_results = update_with_label_metrics(y_true=target.iloc[test_idx], y_pred=oof_pred_labels.iloc[test_idx],
-                                               cv_results=cv_results, mode='test')
-        cv_results = update_with_label_metrics(y_true=target.iloc[train_idx], y_pred=model.predict(train.iloc[train_idx]),
-                                               cv_results=cv_results, mode='train')
+    oof_pred_labels.iloc[test_idx] = model.predict(train.iloc[test_idx])
+    cv_results = update_with_label_metrics(y_true=target.iloc[test_idx], y_pred=oof_pred_labels.iloc[test_idx],
+                                            cv_results=cv_results, mode='test')
+    cv_results = update_with_label_metrics(y_true=target.iloc[train_idx], y_pred=model.predict(train.iloc[train_idx]),
+                                            cv_results=cv_results, mode='train')
 
-        if has_predict_proba:
-            oof_pred_proba.iloc[test_idx] = _process_pred_proba(model.predict_proba(train.iloc[test_idx]))
-            cv_results = update_with_pred_proba_metrics(
-                y_true=target.iloc[test_idx], 
-                y_pred=oof_pred_labels.iloc[test_idx],
-                cv_results=cv_results, mode='test')
+    if has_predict_proba:
+        oof_pred_proba.iloc[test_idx] = _process_pred_proba(model.predict_proba(train.iloc[test_idx]))
+        cv_results = update_with_pred_proba_metrics(
+            y_true=target.iloc[test_idx], 
+            y_pred=oof_pred_labels.iloc[test_idx],
+            cv_results=cv_results, mode='test')
 
-            cv_results = update_with_pred_proba_metrics(
-                y_true=target.iloc[train_idx], 
-                y_pred=_process_pred_proba(model.predict_proba(train.iloc[train_idx])),
-                cv_results=cv_results, mode='train')
-        
-        test_pred_labels += model.predict(test)
-        if has_predict_proba:
-            test_pred_proba += _process_pred_proba(model.predict_proba(test))
-        fold += 1
+        cv_results = update_with_pred_proba_metrics(
+            y_true=target.iloc[train_idx], 
+            y_pred=_process_pred_proba(model.predict_proba(train.iloc[train_idx])),
+            cv_results=cv_results, mode='train')
+    
+    test_pred_labels += model.predict(test)
+    if has_predict_proba:
+        test_pred_proba += _process_pred_proba(model.predict_proba(test))
     
     model.fit(train, target)
     save_fitted_model(model)

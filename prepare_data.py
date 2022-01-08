@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import string
 
-from config import (ID, ORDERED_CATEGORIES, ORIGINAL_DATA_PATH,
+from config import (ID, ORDERED_CATEGORIES, ORIGINAL_DATA_PATH, CITY,
                     PREPARED_DATA_PATH, TARGET, UNORDERED_CATEGORIES, TEXT_COLS)
 
 
@@ -22,7 +22,13 @@ def prepare_data(train: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
         X[ordered_category] = X[ordered_category].fillna(-1)
         X[ordered_category] = X[ordered_category].astype('category').cat.as_ordered()
     
-    X[UNORDERED_CATEGORIES] = X[UNORDERED_CATEGORIES].fillna('NA')
+    X[CITY] = X[CITY].fillna('NA')
+
+    # cities
+    common_cities = set(X.loc[train_idx, CITY]) & set(X.loc[test_idx, CITY])
+    mask = ~X[CITY].isin(common_cities)
+    X.loc[mask, CITY] = 'ANOTHER'
+
     X[UNORDERED_CATEGORIES] = X[UNORDERED_CATEGORIES].astype('category')
     
     X[TEXT_COLS] = X[TEXT_COLS].fillna('NA').astype('str')
