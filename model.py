@@ -19,7 +19,7 @@ from catboost import CatBoostClassifier
 from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES, TEXT_COLS
 
 
-def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, bool]:
+def make_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
     text_processing_options = {
         "tokenizers" : [{
             "tokenizer_id" : "Sense",
@@ -78,8 +78,8 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
         random_state=random_state,
         max_depth=10,
         text_processing=text_processing_options,
-        task_type="GPU",
-        devices='0:1',
+        # task_type="GPU",
+        # devices='0:1',
         verbose=10)
     model = MultiOutputClassifier(estimator=base_estimator, n_jobs=1)
 
