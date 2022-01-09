@@ -1,14 +1,14 @@
 import os
 from typing import List, Union
+
 import numpy as np
 import pandas as pd
-import string
-
 from pandas.core.frame import DataFrame
 from pandas.core.indexes.base import Index
 
-from config import (ID, ORDERED_CATEGORIES, ORIGINAL_DATA_PATH,
-                    PREPARED_DATA_PATH, TARGET, UNORDERED_CATEGORIES, TEXT_COLS)
+from config import (ID, ORDERED_CATEGORIES, ORIGINAL_DATA_PATH, POSITION,
+                    POSITION_AS_TXT, PREPARED_DATA_PATH, TARGET, TEXT_COLS,
+                    UNORDERED_CATEGORIES)
 
 
 def _process_ordered_categories(
@@ -36,6 +36,9 @@ def _process_unorder_categories(
 
 
 def _process_text_cols(data: DataFrame, text_cols: List) -> DataFrame:
+    if POSITION_AS_TXT in text_cols:
+        data[POSITION_AS_TXT] = data[POSITION].copy()
+
     data[text_cols] = data[text_cols].fillna('NA').astype('str')
     return data
         
@@ -50,11 +53,12 @@ def prepare_data(train: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
     target = train[TARGET]
     target = target.str.get_dummies(sep=',').astype(np.int8)
     data = pd.concat((train.drop(TARGET, axis=1), test))
+
+    data = _process_text_cols(data, TEXT_COLS)
     data = _process_ordered_categories(data, ORDERED_CATEGORIES)
     data = _process_unorder_categories(data, UNORDERED_CATEGORIES, 
                                        train_idx, test_idx, keep_only_common_categories=True)
-    data = _process_text_cols(data, TEXT_COLS)
-
+    
     return data.loc[train_idx], data.loc[test_idx], target
 
 def main() -> None:
