@@ -16,7 +16,7 @@ from sklearn.decomposition import TruncatedSVD
 import category_encoders as ce
 from catboost import CatBoostClassifier
 
-from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES, TEXT_COLS
+from config import NEGATIVE, ORDERED_CATEGORIES, POSITION_TXT, POSITIVE, UNORDERED_CATEGORIES, TEXT_COLS
 
 
 def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, bool]:
@@ -76,10 +76,10 @@ def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, boo
         cat_features=ORDERED_CATEGORIES+UNORDERED_CATEGORIES,
         text_features=TEXT_COLS,
         random_state=random_state,
-        max_depth=10,
+        max_depth=12,
         text_processing=text_processing_options,
-        task_type="GPU",
-        devices='0:1',
+        # task_type="GPU",
+        # devices='0:1',
         verbose=10)
     model = MultiOutputClassifier(estimator=base_estimator, n_jobs=1)
 
