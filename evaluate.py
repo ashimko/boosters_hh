@@ -48,7 +48,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
 
     cv_results = defaultdict(list)
     fold = 0
-    for train_idx, test_idx in cv.split(X=train, y=train[UNORDERED_CATEGORIES]):
+    for train_idx, test_idx in cv.split(X=train, y=target):
         model.fit(train.iloc[train_idx], target.iloc[train_idx])
         cv_results['estimator'].append(model)
 
