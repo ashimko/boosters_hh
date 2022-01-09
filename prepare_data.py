@@ -29,10 +29,6 @@ def prepare_data(train: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
     mask = ~X[CITY].isin(common)
     X.loc[mask, CITY] = 'ANOTHER'
 
-    common = set(X.loc[train_idx, POSITION]) & set(X.loc[test_idx, POSITION])
-    mask = ~X[POSITION].isin(common)
-    X.loc[mask, POSITION] = 'ANOTHER'
-
     X[UNORDERED_CATEGORIES] = X[UNORDERED_CATEGORIES].astype('category')
     X[TEXT_COLS] = X[TEXT_COLS].fillna('NA').astype('str')
 

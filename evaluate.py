@@ -4,11 +4,12 @@ from collections import defaultdict
 from numpy import float32, int8, ndarray, zeros_like, zeros
 from numpy.core.shape_base import hstack, vstack
 from pandas import DataFrame, Series
-from sklearn.model_selection import KFold, cross_validate
+from sklearn.model_selection import KFold, cross_validate, train_test_split
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import roc_auc_score, f1_score, log_loss, recall_score, precision_score
 import pickle
+from config import CITY, UNORDERED_CATEGORIES
 
 from helper import save_fitted_model
 
@@ -47,7 +48,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
 
     cv_results = defaultdict(list)
     fold = 0
-    for train_idx, test_idx in cv.split(X=train, y=target):
+    for train_idx, test_idx in cv.split(X=train, y=train[UNORDERED_CATEGORIES]):
         model.fit(train.iloc[train_idx], target.iloc[train_idx])
         cv_results['estimator'].append(model)
 

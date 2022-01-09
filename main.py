@@ -10,7 +10,7 @@ from model import make_model
 from evaluate import evaluate, _process_pred_proba
 
 
-def main(n_splits: int = 5, random_state: int = 42):
+def main(n_splits: int = 3, random_state: int = 42):
     train, target, = get_train_data()
     test = get_test_data()
     model, has_predict_proba = make_model(n_splits=n_splits, random_state=random_state)
