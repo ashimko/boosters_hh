@@ -88,7 +88,7 @@ def save_predicted_labels(pred_labels: DataFrame, mode: str = 'test') -> None:
         n = int((x >= 0.5).sum()) # if more than halve estimators predicted then predict at final
         if n == 0:
             return '0'
-        return ','.join(map(str, x.nlargest(n).index))
+        return ','.join(map(str, sorted(x.nlargest(n).index)))
 
     pred_labels['target'] = pred_labels.apply(_process_pred_labels, axis=1)
     pred_labels = pred_labels['target']
