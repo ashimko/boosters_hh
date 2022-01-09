@@ -15,10 +15,11 @@ from lightgbm import LGBMClassifier
 from sklearn.decomposition import TruncatedSVD
 from catboost import CatBoostClassifier
 
-from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES
+from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES, TEXT_COLS
 
 
-def make_model(n_splits: int = 5, random_state: int = 42) -> Tuple[Pipeline, bool]:
+
+def make_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
     text_processing = Pipeline(memory='.cache', verbose=True, steps=[
         ('vectorize', FeatureUnion(n_jobs=-1, transformer_list=[
             ('count_vec_char_wb', CountVectorizer(analyzer='char_wb', ngram_range=(1,5), dtype=int32)),

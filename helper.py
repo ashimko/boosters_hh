@@ -13,10 +13,9 @@ from utils import save_to_pickle
 
 
 def process_cv_results(cv_results: Dict, metrics: List) -> Tuple[Dict, List]:
-    estimators = cv_results.pop('estimator', [])
     for metric in metrics:
         cv_results[f'avg_{metric}'] = mean(cv_results[f'test_{metric}'])
-    return cv_results, estimators
+    return cv_results
 
 
 def filter_metrics(metrics: List) -> List:
@@ -30,13 +29,6 @@ def get_train_data() -> Tuple[DataFrame, Series]:
 
 def get_test_data() -> DataFrame:
     return read_pickle(os.path.join(PREPARED_DATA_PATH, 'test.pkl'))
-
-
-def save_models(estimators: List) -> None:
-    for fold, estimator in enumerate(estimators):
-        save_to_pickle(
-            obj=estimator, 
-            path=os.path.join(MODEL_PATH, f'fold_{fold}_model.pkl'))
 
 
 def save_metrics(cv_results: Dict, metrics) -> None:
@@ -83,30 +75,41 @@ def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame) -> None:
             )
 
 
-def save_predicted_labels(pred_labels: DataFrame, mode: str = 'test') -> None:
-    def _process_pred_labels(x: Series) -> str:
+def _process_pred_labels(x: Series) -> str:
         n = int((x >= 0.5).sum()) # if more than halve estimators predicted then predict at final
         if n == 0:
             return '0'
-        return ','.join(map(str, x.nlargest(n).index))
+        return ','.join(map(str, sorted(x.nlargest(n).index)))
 
+
+def save_predicted_labels(pred_labels: DataFrame, mode: str = 'test') -> None:
     pred_labels['target'] = pred_labels.apply(_process_pred_labels, axis=1)
     pred_labels = pred_labels['target']
-    if mode == 'test':
+    if mode == 'test_avg_by_folds':
         pred_labels.to_csv(os.path.join(SUBMITIONS_PATH, 'submit_labels.csv'))
+    elif mode == 'test_whole_train':
+        pred_labels.to_csv(os.path.join(SUBMITIONS_PATH, 'submit_labels_whole_train.csv'))
     elif mode == 'train':
         pred_labels.to_csv(os.path.join(OOF_PATH, 'submit_labels.csv'))
+    
     else:
         raise NotImplementedError()
 
 
 def save_predicted_proba(pred_proba: DataFrame, mode: str = 'test') -> None:
-    if mode == 'test':
+    if mode == 'test_avg_by_folds':
         pred_proba.to_csv(os.path.join(SUBMITIONS_PATH, 'pred_proba.csv'))
+    elif mode == 'test_whole_train':
+        pred_proba.to_csv(os.path.join(SUBMITIONS_PATH, 'pred_proba_whole_train.csv'))
     elif mode == 'train':
         pred_proba.to_csv(os.path.join(OOF_PATH, 'pred_proba.csv'))
     else:
         raise NotImplementedError()
 
-def save_fitted_model(model: Pipeline) -> None:
-    save_to_pickle(model, os.path.join(MODEL_PATH, 'whole_train_model.pkl'))
+
+def save_model(estimator: Pipeline, fold: int = -1) -> None:
+    if fold == -1:
+        model_name = 'whole_train_target_model.pkl'
+    else:
+        model_name = f'fold_{fold}_target_model.pkl'
+    save_to_pickle(obj=estimator, path=os.path.join(MODEL_PATH, model_name))
