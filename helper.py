@@ -18,7 +18,7 @@ from utils import save_to_pickle
 
 def process_cv_results(cv_results: Dict, metrics: List) -> Tuple[Dict, List]:
     for metric in metrics:
-        cv_results[f'avg_{metric}'] = mean(cv_results[f'test_{metric}'])
+        cv_results[f'avg_{metric}'] = mean(cv_results[f'val_{metric}'])
     return cv_results
 
 

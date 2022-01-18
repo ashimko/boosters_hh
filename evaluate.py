@@ -15,7 +15,7 @@ from helper import save_model
 
 def update_with_label_metrics(y_true: DataFrame, y_pred: DataFrame, 
                       cv_results: DefaultDict, mode: str = 'test') -> DataFrame:
-    cv_results[f'{mode}_f1_samples'].append(f1_score(y_true, y_pred, average='samples'))
+    cv_results[f'{mode}_f1_samples'].append(f1_score(y_true, y_pred, average='samples', zero_division=0))
     cv_results[f'{mode}_recall_samples'].append(recall_score(y_true, y_pred, average='samples'))
     cv_results[f'{mode}_precision_samples'].append(precision_score(y_true, y_pred, average='samples'))
     return cv_results
@@ -33,7 +33,7 @@ def get_pred_labels(pred_proba: np.ndarray, y_true: np.ndarray = None) -> np.nda
         thres, _ = optimal_threshold(pred_proba[:, col_idx])
         pred_labels[:, col_idx] = np.where(pred_proba[:, col_idx] > thres, 1, 0)
     if y_true is not None:
-        print('f1_scores_samples', f1_score(y_true, pred_labels, average='samples'))
+        print('f1_scores_samples', f1_score(y_true, pred_labels, average='samples', zero_division=0))
     return pred_labels
 
 
@@ -64,8 +64,6 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
     ens_test_pred_labels = DataFrame(data=np.zeros(shape=test_shape, dtype=np.int8), index=test.index, columns=target.columns)
     ens_test_pred_proba = DataFrame(data=np.zeros(shape=test_shape, dtype=np.float32), index=test.index, columns=target.columns)
 
-    whole_train_test_pred_labels = ens_test_pred_labels.copy()
-    whole_train_test_pred_proba = ens_test_pred_labels.copy()
 
     cv_results = defaultdict(list)
     fold = 0
@@ -76,7 +74,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
 
 
         early_stopping = tf.keras.callbacks.EarlyStopping(
-            monitor='f1_score_micro',
+            monitor='val_f1_score_micro',
             mode='max',
             patience=3)
             
@@ -84,18 +82,18 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         checkopoint = tf.keras.callbacks.ModelCheckpoint(
             filepath=checkpoint_filepath,
             save_best_only=True,
-            monitor='f1_score_micro',
+            monitor='val_f1_score_micro',
             mode='max',
             verbose=1
         )
 
-        model.fit(
-            x=get_model_input(X_train), 
-            y=y_train, 
-            epochs=N_EPOCHS, 
-            batch_size=BATCH_SIZE,
-            validation_split=0.15, 
-            callbacks=[early_stopping, checkopoint])
+        # model.fit(
+        #     x=get_model_input(X_train), 
+        #     y=y_train, 
+        #     epochs=N_EPOCHS, 
+        #     batch_size=BATCH_SIZE,
+        #     validation_split=0.15, 
+        #     callbacks=[early_stopping, checkopoint])
         
         model.load_weights(checkpoint_filepath).expect_partial()
 
@@ -134,27 +132,27 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
     checkopoint = tf.keras.callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath,
         save_best_only=True,
-        monitor='f1_score_micro',
+        monitor='val_f1_score_micro',
         mode='max',
         verbose=1
     )
         
-    model.fit(
-        x=get_model_input(train), 
-        y=target, 
-        epochs=N_EPOCHS, 
-        batch_size=BATCH_SIZE,
-        validation_split=0.15, 
-        callbacks=[early_stopping, checkopoint])
+    # model.fit(
+    #     x=get_model_input(train), 
+    #     y=target, 
+    #     epochs=N_EPOCHS, 
+    #     batch_size=BATCH_SIZE,
+    #     validation_split=0.15, 
+    #     callbacks=[early_stopping, checkopoint])
 
     model.load_weights(checkpoint_filepath).expect_partial()
     pred_proba = model.predict(get_model_input(test))
     pred_labels = get_pred_labels(pred_proba)
     ens_test_pred_labels += pred_labels
-    whole_train_test_pred_labels = pred_labels
+    whole_train_test_pred_labels =  DataFrame(data=pred_labels, index=test.index, columns=target.columns)
     
     ens_test_pred_proba += pred_proba
-    whole_train_test_pred_proba = pred_proba
+    whole_train_test_pred_proba = DataFrame(data=pred_proba, index=test.index, columns=target.columns)
         
     ens_test_pred_labels /= (n_splits + 1)
     ens_test_pred_proba /= (n_splits + 1)
