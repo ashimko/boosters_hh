@@ -29,10 +29,10 @@ def make_model(encoders: Dict) -> keras.Model:
                 input_dim=len(encoder.get_vocabulary()),
                 output_dim=64,
                 mask_zero=True)(x)
-        x = layers.Bidirectional(tf.keras.layers.LSTM(64, return_sequences=True))(x)
-        x = layers.Dropout(0.5)(x)
-        x = layers.Bidirectional(tf.keras.layers.LSTM(64))(x)
-        x = layers.Dropout(0.5)(x)
+        x = layers.Bidirectional(tf.keras.layers.GRU(64, return_sequences=True))(x)
+        x = layers.Dropout(0.7)(x)
+        x = layers.Bidirectional(tf.keras.layers.GRU(64))(x)
+        x = layers.Dropout(0.7)(x)
         x = layers.Dense(64, activation='relu')(x)
         x = layers.Dropout(0.3)(x)
         x = layers.Dense(N_TARGETS)(x)

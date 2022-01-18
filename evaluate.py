@@ -87,13 +87,13 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
             verbose=1
         )
 
-        # model.fit(
-        #     x=get_model_input(X_train), 
-        #     y=y_train, 
-        #     epochs=N_EPOCHS, 
-        #     batch_size=BATCH_SIZE,
-        #     validation_split=0.15, 
-        #     callbacks=[early_stopping, checkopoint])
+        model.fit(
+            x=get_model_input(X_train), 
+            y=y_train, 
+            epochs=N_EPOCHS, 
+            batch_size=BATCH_SIZE,
+            validation_split=0.15, 
+            callbacks=[early_stopping, checkopoint])
         
         model.load_weights(checkpoint_filepath).expect_partial()
 
@@ -137,13 +137,13 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         verbose=1
     )
         
-    # model.fit(
-    #     x=get_model_input(train), 
-    #     y=target, 
-    #     epochs=N_EPOCHS, 
-    #     batch_size=BATCH_SIZE,
-    #     validation_split=0.15, 
-    #     callbacks=[early_stopping, checkopoint])
+    model.fit(
+        x=get_model_input(train), 
+        y=target, 
+        epochs=N_EPOCHS, 
+        batch_size=BATCH_SIZE,
+        validation_split=0.15, 
+        callbacks=[early_stopping, checkopoint])
 
     model.load_weights(checkpoint_filepath).expect_partial()
     pred_proba = model.predict(get_model_input(test))
