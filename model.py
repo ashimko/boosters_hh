@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+import tensorflow_addons as tfa
 from tensorflow import keras
 from tensorflow.keras import layers
 from typing import Dict
@@ -21,7 +22,7 @@ def get_model_input(data: pd.DataFrame) -> Dict:
     return x
 
 
-def make_model(encoders):
+def make_model(encoders: Dict) -> keras.Model:
 
     def _get_text_model(input, encoder):
         x = encoder(input)
@@ -77,8 +78,11 @@ def make_model(encoders):
     )
 
     model.compile(
-    optimizer=keras.optimizers.Adam(),
-    loss=keras.losses.BinaryCrossentropy(from_logits=False)
+        optimizer=keras.optimizers.Adam(),
+        loss=keras.losses.BinaryCrossentropy(from_logits=False),
+        metrics=[
+            tfa.metrics.F1Score(num_classes=9, average='micro', name='f1_score_micro'),
+            tfa.metrics.F1Score(num_classes=9, average='macro', name='f1_score_macro')]
 )
 
     return model

@@ -1,12 +1,14 @@
+import os
 from typing import DefaultDict, Dict, List
 from collections import defaultdict
 
 import numpy as np
+import tensorflow as tf
 from pandas import DataFrame, Series
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import roc_auc_score, f1_score, log_loss, recall_score, precision_score
-from config import N_LABELS
+from config import MODEL_PATH, N_LABELS
 from model import get_model_input, N_EPOCHS
 
 from helper import save_model
@@ -30,7 +32,7 @@ def get_pred_labels(pred_proba: np.ndarray, y_true: np.ndarray = None) -> np.nda
     for col_idx in range(N_LABELS):
         thres, _ = optimal_threshold(pred_proba[:, col_idx])
         pred_labels[:, col_idx] = np.where(pred_proba[:, col_idx] > thres, 1, 0)
-    if y_true:
+    if y_true is not None:
         print('f1_scores_samples', f1_score(y_true, pred_labels, average='samples'))
     return pred_labels
 
@@ -71,20 +73,43 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         X_train, y_train = train.iloc[train_idx], target.iloc[train_idx]
         X_val, y_val  = train.iloc[val_idx], target.iloc[val_idx]
 
-        model.fit(x=get_model_input(X_train), y=y_train, epochs=3, batch_size=2048)
-        save_model(model, fold)
+
+        early_stopping = tf.keras.callbacks.EarlyStopping(
+            monitor='f1_score_micro',
+            mode='max',
+            patience=3)
+            
+        checkpoint_filepath = os.path.join(MODEL_PATH, f'fold_{fold}_checkpoint')
+        checkopoint = tf.keras.callbacks.ModelCheckpoint(
+            filepath=checkpoint_filepath,
+            save_best_only=True,
+            monitor='f1_score_micro',
+            mode='max',
+            verbose=1
+        )
+
+        model.fit(
+            x=get_model_input(X_train), 
+            y=y_train, 
+            epochs=N_EPOCHS, 
+            batch_size=256,
+            validation_split=0.15, 
+            callbacks=[early_stopping, checkopoint])
+        
+        model.load_weights(checkpoint_filepath)
+
 
         pred_proba_val = model.predict(get_model_input(X_val))
         pred_proba_train = model.predict(get_model_input(X_train))
 
-        oof_pred_labels.iloc[val_idx] = get_pred_labels(y_val, pred_proba_val)
+        oof_pred_labels.iloc[val_idx] = get_pred_labels(pred_proba_val, y_val)
         cv_results = update_with_label_metrics(
             y_true=target.iloc[val_idx], 
             y_pred=oof_pred_labels.iloc[val_idx],
             cv_results=cv_results, mode='val')
         cv_results = update_with_label_metrics(
             y_true=target.iloc[train_idx], 
-            y_pred=get_pred_labels(y_val, pred_proba_train),
+            y_pred=get_pred_labels(pred_proba_train, y_train),
             cv_results=cv_results, mode='train')
 
         oof_pred_proba.iloc[val_idx] = pred_proba_val
@@ -103,7 +128,24 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         ens_test_pred_proba += pred_proba_test
         fold += 1
     
-    model.fit(x=get_model_input(train), y=target, epochs=N_EPOCHS, batch_size=2048)
+
+    checkpoint_filepath = os.path.join(MODEL_PATH, 'whole_train_checkpoint')
+    checkopoint = tf.keras.callbacks.ModelCheckpoint(
+        filepath=checkpoint_filepath,
+        save_best_only=True,
+        monitor='f1_score_micro',
+        mode='max',
+        verbose=1
+    )
+        
+    model.fit(
+        x=get_model_input(train), 
+        y=target, 
+        epochs=N_EPOCHS, 
+        batch_size=256,
+        validation_split=0.15, 
+        callbacks=[early_stopping, checkopoint])
+
     save_model(model, fold=-1)
     pred_proba = model.predict(get_model_input(test))
     pred_labels = get_pred_labels(pred_proba)
