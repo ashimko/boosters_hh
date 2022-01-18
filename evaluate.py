@@ -70,6 +70,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
     cv_results = defaultdict(list)
     fold = 0
     for train_idx, val_idx in cv.split(X=train, y=target):
+        print(f'fold {fold}')
         X_train, y_train = train.iloc[train_idx], target.iloc[train_idx]
         X_val, y_val  = train.iloc[val_idx], target.iloc[val_idx]
 

@@ -9,7 +9,7 @@ from config import TEXT_COLS, ORDERED_CATEGORIES, UNORDERED_CATEGORIES
 
 
 VOCAB_SIZE = 15000
-BATCH_SIZE = 512
+BATCH_SIZE = 128
 N_TARGETS = 9
 N_EPOCHS = 20
 
@@ -29,7 +29,7 @@ def make_model(encoders: Dict) -> keras.Model:
                 input_dim=len(encoder.get_vocabulary()),
                 output_dim=64,
                 mask_zero=True)(x)
-        x = layers.Bidirectional(tf.keras.layers.LSTM(64))(x)
+        x = layers.Bidirectional(tf.keras.layers.LSTM(64, return_sequences=True))(x)
         x = layers.Dropout(0.5)(x)
         x = layers.Bidirectional(tf.keras.layers.LSTM(64))(x)
         x = layers.Dropout(0.5)(x)
