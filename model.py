@@ -8,11 +8,10 @@ from typing import Dict
 from config import TEXT_COLS, ORDERED_CATEGORIES, UNORDERED_CATEGORIES
 
 
-BUFFER_SIZE = 10000
-VOCAB_SIZE = 10000
-BATCH_SIZE = 64
+VOCAB_SIZE = 15000
+BATCH_SIZE = 512
 N_TARGETS = 9
-N_EPOCHS = 1
+N_EPOCHS = 20
 
 
 def get_model_input(data: pd.DataFrame) -> Dict:
@@ -30,6 +29,8 @@ def make_model(encoders: Dict) -> keras.Model:
                 input_dim=len(encoder.get_vocabulary()),
                 output_dim=64,
                 mask_zero=True)(x)
+        x = layers.Bidirectional(tf.keras.layers.LSTM(64))(x)
+        x = layers.Dropout(0.5)(x)
         x = layers.Bidirectional(tf.keras.layers.LSTM(64))(x)
         x = layers.Dropout(0.5)(x)
         x = layers.Dense(64, activation='relu')(x)

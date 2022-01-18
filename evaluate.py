@@ -9,7 +9,7 @@ from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import roc_auc_score, f1_score, log_loss, recall_score, precision_score
 from config import MODEL_PATH, N_LABELS
-from model import get_model_input, N_EPOCHS
+from model import BATCH_SIZE, get_model_input, N_EPOCHS
 
 from helper import save_model
 
@@ -92,11 +92,11 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
             x=get_model_input(X_train), 
             y=y_train, 
             epochs=N_EPOCHS, 
-            batch_size=256,
+            batch_size=BATCH_SIZE,
             validation_split=0.15, 
             callbacks=[early_stopping, checkopoint])
         
-        model.load_weights(checkpoint_filepath)
+        model.load_weights(checkpoint_filepath).expect_partial()
 
 
         pred_proba_val = model.predict(get_model_input(X_val))
@@ -142,11 +142,11 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         x=get_model_input(train), 
         y=target, 
         epochs=N_EPOCHS, 
-        batch_size=256,
+        batch_size=BATCH_SIZE,
         validation_split=0.15, 
         callbacks=[early_stopping, checkopoint])
 
-    save_model(model, fold=-1)
+    model.load_weights(checkpoint_filepath).expect_partial()
     pred_proba = model.predict(get_model_input(test))
     pred_labels = get_pred_labels(pred_proba)
     ens_test_pred_labels += pred_labels
