@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from pandas.core.frame import DataFrame
 from pandas.core.indexes.base import Index
+import tensorflow as tf
 
 from config import (ID, ORDERED_CATEGORIES, ORIGINAL_DATA_PATH, POSITION,
                     POSITION_AS_TXT, PREPARED_DATA_PATH, TARGET, TEXT_COLS,
@@ -36,9 +37,6 @@ def _process_unorder_categories(
 
 
 def _process_text_cols(data: DataFrame, text_cols: List) -> DataFrame:
-    if POSITION_AS_TXT in text_cols:
-        data[POSITION_AS_TXT] = data[POSITION].copy()
-
     data[text_cols] = data[text_cols].fillna('NA').astype('str')
     return data
         

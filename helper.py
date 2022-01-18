@@ -2,13 +2,17 @@ import json
 import os
 from typing import Any, Dict, List, Tuple
 
+import matplotlib.pyplot as plt
+import numpy as np
 from numpy import mean, ndarray
 from pandas import DataFrame, Series, read_csv, read_pickle
 from sklearn.metrics import precision_recall_curve, roc_curve
 from sklearn.pipeline import Pipeline
+from tensorflow.keras.layers import TextVectorization
+from tensorflow.keras import Model
 
-from config import (MODEL_PATH, OOF_PATH, PLOTS_PATH, PREPARED_DATA_PATH,
-                    SCORES_PATH, SUBMITIONS_PATH)
+from config import (MODEL_PATH, OOF_PATH, ORDERED_CATEGORIES, PLOTS_PATH, PREPARED_DATA_PATH,
+                    SCORES_PATH, SUBMITIONS_PATH, TEXT_COLS, UNORDERED_CATEGORIES)
 from utils import save_to_pickle
 
 
@@ -107,9 +111,26 @@ def save_predicted_proba(pred_proba: DataFrame, mode: str = 'test') -> None:
         raise NotImplementedError()
 
 
-def save_model(estimator: Pipeline, fold: int = -1) -> None:
+def save_model(model: Model, fold: int = -1) -> None:
     if fold == -1:
         model_name = 'whole_train_target_model.pkl'
     else:
         model_name = f'fold_{fold}_target_model.pkl'
-    save_to_pickle(obj=estimator, path=os.path.join(MODEL_PATH, model_name))
+    model.save(os.path.join(MODEL_PATH, model_name))
+
+
+def plot_graphs(history, metric):
+  plt.plot(history.history[metric])
+  plt.plot(history.history['val_'+metric], '')
+  plt.xlabel("Epochs")
+  plt.ylabel(metric)
+  plt.legend([metric, 'val_'+metric])
+
+
+def get_encoders(data: DataFrame, vocab_size: int, **keywords) -> Dict:
+    encoders = {}
+    for col in data.columns:
+        encoder = TextVectorization(max_tokens=vocab_size, name=col, **keywords)
+        encoder.adapt(data[col])
+        encoders[col] = encoder
+    return encoders

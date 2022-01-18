@@ -1,45 +1,84 @@
-from typing import Tuple
-from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
-from numpy import int32, int8, vectorize, bool_
-from sklearn.compose import ColumnTransformer
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, TfidfVectorizer
-from sklearn.multioutput import ClassifierChain, MultiOutputClassifier
-from sklearn.pipeline import Pipeline, FeatureUnion
-from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
-from sklearn.svm import LinearSVC
-from sklearn.feature_selection import chi2, SelectPercentile
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.linear_model import LogisticRegressionCV
-from sklearn.ensemble import RandomForestClassifier
-from lightgbm import LGBMClassifier
-from sklearn.decomposition import TruncatedSVD
-from catboost import CatBoostClassifier
-
-from config import NEGATIVE, ORDERED_CATEGORIES, POSITIVE, UNORDERED_CATEGORIES, TEXT_COLS
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+from typing import Dict
+from config import TEXT_COLS, ORDERED_CATEGORIES, UNORDERED_CATEGORIES
 
 
+BUFFER_SIZE = 10000
+VOCAB_SIZE = 10000
+BATCH_SIZE = 64
+N_TARGETS = 9
+N_EPOCHS = 1
 
-def make_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
-    text_processing = Pipeline(memory='.cache', verbose=True, steps=[
-        ('vectorize', FeatureUnion(n_jobs=-1, transformer_list=[
-            ('count_vec_char_wb', CountVectorizer(analyzer='char_wb', ngram_range=(1,5), dtype=int32)),
-            ('count_vec_word', CountVectorizer(analyzer='word', ngram_range=(1,3), dtype=int32))])
-            ),
-        ('select_features', SelectPercentile(chi2, percentile=35)),
-        ('tfidf', TfidfTransformer()),
-    ])
 
-    features_generation = ColumnTransformer(n_jobs=-1, verbose=True, transformers=[
-        ('ordered_categories_as_is', 'passthrough', ORDERED_CATEGORIES),
-        ('positive_col', text_processing, POSITIVE),
-        ('negative_col', text_processing, NEGATIVE),
-        ('ordered_categories_ohe', OneHotEncoder(dtype=int8, handle_unknown='ignore'), ORDERED_CATEGORIES),
-        ('unordered_categories', OneHotEncoder(dtype=int8, handle_unknown='ignore'), UNORDERED_CATEGORIES),
-    ])
-    
-    base_estimator = LogisticRegressionCV(Cs=20, n_jobs=-1, cv=n_splits, scoring='f1_samples', random_state=random_state)
-    model = Pipeline(memory='.cache', verbose=True, steps=[
-        ('get_features', features_generation),
-        ('model', MultiOutputClassifier(estimator=base_estimator, n_jobs=1))
-    ])
-    return model, hasattr(base_estimator, 'predict_proba')
+def get_model_input(data: pd.DataFrame) -> Dict:
+    x = {f'{col}_text': data[col] for col in TEXT_COLS + UNORDERED_CATEGORIES}
+    x.update({f'{col}_unordered_cat': data[col] for col in UNORDERED_CATEGORIES})
+    x.update({'ordered_cat_input': data[ORDERED_CATEGORIES]})
+    return x
+
+
+def make_model(encoders):
+
+    def _get_text_model(input, encoder):
+        x = encoder(input)
+        x = layers.Embedding(
+                input_dim=len(encoder.get_vocabulary()),
+                output_dim=64,
+                mask_zero=True)(x)
+        x = layers.Bidirectional(tf.keras.layers.LSTM(64))(x)
+        x = layers.Dropout(0.5)(x)
+        x = layers.Dense(64, activation='relu')(x)
+        x = layers.Dropout(0.3)(x)
+        x = layers.Dense(N_TARGETS)(x)
+        return x
+
+    def _get_ordered_category_model(input):
+        x = layers.Dense(32, activation='relu')(input)
+        x = layers.Dropout(0.2)(x)
+        x = layers.Dense(N_TARGETS)(x)
+        return x
+
+    def _get_unordered_category_mode(input, encoder):
+        x = encoder(input)
+        x = layers.CategoryEncoding(num_tokens=len(encoder.get_vocabulary()))(x)
+        x = layers.Dense(64, activation='relu')(x)
+        x = layers.Dropout(0.2)(x)
+        x = layers.Dense(32, activation='relu')(x)
+        x = layers.Dropout(0.2)(x)
+        x = layers.Dense(N_TARGETS)(x)
+        return x
+
+    def _get_final_classifier(features):
+        x = layers.Dense(128, activation='relu')(features)
+        x = layers.Dropout(0.3)(x)
+        x = layers.Dense(64, activation='relu')(x)
+        x = layers.Dropout(0.3)(x)
+        x = layers.Dense(N_TARGETS, activation='sigmoid')(x)
+        return x
+
+    text_inputs = {col: keras.Input(shape=(None,), dtype='string', name=f'{col}_text') for col in TEXT_COLS + UNORDERED_CATEGORIES}
+    unordered_cat_inputs = {col: keras.Input(shape=(None,), dtype='string', name=f'{col}_unordered_cat') for col in UNORDERED_CATEGORIES}
+    ordered_cat_input = keras.Input(shape=(len(ORDERED_CATEGORIES)), name='ordered_cat_input')
+
+    ordered_cat_features = [_get_ordered_category_model(ordered_cat_input)]
+    text_features = [_get_text_model(text_inputs[col], encoders[col]) for col in TEXT_COLS]
+    unordered_cat_features = [_get_unordered_category_mode(unordered_cat_inputs[col], encoders[col]) for col in UNORDERED_CATEGORIES]
+
+    features = layers.Add()(ordered_cat_features + text_features + unordered_cat_features)
+    out = _get_final_classifier(features)
+
+    model = keras.Model(
+        inputs=[ordered_cat_input] + list(text_inputs.values()) + list(unordered_cat_inputs.values()),
+        outputs=out
+    )
+
+    model.compile(
+    optimizer=keras.optimizers.Adam(),
+    loss=keras.losses.BinaryCrossentropy(from_logits=False)
+)
+
+    return model
