@@ -1,47 +1,11 @@
 import os
-from typing import List, Union
-
 import numpy as np
 import pandas as pd
-from pandas.core.frame import DataFrame
-from pandas.core.indexes.base import Index
+import string
 
-from config import (ID, ORDERED_CATEGORIES, ORIGINAL_DATA_PATH, POSITION,
-                    POSITION_AS_TXT, PREPARED_DATA_PATH, TARGET, TEXT_COLS,
-                    UNORDERED_CATEGORIES)
+from config import (ID, ORDERED_CATEGORIES, ORIGINAL_DATA_PATH, CITY, POSITION, POSITION_TXT,
+                    PREPARED_DATA_PATH, TARGET, UNORDERED_CATEGORIES, TEXT_COLS)
 
-
-def _process_ordered_categories(
-    data: DataFrame, ordered_categories: List, fillna_value: Union[int, None] =-1) -> DataFrame:
-
-    for ordered_category in ordered_categories:
-        data[ordered_category] = data[ordered_category].fillna(fillna_value)
-        data[ordered_category] = data[ordered_category].astype('category').cat.as_ordered()
-    return data
-
-def _process_unorder_categories(
-    data: DataFrame, unordered_categories: List,
-    train_idx: Index, test_idx: Index, keep_only_common_categories: bool = True) -> DataFrame:
-    for unordered_category in unordered_categories:
-        data[unordered_category] = data[unordered_category].fillna('NA')
-
-        if keep_only_common_categories:
-            common_categories = (
-                set(data.loc[train_idx, unordered_category]) 
-                & set(data.loc[test_idx, unordered_category]))
-            mask = ~data[unordered_category].isin(common_categories)
-            data.loc[mask, unordered_category] = 'ANOTHER'
-        data[unordered_category] = data[unordered_category].astype('category')
-    return data
-
-
-def _process_text_cols(data: DataFrame, text_cols: List) -> DataFrame:
-    if POSITION_AS_TXT in text_cols:
-        data[POSITION_AS_TXT] = data[POSITION].copy()
-
-    data[text_cols] = data[text_cols].fillna('NA').astype('str')
-    return data
-        
 
 def prepare_data(train: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
     train=train.set_index(ID)
@@ -50,16 +14,25 @@ def prepare_data(train: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
     test=test.set_index(ID)
     test_idx = test.index
 
-    target = train[TARGET]
-    target = target.str.get_dummies(sep=',').astype(np.int8)
-    data = pd.concat((train.drop(TARGET, axis=1), test))
+    y = train[TARGET]
+    y = y.str.get_dummies(sep=',').astype(np.int8)
 
-    data = _process_text_cols(data, TEXT_COLS)
-    data = _process_ordered_categories(data, ORDERED_CATEGORIES)
-    data = _process_unorder_categories(data, UNORDERED_CATEGORIES, 
-                                       train_idx, test_idx, keep_only_common_categories=True)
+    X = pd.concat((train.drop(TARGET, axis=1), test))
+    for ordered_category in ORDERED_CATEGORIES:
+        X[ordered_category] = X[ordered_category].fillna(-1)
+        X[ordered_category] = X[ordered_category].astype('category').cat.as_ordered()
     
-    return data.loc[train_idx], data.loc[test_idx], target
+    X[UNORDERED_CATEGORIES] = X[UNORDERED_CATEGORIES].fillna('NA')
+
+    # cities
+    common = set(X.loc[train_idx, CITY]) & set(X.loc[test_idx, CITY])
+    mask = ~X[CITY].isin(common)
+    X.loc[mask, CITY] = 'ANOTHER'
+
+    X[UNORDERED_CATEGORIES] = X[UNORDERED_CATEGORIES].astype('category')
+    X[TEXT_COLS] = X[TEXT_COLS].fillna('NA').astype('str')
+
+    return X.loc[train_idx], X.loc[test_idx], y
 
 def main() -> None:
 
