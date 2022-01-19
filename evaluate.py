@@ -86,7 +86,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
             mode='max',
             verbose=1
         )
-
+        print(X_train.shape)
         model.fit(
             x=get_model_input(X_train), 
             y=y_train, 
@@ -98,8 +98,8 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         model.load_weights(checkpoint_filepath).expect_partial()
 
 
-        pred_proba_val = model.predict(get_model_input(X_val))
-        pred_proba_train = model.predict(get_model_input(X_train))
+        pred_proba_val = model.predict(get_model_input(X_val), batch_size=BATCH_SIZE)
+        pred_proba_train = model.predict(get_model_input(X_train), batch_size=BATCH_SIZE)
 
         oof_pred_labels.iloc[val_idx] = get_pred_labels(pred_proba_val, y_val)
         cv_results = update_with_label_metrics(
