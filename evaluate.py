@@ -11,13 +11,12 @@ from sklearn.metrics import roc_auc_score, f1_score, log_loss, recall_score, pre
 from config import MODEL_PATH, N_LABELS
 from model import BATCH_SIZE, get_model_input, N_EPOCHS
 
-from helper import save_model
 
 def update_with_label_metrics(y_true: DataFrame, y_pred: DataFrame, 
                       cv_results: DefaultDict, mode: str = 'test') -> DataFrame:
     cv_results[f'{mode}_f1_samples'].append(f1_score(y_true, y_pred, average='samples', zero_division=0))
-    cv_results[f'{mode}_recall_samples'].append(recall_score(y_true, y_pred, average='samples'))
-    cv_results[f'{mode}_precision_samples'].append(precision_score(y_true, y_pred, average='samples'))
+    cv_results[f'{mode}_recall_samples'].append(recall_score(y_true, y_pred, average='samples', zero_division=0))
+    cv_results[f'{mode}_precision_samples'].append(precision_score(y_true, y_pred, average='samples', zero_division=0))
     return cv_results
 
 def update_with_pred_proba_metrics(y_true: DataFrame, y_pred: DataFrame, 
@@ -76,7 +75,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         early_stopping = tf.keras.callbacks.EarlyStopping(
             monitor='val_f1_score_micro',
             mode='max',
-            patience=3)
+            patience=1)
             
         checkpoint_filepath = os.path.join(MODEL_PATH, f'fold_{fold}_checkpoint')
         checkopoint = tf.keras.callbacks.ModelCheckpoint(
@@ -92,7 +91,8 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
             y=y_train, 
             epochs=N_EPOCHS, 
             batch_size=BATCH_SIZE,
-            validation_split=0.15, 
+            validation_split=0.15,
+            validation_batch_size=BATCH_SIZE,
             callbacks=[early_stopping, checkopoint])
         
         model.load_weights(checkpoint_filepath).expect_partial()
@@ -122,7 +122,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
             y_pred=pred_proba_train,
             cv_results=cv_results, mode='train')
         
-        pred_proba_test = model.predict(get_model_input(test))
+        pred_proba_test = model.predict(get_model_input(test), batch_size=BATCH_SIZE)
         ens_test_pred_labels += get_pred_labels(pred_proba_test)
         ens_test_pred_proba += pred_proba_test
         fold += 1
@@ -142,11 +142,12 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         y=target, 
         epochs=N_EPOCHS, 
         batch_size=BATCH_SIZE,
-        validation_split=0.15, 
+        validation_split=0.15,
+        validation_batch_size=BATCH_SIZE, 
         callbacks=[early_stopping, checkopoint])
 
     model.load_weights(checkpoint_filepath).expect_partial()
-    pred_proba = model.predict(get_model_input(test))
+    pred_proba = model.predict(get_model_input(test), batch_size=BATCH_SIZE)
     pred_labels = get_pred_labels(pred_proba)
     ens_test_pred_labels += pred_labels
     whole_train_test_pred_labels =  DataFrame(data=pred_labels, index=test.index, columns=target.columns)

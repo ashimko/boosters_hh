@@ -11,7 +11,7 @@ from config import TEXT_COLS, ORDERED_CATEGORIES, UNORDERED_CATEGORIES
 
 
 VOCAB_SIZE = 15000
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 N_TARGETS = 9
 N_EPOCHS = 20
 
@@ -26,17 +26,16 @@ def get_model_input(data: pd.DataFrame) -> Dict:
 def make_model(encoders: Dict) -> keras.Model:
 
     def _get_text_model(text_input):
-        preprocessor = hub.KerasLayer(
-             "https://tfhub.dev/tensorflow/bert_multi_cased_preprocess/3")
-        encoder_inputs = preprocessor(text_input)
+        # preprocessor = hub.KerasLayer(
+        #      "https://tfhub.dev/google/universal-sentence-encoder-cmlm/multilingual-preprocess/2")
+        # encoder_inputs = preprocessor(text_input)
         encoder = hub.KerasLayer(
-            "https://tfhub.dev/tensorflow/mobilebert_multi_cased_L-24_H-128_B-512_A-4_F-4_OPT/1",
-            trainable=True)
-        outputs = encoder(encoder_inputs)
-        sequence_output = outputs["sequence_output"]  # [batch_size, seq_length, 768].
-        x = layers.Bidirectional(tf.keras.layers.GRU(64))(sequence_output)
-        x = layers.Dropout(0.4)(x)
-        x = layers.Dense(64, activation='relu')(x)
+            "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3",
+            trainable=False)
+        outputs = encoder(text_input)
+        # pooled_output = outputs["pooled_output"]
+        # sequence_output = outputs["sequence_output"]  # [batch_size, seq_length, 768].
+        x = layers.Dense(64, activation='relu')(outputs)
         x = layers.Dropout(0.3)(x)
         x = layers.Dense(N_TARGETS)(x)
         return x
