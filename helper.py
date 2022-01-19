@@ -53,14 +53,16 @@ def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame) -> None:
     for col in true_labels.columns:
         precision, recall, prc_thresholds = precision_recall_curve(true_labels[col], pred_proba[col])
         fpr, tpr, roc_thresholds = roc_curve(true_labels[col], pred_proba[col])
-
+        
+        nth_point = len(prc_thresholds) // 1000
+        prc_points = list(zip(precision, recall, prc_thresholds))[::nth_point]
 
         with open(os.path.join(PLOTS_PATH, f'prc_{col}.json'), "w") as fd:
             json.dump(
                 {
                     "prc": [
                         {"precision": float(p), "recall": float(r), "threshold": float(t)}
-                        for p, r, t in zip(precision, recall, prc_thresholds)
+                        for p, r, t in prc_points
                     ]
                 },
                 fd,
