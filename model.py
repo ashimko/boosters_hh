@@ -11,7 +11,7 @@ from config import TEXT_COLS, ORDERED_CATEGORIES, UNORDERED_CATEGORIES
 
 
 VOCAB_SIZE = 15000
-BATCH_SIZE = 32
+BATCH_SIZE = 4
 N_TARGETS = 9
 N_EPOCHS = 20
 
@@ -30,7 +30,7 @@ def make_model(encoders: Dict) -> keras.Model:
         #      "https://tfhub.dev/google/universal-sentence-encoder-cmlm/multilingual-preprocess/2")
         # encoder_inputs = preprocessor(text_input)
         encoder = hub.KerasLayer(
-            "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3",
+            "https://tfhub.dev/google/universal-sentence-encoder-multilingual-large/3",
             trainable=False)
         outputs = encoder(text_input)
         # pooled_output = outputs["pooled_output"]
