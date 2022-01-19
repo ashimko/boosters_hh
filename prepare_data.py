@@ -38,6 +38,8 @@ def _process_unorder_categories(
 
 def _process_text_cols(data: DataFrame, text_cols: List) -> DataFrame:
     data[text_cols] = data[text_cols].fillna('NA').astype('str')
+    for col in text_cols:
+        data[col] = data[col].str.lower()
     return data
         
 
