@@ -36,10 +36,11 @@ def _process_unorder_categories(
     return data
 
 
-def _process_text_cols(data: DataFrame, text_cols: List) -> DataFrame:
+def _process_text_cols(data: DataFrame, text_cols: List, make_lower: bool = True) -> DataFrame:
     data[text_cols] = data[text_cols].fillna('NA').astype('str')
-    for col in text_cols:
-        data[col] = data[col].str.lower()
+    if make_lower:
+        for col in text_cols:
+            data[col] = data[col].str.lower()
     return data
         
 
@@ -54,10 +55,10 @@ def prepare_data(train: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
     target = target.str.get_dummies(sep=',').astype(np.int8)
     data = pd.concat((train.drop(TARGET, axis=1), test))
 
-    data = _process_text_cols(data, TEXT_COLS)
+    data = _process_text_cols(data, TEXT_COLS, make_lower=False)
     data = _process_ordered_categories(data, ORDERED_CATEGORIES)
     data = _process_unorder_categories(data, UNORDERED_CATEGORIES, 
-                                       train_idx, test_idx, keep_only_common_categories=True)
+                                       train_idx, test_idx, keep_only_common_categories=False)
     
     return data.loc[train_idx], data.loc[test_idx], target
 
