@@ -1,9 +1,12 @@
 import os
 import numpy as np
 import pandas as pd
-import string
+import tensorflow_hub as hub
+import numpy as np
+import tensorflow_text
+from tqdm import tqdm
 
-from config import (ID, ORDERED_CATEGORIES, ORIGINAL_DATA_PATH, CITY, POSITION, POSITION_TXT,
+from config import (ID, ORDERED_CATEGORIES, ORIGINAL_DATA_PATH, POSITION,
                     PREPARED_DATA_PATH, TARGET, UNORDERED_CATEGORIES, TEXT_COLS)
 
 
@@ -23,14 +26,23 @@ def prepare_data(train: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
         X[ordered_category] = X[ordered_category].astype('category').cat.as_ordered()
     
     X[UNORDERED_CATEGORIES] = X[UNORDERED_CATEGORIES].fillna('NA')
-
-    # cities
-    common = set(X.loc[train_idx, CITY]) & set(X.loc[test_idx, CITY])
-    mask = ~X[CITY].isin(common)
-    X.loc[mask, CITY] = 'ANOTHER'
-
     X[UNORDERED_CATEGORIES] = X[UNORDERED_CATEGORIES].astype('category')
     X[TEXT_COLS] = X[TEXT_COLS].fillna('NA').astype('str')
+    
+    embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
+    embeddings = []
+    for text_col in TEXT_COLS:
+        print(f'get embedding for {text_col}...')
+        embedding = np.zeros(shape=(len(X), 512), dtype=np.float32)
+        for i, sent in tqdm(enumerate(X[text_col]), total=len(X)):
+            embedding[i] = embed([sent])[0]
+        embedding = pd.DataFrame(
+            data=embedding,
+            index=X.index,
+            columns=[f'{text_col}_embed_{i}' for i in range(512)])
+        embeddings.append(embedding)
+        print(embedding.memory_usage().sum() / 1e+6)
+    X = X.join(embeddings)
 
     return X.loc[train_idx], X.loc[test_idx], y
 
