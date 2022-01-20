@@ -74,7 +74,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         early_stopping = tf.keras.callbacks.EarlyStopping(
             monitor='val_f1_score_micro',
             mode='max',
-            patience=1)
+            patience=2)
             
         checkpoint_filepath = os.path.join(MODEL_PATH, f'fold_{fold}_checkpoint')
         checkopoint = tf.keras.callbacks.ModelCheckpoint(
@@ -84,6 +84,14 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
             mode='max',
             verbose=1
         )
+
+        def scheduler(epoch, lr):
+            if epoch < 2:
+                return lr
+            else:
+                return lr * tf.math.exp(-0.1)
+        lr_scheduler = tf.keras.callbacks.LearningRateScheduler(scheduler)
+
         print(X_train.shape)
         model.fit(
             x=get_model_input(X_train), 
@@ -92,7 +100,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
             batch_size=BATCH_SIZE,
             validation_split=0.15,
             validation_batch_size=BATCH_SIZE,
-            callbacks=[early_stopping, checkopoint])
+            callbacks=[early_stopping, checkopoint, lr_scheduler])
         
         model.load_weights(checkpoint_filepath).expect_partial()
 

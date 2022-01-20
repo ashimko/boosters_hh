@@ -7,7 +7,7 @@ from tensorflow.keras import layers
 import tensorflow_text as text
 from typing import Dict
 import tensorflow_hub as hub
-from config import TEXT_COLS, ORDERED_CATEGORIES, UNORDERED_CATEGORIES
+from config import POSITION, TEXT_COLS, ORDERED_CATEGORIES, UNORDERED_CATEGORIES
 
 
 VOCAB_SIZE = 15000
@@ -35,31 +35,31 @@ def make_model(encoders: Dict) -> keras.Model:
         outputs = encoder(text_input)
         # pooled_output = outputs["pooled_output"]
         # sequence_output = outputs["sequence_output"]  # [batch_size, seq_length, 768].
-        x = layers.Dense(64, activation='relu')(outputs)
+        x = layers.Dense(128, activation='relu')(outputs)
         x = layers.Dropout(0.3)(x)
-        x = layers.Dense(N_TARGETS)(x)
+        x = layers.Dense(128)(x)
         return x
 
     def _get_ordered_category_model(input):
-        x = layers.Dense(32, activation='relu')(input)
+        x = layers.Dense(128, activation='relu')(input)
         x = layers.Dropout(0.2)(x)
-        x = layers.Dense(N_TARGETS)(x)
+        x = layers.Dense(128)(x)
         return x
 
     def _get_unordered_category_mode(input, encoder):
         x = encoder(input)
         x = layers.CategoryEncoding(num_tokens=len(encoder.get_vocabulary()))(x)
-        x = layers.Dense(64, activation='relu')(x)
+        x = layers.Dense(128, activation='relu')(x)
         x = layers.Dropout(0.2)(x)
-        x = layers.Dense(32, activation='relu')(x)
+        x = layers.Dense(128, activation='relu')(x)
         x = layers.Dropout(0.2)(x)
-        x = layers.Dense(N_TARGETS)(x)
+        x = layers.Dense(128)(x)
         return x
 
     def _get_final_classifier(features):
-        x = layers.Dense(128, activation='relu')(features)
+        x = layers.Dense(256, activation='relu')(features)
         x = layers.Dropout(0.3)(x)
-        x = layers.Dense(64, activation='relu')(x)
+        x = layers.Dense(128, activation='relu')(x)
         x = layers.Dropout(0.3)(x)
         x = layers.Dense(N_TARGETS, activation='sigmoid')(x)
         return x
@@ -69,10 +69,10 @@ def make_model(encoders: Dict) -> keras.Model:
     ordered_cat_input = keras.Input(shape=(len(ORDERED_CATEGORIES)), name='ordered_cat_input')
 
     ordered_cat_features = [_get_ordered_category_model(ordered_cat_input)]
-    text_features = [_get_text_model(text_inputs[col]) for col in TEXT_COLS]
+    text_features = [_get_text_model(text_inputs[col]) for col in TEXT_COLS + [POSITION]]
     unordered_cat_features = [_get_unordered_category_mode(unordered_cat_inputs[col], encoders[col]) for col in UNORDERED_CATEGORIES]
 
-    features = layers.Add()(ordered_cat_features + text_features + unordered_cat_features)
+    features = layers.Concatenate()(ordered_cat_features + text_features + unordered_cat_features)
     out = _get_final_classifier(features)
 
     model = keras.Model(
@@ -81,7 +81,7 @@ def make_model(encoders: Dict) -> keras.Model:
     )
 
     model.compile(
-        optimizer=keras.optimizers.Adam(),
+        optimizer=keras.optimizers.Adam(learning_rate=0.0003),
         loss=keras.losses.BinaryCrossentropy(from_logits=False),
         metrics=[
             tfa.metrics.F1Score(num_classes=9, average='micro', name='f1_score_micro'),
