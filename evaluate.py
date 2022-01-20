@@ -15,9 +15,11 @@ from helper import save_model
 
 def update_with_label_metrics(y_true: DataFrame, y_pred: DataFrame, 
                       cv_results: DefaultDict, mode: str = 'test') -> DataFrame:
-    cv_results[f'{mode}_f1_samples'].append(f1_score(y_true, y_pred, average='samples'))
-    cv_results[f'{mode}_recall_samples'].append(recall_score(y_true, y_pred, average='samples'))
-    cv_results[f'{mode}_precision_samples'].append(precision_score(y_true, y_pred, average='samples'))
+    main_score = f1_score(y_true, y_pred, average='samples', zero_division=0)
+    print('f1_score', main_score)
+    cv_results[f'{mode}_f1_samples'].append(main_score)
+    cv_results[f'{mode}_recall_samples'].append(recall_score(y_true, y_pred, average='samples', zero_division=0))
+    cv_results[f'{mode}_precision_samples'].append(precision_score(y_true, y_pred, average='samples', zero_division=0))
     return cv_results
 
 def update_with_pred_proba_metrics(y_true: DataFrame, y_pred: DataFrame, 
@@ -46,12 +48,11 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
     ens_test_pred_labels = DataFrame(data=zeros(shape=test_shape, dtype=int8), index=test.index, columns=target.columns)
     ens_test_pred_proba = DataFrame(data=zeros(shape=test_shape, dtype=float32), index=test.index, columns=target.columns)
 
-    whole_train_test_pred_labels = ens_test_pred_labels.copy()
-    whole_train_test_pred_proba = ens_test_pred_labels.copy()
-
     cv_results = defaultdict(list)
     fold = 0
     for train_idx, test_idx in cv.split(X=train, y=target):
+        print('fold', fold)
+
         model.fit(train.iloc[train_idx], target.iloc[train_idx])
         save_model(model, fold)
 
@@ -82,11 +83,13 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
     save_model(model, fold=-1)
     pred = model.predict(test)
     ens_test_pred_labels += pred
-    whole_train_test_pred_labels = pred
+    
+
+    whole_train_test_pred_labels = DataFrame(data=pred, index=test.index, columns=target.columns)
     if has_predict_proba:
         pred_proba = _process_pred_proba(model.predict_proba(test))
         ens_test_pred_proba += pred_proba
-        whole_train_test_pred_proba = pred_proba
+        whole_train_test_pred_proba = DataFrame(data=pred_proba, index=test.index, columns=target.columns) 
         
     ens_test_pred_labels /= (n_splits + 1)
     ens_test_pred_proba /= (n_splits + 1)

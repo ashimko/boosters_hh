@@ -24,7 +24,7 @@ def main(n_splits: int = 3, random_state: int = 42):
         has_predict_proba=has_predict_proba)
 
     save_predicted_labels(oof_pred_labels, mode='train')
-    save_predicted_proba(oof_pred_proba if has_predict_proba else oof_pred_labels, mode='train')
+    save_predicted_proba(oof_pred_proba, mode='train')
 
     save_predicted_labels(test_pred_labels, mode='test_avg_by_folds')
     save_predicted_proba(test_pred_proba, mode='test_avg_by_folds')
