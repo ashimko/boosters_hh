@@ -35,32 +35,43 @@ def make_model(encoders: Dict) -> keras.Model:
         outputs = encoder(text_input)
         # pooled_output = outputs["pooled_output"]
         # sequence_output = outputs["sequence_output"]  # [batch_size, seq_length, 768].
-        x = layers.Dense(128, activation='relu')(outputs)
-        x = layers.Dropout(0.3)(x)
+        x = layers.Dense(256)(outputs)
+        x = keras.activations.relu(x, alpha=0.05)
+        x = layers.Dropout(0.1)(x)
         x = layers.Dense(128)(x)
+        x = keras.activations.relu(x, alpha=0.05)
         return x
 
     def _get_ordered_category_model(input):
         x = layers.Dense(128, activation='relu')(input)
         x = layers.Dropout(0.2)(x)
         x = layers.Dense(128)(x)
+        x = keras.activations.relu(x, alpha=0.05)
         return x
 
     def _get_unordered_category_mode(input, encoder):
         x = encoder(input)
         x = layers.CategoryEncoding(num_tokens=len(encoder.get_vocabulary()))(x)
-        x = layers.Dense(128, activation='relu')(x)
-        x = layers.Dropout(0.2)(x)
-        x = layers.Dense(128, activation='relu')(x)
+        x = layers.Dense(128)(x)
+        x = keras.activations.relu(x, alpha=0.05)
         x = layers.Dropout(0.2)(x)
         x = layers.Dense(128)(x)
+        x = keras.activations.relu(x, alpha=0.05)
+        x = layers.Dropout(0.2)(x)
+        x = layers.Dense(128)(x)
+        x = keras.activations.relu(x, alpha=0.05)
         return x
 
     def _get_final_classifier(features):
-        x = layers.Dense(256, activation='relu')(features)
-        x = layers.Dropout(0.3)(x)
-        x = layers.Dense(128, activation='relu')(x)
-        x = layers.Dropout(0.3)(x)
+        x = layers.Dense(384)(features)
+        x = keras.activations.relu(x, alpha=0.05)
+        x = layers.Dropout(0.1)(x)
+        x = layers.Dense(256)(x)
+        x = keras.activations.relu(x, alpha=0.05)
+        x = layers.Dropout(0.1)(x)
+        x = layers.Dense(128)(x)
+        x = keras.activations.relu(x, alpha=0.05)
+        x = layers.Dropout(0.1)(x)
         x = layers.Dense(N_TARGETS, activation='sigmoid')(x)
         return x
 
@@ -81,7 +92,7 @@ def make_model(encoders: Dict) -> keras.Model:
     )
 
     model.compile(
-        optimizer=keras.optimizers.Adam(learning_rate=0.0001),
+        optimizer=keras.optimizers.Adam(learning_rate=0.0003),
         loss=keras.losses.BinaryCrossentropy(from_logits=False),
         metrics=[
             tfa.metrics.F1Score(num_classes=9, average='micro', name='f1_score_micro'),

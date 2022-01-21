@@ -86,7 +86,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         )
 
         def scheduler(epoch, lr):
-            if epoch < 2:
+            if epoch < 1:
                 return lr
             else:
                 return lr * tf.math.exp(-0.1)
