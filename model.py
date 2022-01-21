@@ -81,7 +81,7 @@ def make_model(encoders: Dict) -> keras.Model:
     )
 
     model.compile(
-        optimizer=keras.optimizers.Adam(learning_rate=0.0003),
+        optimizer=keras.optimizers.Adam(learning_rate=0.0001),
         loss=keras.losses.BinaryCrossentropy(from_logits=False),
         metrics=[
             tfa.metrics.F1Score(num_classes=9, average='micro', name='f1_score_micro'),
