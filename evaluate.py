@@ -72,16 +72,16 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
 
 
         early_stopping = tf.keras.callbacks.EarlyStopping(
-            monitor='val_f1_score_micro',
-            mode='max',
-            patience=2)
+            monitor='val_loss',
+            mode='min',
+            patience=5)
             
         checkpoint_filepath = os.path.join(MODEL_PATH, f'fold_{fold}_checkpoint')
         checkopoint = tf.keras.callbacks.ModelCheckpoint(
             filepath=checkpoint_filepath,
             save_best_only=True,
-            monitor='val_f1_score_micro',
-            mode='max',
+            monitor='val_loss',
+            mode='min',
             verbose=1
         )
 
