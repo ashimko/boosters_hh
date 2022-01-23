@@ -73,6 +73,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
 
         early_stopping = tf.keras.callbacks.EarlyStopping(
             monitor='val_loss',
+            min_delta=0.0001,
             mode='min',
             patience=5)
             
@@ -81,15 +82,16 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
             filepath=checkpoint_filepath,
             save_best_only=True,
             monitor='val_loss',
+            min_delta=0.0001,
             mode='min',
             verbose=1
         )
 
         def scheduler(epoch, lr):
-            if epoch < 2:
+            if epoch < 7:
                 return lr
             else:
-                return lr * tf.math.exp(-0.1)
+                return lr * tf.math.exp(-0.025)
         lr_scheduler = tf.keras.callbacks.LearningRateScheduler(scheduler)
 
         print(X_train.shape)
@@ -139,10 +141,17 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
     checkopoint = tf.keras.callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath,
         save_best_only=True,
-        monitor='val_f1_score_micro',
-        mode='max',
+        monitor='val_loss',
+        mode='min',
         verbose=1
     )
+    early_stopping = tf.keras.callbacks.EarlyStopping(
+            monitor='val_loss',
+            min_delta=0.0001,
+            mode='min',
+            patience=5)
+            
+       
         
     model.fit(
         x=get_model_input(train), 
@@ -151,7 +160,7 @@ def evaluate(model: Pipeline, train: DataFrame, target: Series, test: DataFrame,
         batch_size=BATCH_SIZE,
         validation_split=0.15,
         validation_batch_size=BATCH_SIZE, 
-        callbacks=[early_stopping, checkopoint])
+        callbacks=[early_stopping, checkopoint, lr_scheduler])
 
     model.load_weights(checkpoint_filepath).expect_partial()
     pred_proba = model.predict(get_model_input(test), batch_size=BATCH_SIZE)
