@@ -11,9 +11,9 @@ from config import POSITION, TEXT_COLS, ORDERED_CATEGORIES, UNORDERED_CATEGORIES
 
 
 VOCAB_SIZE = 15000
-BATCH_SIZE = 512
+BATCH_SIZE = 128
 N_TARGETS = 9
-N_EPOCHS = 1
+N_EPOCHS = 35
 
 
 def get_model_input(data: pd.DataFrame) -> Dict:
@@ -90,21 +90,17 @@ def soft_f1_samples_loss(y, y_hat):
 def make_model(encoders: Dict) -> keras.Model:
 
     def _get_text_model(text_input):
-        # preprocessor = hub.KerasLayer(
-        #     "https://tfhub.dev/tensorflow/bert_multi_cased_preprocess/3")
-        # encoder_inputs = preprocessor(text_input)
-        # encoder = hub.KerasLayer(
-        #     "https://tfhub.dev/tensorflow/bert_multi_cased_L-12_H-768_A-12/4",
-        #     trainable=True)
-        # outputs = encoder(encoder_inputs)
-        # pooled_output = outputs["pooled_output"]      # [batch_size, 768].
-        # sequence_output = outputs["sequence_output"]  # [batch_size, seq_length, 768].
         preprocessor = hub.KerasLayer(
-            "https://tfhub.dev/google/universal-sentence-encoder-cmlm/multilingual-preprocess/2")
-        encoder = hub.KerasLayer("https://tfhub.dev/google/LaBSE/2", trainable=False)
-
-        x = encoder(preprocessor(text_input))["default"]
-        return x
+            "https://tfhub.dev/jeongukjae/smaller_LaBSE_15lang_preprocess/1")
+        encoder_inputs = preprocessor(text_input)
+        encoder = hub.KerasLayer(
+            "https://tfhub.dev/jeongukjae/smaller_LaBSE_15lang/1",
+            trainable=False)
+        outputs = encoder(encoder_inputs)
+        pooled_output = outputs["pooled_output"]      # [batch_size, 768].
+        # sequence_output = outputs["sequence_output"]  # [batch_size, seq_length, 768].
+        # pooled_output = outputs['default']
+        return pooled_output
 
     def _get_ordered_category_model(input):
         x = layers.Dense(128)(input)
@@ -149,7 +145,7 @@ def make_model(encoders: Dict) -> keras.Model:
 
     model.compile(
         optimizer=Ranger(), # keras.optimizers.Adam(learning_rate=0.0003),
-        loss=soft_f1_samples_loss, # keras.losses.BinaryCrossentropy(from_logits=False),
+        loss=keras.losses.BinaryCrossentropy(from_logits=False), #  soft_f1_samples_loss,
         metrics=soft_f1_samples_metric
 )
 

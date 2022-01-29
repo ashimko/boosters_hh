@@ -1,7 +1,7 @@
 {
-    "avg_f1_samples": 0.8527605977185848,
-    "avg_precision_samples": 0.8433423978591814,
-    "avg_recall_samples": 0.8807407468837853,
-    "avg_roc_auc_ovo": 0.926605388326042,
-    "avg_neg_log_loss": -4.712324972522003
+    "avg_f1_samples": 0.8418819849602525,
+    "avg_precision_samples": 0.8331416041710501,
+    "avg_recall_samples": 0.8716199304468523,
+    "avg_roc_auc_ovo": 0.920690382723761,
+    "avg_neg_log_loss": -4.9801999652486755
 }
