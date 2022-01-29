@@ -98,9 +98,14 @@ def make_model(encoders: Dict) -> keras.Model:
             trainable=False)
         outputs = encoder(encoder_inputs)
         pooled_output = outputs["pooled_output"]      # [batch_size, 768].
-        # sequence_output = outputs["sequence_output"]  # [batch_size, seq_length, 768].
-        # pooled_output = outputs['default']
-        return pooled_output
+        sequence_output = outputs["sequence_output"]  # [batch_size, seq_length, 768].
+        rnn_out = layers.LSTM(32, return_sequences=True)(sequence_output)
+        max_pool_transformer = layers.GlobalMaxPool1D()(sequence_output)
+        max_pool_rnn = layers.GlobalMaxPool1D()(rnn_out)
+        avg_pool_rnn = layers.GlobalAveragePooling1D()(rnn_out)
+        text_features = layers.Concatenate()(
+            [pooled_output, max_pool_transformer, max_pool_rnn, avg_pool_rnn])
+        return text_features
 
     def _get_ordered_category_model(input):
         x = layers.Dense(128)(input)
