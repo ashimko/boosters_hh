@@ -10,43 +10,16 @@ from sklearn.metrics import precision_recall_curve, roc_curve
 from sklearn.pipeline import Pipeline
 from tensorflow.keras.layers import TextVectorization
 from tensorflow.keras import Model
+from utils import create_folder
 
-from config import (MODEL_PATH, OOF_PATH, ORDERED_CATEGORIES, PLOTS_PATH, PREPARED_DATA_PATH,
-                    SCORES_PATH, SUBMITIONS_PATH, TEXT_COLS, UNORDERED_CATEGORIES)
+from config import *
 from utils import save_to_pickle
 
 
-def process_cv_results(cv_results: Dict, metrics: List) -> Tuple[Dict, List]:
-    for metric in metrics:
-        cv_results[f'avg_{metric}'] = mean(cv_results[f'val_{metric}'])
-    return cv_results
-
-
-def filter_metrics(metrics: List) -> List:
-    return [metric for metric in metrics if metric not in ('roc_auc_ovo', 'neg_log_loss')]
-
-
-def get_train_data() -> Tuple[DataFrame, Series]:
-    X = read_pickle(os.path.join(PREPARED_DATA_PATH, 'train.pkl'))
-    y = read_pickle(os.path.join(PREPARED_DATA_PATH, 'target.pkl'))
-    return X, y
-
-def get_test_data() -> DataFrame:
-    return read_pickle(os.path.join(PREPARED_DATA_PATH, 'test.pkl'))
-
-
 def save_metrics(cv_results: Dict, metrics) -> None:
-    scores = {}
-    for metric in metrics:
-        avg_metric = f'avg_{metric}'
-        scores[avg_metric] = cv_results.pop(avg_metric, None)
-        
     score_path = os.path.join(SCORES_PATH, 'scores.json')
     with open(score_path, "w") as f:
-        json.dump(scores, f, indent=4)
-
-    cv_results_path = os.path.join(SCORES_PATH, 'cv_results.csv')
-    DataFrame(cv_results).to_csv(cv_results_path, index=False)
+        json.dump(cv_results, f, indent=4)
 
 
 def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame) -> None:
@@ -96,29 +69,37 @@ def save_predicted_labels(pred_labels: DataFrame, mode: str = 'test') -> None:
     elif mode == 'test_whole_train':
         pred_labels.to_csv(os.path.join(SUBMITIONS_PATH, 'submit_labels_whole_train.csv'))
     elif mode == 'train':
-        pred_labels.to_csv(os.path.join(OOF_PATH, 'submit_labels.csv'))
+        pred_labels.to_csv(os.path.join(OOF_PRED_PATH, 'submit_labels.csv'))
     
     else:
         raise NotImplementedError()
 
 
-def save_predicted_proba(pred_proba: DataFrame, mode: str = 'test') -> None:
-    if mode == 'test_avg_by_folds':
-        pred_proba.to_csv(os.path.join(SUBMITIONS_PATH, 'pred_proba.csv'))
-    elif mode == 'test_whole_train':
-        pred_proba.to_csv(os.path.join(SUBMITIONS_PATH, 'pred_proba_whole_train.csv'))
-    elif mode == 'train':
-        pred_proba.to_csv(os.path.join(OOF_PATH, 'pred_proba.csv'))
+def save_predictions(
+        predictions: DataFrame, 
+        mode: str = 'test', 
+        model_name: str = 'default',
+        pred_type: str = 'pred_proba', 
+        fold: int = -1) -> None:
+    file_name = f'{model_name}_{pred_type}_{fold}.csv'
+    test_path = os.path.join(TEST_PRED_PATH, model_name)
+    create_folder(test_path)
+    oof_path = os.path.join(OOF_PRED_PATH, model_name)
+    create_folder(oof_path)
+
+    if mode == 'test':
+        predictions.to_csv(os.path.join(test_path, file_name))
+    elif mode == 'oof':
+        predictions.to_csv(os.path.join(oof_path, file_name))
     else:
         raise NotImplementedError()
 
 
-def save_model(model: Model, fold: int = -1) -> None:
-    if fold == -1:
-        model_name = 'whole_train_target_model.pkl'
-    else:
-        model_name = f'fold_{fold}_target_model.pkl'
-    model.save(os.path.join(MODEL_PATH, model_name))
+def save_model(model: Model, model_name: str, fold: int = -1) -> None:
+    file_name = f'fold_{fold}_{model_name}.pkl'
+    path = os.path.join(MODEL_PATH, model_name)
+    create_folder(path)
+    save_to_pickle(model, os.path.join(path, file_name))
 
 
 def plot_graphs(history, metric):

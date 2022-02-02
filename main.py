@@ -2,7 +2,7 @@ from config import METRICS, TEXT_COLS, UNORDERED_CATEGORIES
 from helper import (get_encoders, get_test_data, get_train_data,
                     process_cv_results, save_metric_plots,
                     save_metrics, save_predicted_labels,
-                    save_predicted_proba)
+                    save_predictions)
 from model import VOCAB_SIZE, make_model
 from evaluate import evaluate
 
@@ -20,13 +20,13 @@ def main(n_splits: int = 3, random_state: int = 42):
         random_state=random_state, n_splits=n_splits)
 
     save_predicted_labels(oof_pred_labels, mode='train')
-    save_predicted_proba(oof_pred_proba, mode='train')
+    save_predictions(oof_pred_proba, mode='train')
 
     save_predicted_labels(test_pred_labels, mode='test_avg_by_folds')
-    save_predicted_proba(test_pred_proba, mode='test_avg_by_folds')
+    save_predictions(test_pred_proba, mode='test_avg_by_folds')
 
     save_predicted_labels(whole_train_pred_labels, mode='test_whole_train')
-    save_predicted_proba(whole_train_pred_proba, mode='test_whole_train')
+    save_predictions(whole_train_pred_proba, mode='test_whole_train')
 
     save_metric_plots(true_labels=target, pred_proba=oof_pred_proba)
 

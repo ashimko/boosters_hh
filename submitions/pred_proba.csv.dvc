@@ -1,4 +1,0 @@
-outs:
-- md5: 93489bf2fb7c4aea4ced6cf0d20affe4
-  size: 6044582
-  path: pred_proba.csv

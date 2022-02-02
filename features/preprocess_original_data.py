@@ -1,5 +1,7 @@
 import sys
-sys.path.insert(0, '..')
+import os
+from pathlib import Path
+sys.path.append(os.path.dirname(Path(__file__).parents[0]))
 
 import os
 from typing import List, Union
