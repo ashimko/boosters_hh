@@ -2,8 +2,6 @@
 #COLUMN NAMES
 import os
 
-from sqlalchemy import TEXT
-
 
 TARGET = 'target'
 CITY = 'city'
