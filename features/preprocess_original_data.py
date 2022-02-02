@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, '..')
+
 import os
 from typing import List, Union
 
@@ -7,8 +10,7 @@ from pandas.core.frame import DataFrame
 from pandas.core.indexes.base import Index
 import tensorflow as tf
 
-from config import (ID, ORDERED_CATEGORIES, ORIGINAL_DATA_PATH, POSITION,
-                    POSITION_AS_TXT, PREPARED_DATA_PATH, TARGET, TEXT_COLS,
+from config import (ID, ORDERED_CATEGORIES, ORIGINAL_DATA_PATH, PREPARED_DATA_PATH, TARGET, TEXT_COLS,
                     UNORDERED_CATEGORIES)
 
 
@@ -36,8 +38,12 @@ def _process_unorder_categories(
     return data
 
 
-def _process_text_cols(data: DataFrame, text_cols: List, make_lower: bool = True) -> DataFrame:
+def _process_text_cols(data: DataFrame, text_cols: List, make_lower: bool = False) -> DataFrame:
     data[text_cols] = data[text_cols].fillna('NA').astype('str')
+
+    for text_col in text_cols:
+        data[text_col] = data[text_col].str.replace('\xa0', ' ')
+        data[text_col] = data[text_col].str.replace('\ufeff', '')
     if make_lower:
         for col in text_cols:
             data[col] = data[col].str.lower()
@@ -57,8 +63,9 @@ def prepare_data(train: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
 
     data = _process_text_cols(data, TEXT_COLS, make_lower=False)
     data = _process_ordered_categories(data, ORDERED_CATEGORIES)
-    data = _process_unorder_categories(data, UNORDERED_CATEGORIES, 
-                                       train_idx, test_idx, keep_only_common_categories=False)
+    data = _process_unorder_categories(
+        data, UNORDERED_CATEGORIES, train_idx, test_idx, keep_only_common_categories=False
+    )
     
     return data.loc[train_idx], data.loc[test_idx], target
 

@@ -2,6 +2,8 @@
 #COLUMN NAMES
 import os
 
+from sqlalchemy import TEXT
+
 
 TARGET = 'target'
 CITY = 'city'
@@ -25,14 +27,15 @@ ORDERED_CATEGORIES = [SALARY_RATING, TEAM_RATING, MANAGMENT_RATING, CAREER_RATIN
 TEXT_COLS = [POSITIVE, NEGATIVE]
 
 # PATH
-ABS_PREFIX = '.'
+ABS_PREFIX = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(ABS_PREFIX, 'data')
 ORIGINAL_DATA_PATH = os.path.join(DATA_PATH, 'original')
 PREPARED_DATA_PATH = os.path.join(DATA_PATH, 'prepared')
+MORPH_DATA_PATH = os.path.join(DATA_PATH, 'morph')
+HANDCRAFTED_DATA_PATH = os.path.join(DATA_PATH, 'handcrafted')
 MODEL_PATH = os.path.join(ABS_PREFIX, 'models')
 SCORES_PATH = os.path.join(ABS_PREFIX, 'scores')
 PLOTS_PATH = os.path.join(ABS_PREFIX, 'plots')
 SUBMITIONS_PATH = os.path.join(ABS_PREFIX, 'submitions')
 OOF_PATH = os.path.join(ABS_PREFIX, 'oof_predictions')
-
 METRICS = ('f1_samples', 'precision_samples', 'recall_samples', 'roc_auc_ovo', 'neg_log_loss')
