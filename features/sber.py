@@ -13,9 +13,9 @@ from utils import create_folder
 from transformers import AutoModel, AutoTokenizer
 from tqdm import tqdm
 
-BATCH_SIZE = 1024
+BATCH_SIZE = 256
 EMB_DIM = 1024
-EMB_NAME = 'sbert_large_nlu_ru'
+EMB_NAME = 'sbert_large_nlu_ru'  # 'sbert_large_nlu_ru'
 
 #Mean Pooling - Take attention mask into account for correct averaging
 def mean_pooling(model_output, attention_mask):
@@ -34,10 +34,11 @@ def max_pooling(model_output, attention_mask):
 
 
 
-def get_batch_embedding(sentences: List, tokenizer, model) -> Tuple[np.ndarray]:   
+def get_batch_embedding(sentences: List, tokenizer, model, device) -> Tuple[np.ndarray]:   
 
     #Tokenize sentences
     encoded_input = tokenizer(sentences, padding=True, truncation=True, max_length=24, return_tensors='pt')
+    encoded_input.to(device)
 
     #Compute token embeddings
     with torch.no_grad():
@@ -47,9 +48,9 @@ def get_batch_embedding(sentences: List, tokenizer, model) -> Tuple[np.ndarray]:
     mean_pool = mean_pooling(model_output, encoded_input['attention_mask'])
     max_pool = max_pooling(model_output, encoded_input['attention_mask'])
     return mean_pool, max_pool
+g 
 
-
-def get_embedding(text: pd.Series, tokenizer, model) -> Tuple[np.ndarray]:
+def get_embedding(text: pd.Series, tokenizer, model, device) -> Tuple[np.ndarray]:
     n = len(text)
     mean_pool_embed = np.zeros(shape=(len(text), EMB_DIM), dtype=np.float32)
     max_pool_embed = np.zeros(shape=(len(text), EMB_DIM), dtype=np.float32)
@@ -58,10 +59,11 @@ def get_embedding(text: pd.Series, tokenizer, model) -> Tuple[np.ndarray]:
         mean_pool_sent, max_pool_sent = get_batch_embedding(
             sentences=text.iloc[i:i+BATCH_SIZE].tolist(),
             tokenizer=tokenizer,
-            model=model
+            model=model,
+            device=device
         )
-        mean_pool_sent.cpu().detach().numpy()
-        max_pool_sent.cpu().detach().numpy()
+        mean_pool_sent = mean_pool_sent.cpu().detach().numpy()
+        max_pool_sent = max_pool_sent.cpu().detach().numpy()
 
         mean_pool_embed[i:i+BATCH_SIZE] = mean_pool_sent
         max_pool_embed[i:i+BATCH_SIZE] = max_pool_sent
@@ -93,14 +95,18 @@ def main():
     train = pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'train.pkl'))
     test = pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'test.pkl'))
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     tokenizer = AutoTokenizer.from_pretrained(f"sberbank-ai/{EMB_NAME}")
     model = AutoModel.from_pretrained(f"sberbank-ai/{EMB_NAME}")
+    model.to(device)
+    
 
     for text_col in TEXT_COLS:
-        mean_pool_embed, max_pool_embed = get_embedding(train[text_col], tokenizer, model)
+        mean_pool_embed, max_pool_embed = get_embedding(train[text_col], tokenizer, model, device)
         save_embedding(mean_pool_embed, max_pool_embed, train.index, 'train', text_col)
 
-        mean_pool_embed, max_pool_embed = get_embedding(test[text_col], tokenizer, model)
+        mean_pool_embed, max_pool_embed = get_embedding(test[text_col], tokenizer, model, device)
         save_embedding(mean_pool_embed, max_pool_embed, test.index, 'test', text_col)
     
 
