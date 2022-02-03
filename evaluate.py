@@ -19,8 +19,8 @@ def get_cv_results(
     cv_results['precision_samples'] = precision_score(y_true, pred_labels, average='samples', zero_division=0)
     
     if pred_proba is not None:
-        cv_results['log_loss'].append(log_loss(y_true, pred_proba))
-        cv_results['roc_auc_ovo'].append(roc_auc_score(y_true, pred_proba, average='samples', multi_class='ovo'))
+        cv_results['log_loss'] = log_loss(y_true, pred_proba)
+        cv_results['roc_auc_ovo'] = roc_auc_score(y_true, pred_proba, average='samples', multi_class='ovo')
     return cv_results
 
 

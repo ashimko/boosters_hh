@@ -1,28 +1,25 @@
 import json
 import os
-from typing import Any, Dict, List, Tuple
+from typing import Dict
 
 import matplotlib.pyplot as plt
-import numpy as np
-from numpy import mean, ndarray
-from pandas import DataFrame, Series, read_csv, read_pickle
+from pandas import DataFrame, Series
 from sklearn.metrics import precision_recall_curve, roc_curve
-from sklearn.pipeline import Pipeline
-from tensorflow.keras.layers import TextVectorization
 from tensorflow.keras import Model
-from utils import create_folder
+from tensorflow.keras.layers import TextVectorization
 
 from config import *
-from utils import save_to_pickle
+from utils import create_folder, load_pickle, save_to_pickle
 
 
-def save_metrics(cv_results: Dict, metrics) -> None:
-    score_path = os.path.join(SCORES_PATH, 'scores.json')
+def save_metrics(cv_results: Dict, model_name: str = None) -> None:
+    file_name = f'scores_{model_name}.json' if model_name else 'scores.json'
+    score_path = os.path.join(SCORES_PATH, file_name)
     with open(score_path, "w") as f:
         json.dump(cv_results, f, indent=4)
 
 
-def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame) -> None:
+def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame, model_name: str) -> None:
     for col in true_labels.columns:
         precision, recall, prc_thresholds = precision_recall_curve(true_labels[col], pred_proba[col])
         fpr, tpr, roc_thresholds = roc_curve(true_labels[col], pred_proba[col])
@@ -30,7 +27,9 @@ def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame) -> None:
         nth_point = len(prc_thresholds) // 1000
         prc_points = list(zip(precision, recall, prc_thresholds))[::nth_point]
 
-        with open(os.path.join(PLOTS_PATH, f'prc_{col}.json'), "w") as fd:
+        path = os.path.join(PLOTS_PATH, model_name)
+        create_folder(path)
+        with open(os.path.join(path, f'prc_{col}.json'), "w") as fd:
             json.dump(
                 {
                     "prc": [
@@ -41,7 +40,7 @@ def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame) -> None:
                 fd,
                 indent=4,
             )
-        with open(os.path.join(PLOTS_PATH, f'roc_{col}.json'), "w") as fd:
+        with open(os.path.join(path, f'roc_{col}.json'), "w") as fd:
             json.dump(
                 {
                     "roc": [
@@ -79,9 +78,8 @@ def save_predictions(
         predictions: DataFrame, 
         mode: str = 'test', 
         model_name: str = 'default',
-        pred_type: str = 'pred_proba', 
-        fold: int = -1) -> None:
-    file_name = f'{model_name}_{pred_type}_{fold}.csv'
+        pred_type: str = 'pred_proba') -> None:
+    file_name = f'{model_name}_{pred_type}.csv'
     test_path = os.path.join(TEST_PRED_PATH, model_name)
     create_folder(test_path)
     oof_path = os.path.join(OOF_PRED_PATH, model_name)
@@ -100,6 +98,19 @@ def save_model(model: Model, model_name: str, fold: int = -1) -> None:
     path = os.path.join(MODEL_PATH, model_name)
     create_folder(path)
     save_to_pickle(model, os.path.join(path, file_name))
+
+
+def get_checkpoint_path(model_name: str, fold: int = -1) -> None:
+    file_name = f'fold_{fold}_{model_name}.pkl'
+    path = os.path.join(MODEL_PATH, model_name)
+    create_folder(path)
+    return os.path.join(path, file_name)
+
+
+def load_model(model_name: str, fold: int = -1) -> None:
+    file_name = f'fold_{fold}_{model_name}.pkl'
+    path = os.path.join(MODEL_PATH, model_name)
+    return load_pickle(os.path.join(path, file_name))
 
 
 def plot_graphs(history, metric):

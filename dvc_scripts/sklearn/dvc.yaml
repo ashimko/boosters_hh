@@ -1,0 +1,17 @@
+stages:
+  preprocess_sklearn:
+    cmd: python ../../features/preprocess_original_data.py
+    deps:
+    - ../../data/original
+    outs:
+    - ../../data/prepared:
+        persist: true
+  feature_generation_sklearn:
+    cmd: python ../../features/handcrafted_features.py; python ../../features/morph_features.py
+    deps:
+    - ../../data/prepared
+    outs:
+    - ../../data/handcrafted:
+        persist: true
+    - ../../data/morph:
+        persist: true

@@ -3,9 +3,15 @@ import os
 from typing import Any, List
 import numpy as np
 
-def save_to_pickle(obj: Any, path:str) -> None:
+def save_to_pickle(obj: Any, path: str) -> None:
     with open(path, 'wb') as f:
         pickle.dump(obj, f)
+
+
+def load_pickle(path: str) -> Any:
+    with open(path, 'rb') as f:
+        obj = pickle.load(path)
+    return obj
 
 
 def create_folder(path: str):
@@ -16,4 +22,6 @@ def create_folder(path: str):
 def squeeze_pred_proba(pred_proba: List) -> np.ndarray:
     if not isinstance(pred_proba, List):
         return pred_proba
+    if isinstance(pred_proba, np.ndarray) and len(pred_proba.shape) == 2:
+        return pred_proba[:, 1]
     return np.stack([p[:, 1] for p in pred_proba]).T

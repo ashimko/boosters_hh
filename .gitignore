@@ -127,7 +127,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/data
-/models
-/oof_predictions
-/notebooks/catboost_info
+**/catboost_info

@@ -1,0 +1,30 @@
+schema: '2.0'
+stages:
+  preprocess_sklearn:
+    cmd: python ../../features/preprocess_original_data.py
+    deps:
+    - path: ../../data/original
+      md5: 91adf967c61508c9fa3db802b597212c.dir
+      size: 46409440
+      nfiles: 3
+    outs:
+    - path: ../../data/prepared
+      md5: 4dd01e156f212618f130ba92bd63d80c.dir
+      size: 43444930
+      nfiles: 3
+  feature_generation_sklearn:
+    cmd: python ../../features/handcrafted_features.py; python ../../features/morph_features.py
+    deps:
+    - path: ../../data/prepared
+      md5: 4dd01e156f212618f130ba92bd63d80c.dir
+      size: 43444930
+      nfiles: 3
+    outs:
+    - path: ../../data/handcrafted
+      md5: b3fe3630b8d9bdf28a5f6167a510e390.dir
+      size: 41433962
+      nfiles: 2
+    - path: ../../data/morph
+      md5: 2e2a047cd5ed4ace408c8a7fe2abd6c3.dir
+      size: 80678104
+      nfiles: 2
