@@ -20,8 +20,8 @@ def create_folder(path: str):
 
 
 def squeeze_pred_proba(pred_proba: List) -> np.ndarray:
-    if not isinstance(pred_proba, List):
-        return pred_proba
+    if isinstance(pred_proba, List):
+        return np.stack([p[:, 1] for p in pred_proba]).T
     if isinstance(pred_proba, np.ndarray) and len(pred_proba.shape) == 2:
         return pred_proba[:, 1]
-    return np.stack([p[:, 1] for p in pred_proba]).T
+    return pred_proba
