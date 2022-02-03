@@ -7,6 +7,6 @@ dvc run \
 --deps ../../data/prepared \
 --deps ../../data/morph \
 --deps ../../data/handcrafted \
---deps ../../model_checkopoints/$model_name
+--deps ../../model_checkopoints/$model_name \
 --outs-persist-no-cache ../../test_predictions/$model_name \
 python ../../models/$model_name/predict.py

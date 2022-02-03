@@ -15,3 +15,55 @@ stages:
         persist: true
     - ../../data/morph:
         persist: true
+  fit_sklearn:
+    cmd: python ../../models/sklearn/fit.py
+    deps:
+    - ../../data/handcrafted
+    - ../../data/morph
+    - ../../data/prepared
+    outs:
+    - ../../model_checkopoints/sklearn:
+        persist: true
+    - ../../oof_predictions/sklearn:
+        cache: false
+        persist: true
+    metrics:
+    - ../../scores/scores_sklearn.json:
+        cache: false
+    plots:
+    - ../../plots/sklearn/prc_0.json:
+        cache: false
+    - ../../plots/sklearn/prc_1.json:
+        cache: false
+    - ../../plots/sklearn/prc_2.json:
+        cache: false
+    - ../../plots/sklearn/prc_3.json:
+        cache: false
+    - ../../plots/sklearn/prc_4.json:
+        cache: false
+    - ../../plots/sklearn/prc_5.json:
+        cache: false
+    - ../../plots/sklearn/prc_6.json:
+        cache: false
+    - ../../plots/sklearn/prc_7.json:
+        cache: false
+    - ../../plots/sklearn/prc_8.json:
+        cache: false
+    - ../../plots/sklearn/roc_0.json:
+        cache: false
+    - ../../plots/sklearn/roc_1.json:
+        cache: false
+    - ../../plots/sklearn/roc_2.json:
+        cache: false
+    - ../../plots/sklearn/roc_3.json:
+        cache: false
+    - ../../plots/sklearn/roc_4.json:
+        cache: false
+    - ../../plots/sklearn/roc_5.json:
+        cache: false
+    - ../../plots/sklearn/roc_6.json:
+        cache: false
+    - ../../plots/sklearn/roc_7.json:
+        cache: false
+    - ../../plots/sklearn/roc_8.json:
+        cache: false

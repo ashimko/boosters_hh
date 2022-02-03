@@ -34,6 +34,7 @@ def predict():
     save_predictions(test_pred_proba, 'test', MODEL_NAME, 'pred_proba')
     
     test_pred_labels = get_pred_labels(test_pred_proba.values)
+    test_pred_labels = pd.DataFrame(data=test_pred_labels, index=test.index, columns=target_columns)
     save_predictions(test_pred_labels, 'test', MODEL_NAME, 'pred_labels')
 
 
