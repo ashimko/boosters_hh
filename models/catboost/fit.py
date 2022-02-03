@@ -48,13 +48,13 @@ def fit():
                 eval_set=(X_val, y_val),
                 early_stopping_rounds=20
             )
-            save_model(model, f'{MODEL_NAME}_col{target_col}', fold)
+            save_model(model, MODEL_NAME, fold, target_col)
 
             val_pred_proba = squeeze_pred_proba(model.predict_proba(X_val))
             oof_pred_proba.iloc[val_idx, int(target_col)] = val_pred_proba
 
-            val_pred_labels = get_pred_labels(val_pred_proba)
-            oof_pred_labels.iloc[val_idx, int(target_col)] = val_pred_labels
+        val_pred_labels = get_pred_labels(oof_pred_proba.iloc[val_idx].values)
+        oof_pred_labels.iloc[val_idx] = val_pred_labels
             
         score = f1_score(y_val, val_pred_labels, average='samples', zero_division=0)
         print(f'model name {MODEL_NAME}, fold {fold}, f1_score: {score}')

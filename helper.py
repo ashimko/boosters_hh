@@ -93,9 +93,11 @@ def save_predictions(
         raise NotImplementedError()
 
 
-def save_model(model: Model, model_name: str, fold: int = -1) -> None:
+def save_model(model: Model, model_name: str, fold: int = -1, target_col: str = None) -> None:
     file_name = f'fold_{fold}_{model_name}.pkl'
     path = os.path.join(MODEL_PATH, model_name)
+    if target_col:
+        path = os.path.join(path, f'col_{target_col}')
     create_folder(path)
     save_to_pickle(model, os.path.join(path, file_name))
 
