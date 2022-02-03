@@ -67,3 +67,14 @@ stages:
         cache: false
     - ../../plots/sklearn/roc_8.json:
         cache: false
+  predict_sklearn:
+    cmd: python ../../models/sklearn/predict.py
+    deps:
+    - ../../data/handcrafted
+    - ../../data/morph
+    - ../../data/prepared
+    - ../../model_checkopoints/sklearn
+    outs:
+    - ../../test_predictions/sklearn:
+        cache: false
+        persist: true

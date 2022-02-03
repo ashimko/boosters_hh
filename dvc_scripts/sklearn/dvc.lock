@@ -109,3 +109,27 @@ stages:
     - path: ../../scores/scores_sklearn.json
       md5: 625911e6d625f85c16a7d6aee2b9113e
       size: 201
+  predict_sklearn:
+    cmd: python ../../models/sklearn/predict.py
+    deps:
+    - path: ../../data/handcrafted
+      md5: b3fe3630b8d9bdf28a5f6167a510e390.dir
+      size: 41433962
+      nfiles: 2
+    - path: ../../data/morph
+      md5: 2e2a047cd5ed4ace408c8a7fe2abd6c3.dir
+      size: 80678104
+      nfiles: 2
+    - path: ../../data/prepared
+      md5: 4dd01e156f212618f130ba92bd63d80c.dir
+      size: 43444930
+      nfiles: 3
+    - path: ../../model_checkopoints/sklearn
+      md5: 04ff95fc5a7923e87b0c7638072a0bb9.dir
+      size: 3999969290
+      nfiles: 3
+    outs:
+    - path: ../../test_predictions/sklearn
+      md5: 0b8ccbe3ab186a574f368867c9f10ae9.dir
+      size: 11259431
+      nfiles: 3
