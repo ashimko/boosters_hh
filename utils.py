@@ -10,7 +10,7 @@ def save_to_pickle(obj: Any, path: str) -> None:
 
 def load_pickle(path: str) -> Any:
     with open(path, 'rb') as f:
-        obj = pickle.load(path)
+        obj = pickle.load(f)
     return obj
 
 

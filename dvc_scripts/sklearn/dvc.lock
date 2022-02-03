@@ -28,3 +28,84 @@ stages:
       md5: 2e2a047cd5ed4ace408c8a7fe2abd6c3.dir
       size: 80678104
       nfiles: 2
+  fit_sklearn:
+    cmd: python ../../models/sklearn/fit.py
+    deps:
+    - path: ../../data/handcrafted
+      md5: b3fe3630b8d9bdf28a5f6167a510e390.dir
+      size: 41433962
+      nfiles: 2
+    - path: ../../data/morph
+      md5: 2e2a047cd5ed4ace408c8a7fe2abd6c3.dir
+      size: 80678104
+      nfiles: 2
+    - path: ../../data/prepared
+      md5: 4dd01e156f212618f130ba92bd63d80c.dir
+      size: 43444930
+      nfiles: 3
+    outs:
+    - path: ../../model_checkopoints/sklearn
+      md5: 04ff95fc5a7923e87b0c7638072a0bb9.dir
+      size: 3999969290
+      nfiles: 3
+    - path: ../../oof_predictions/sklearn
+      md5: 55d965db9bf8778418b3fe2b6d7846a1.dir
+      size: 12261014
+      nfiles: 2
+    - path: ../../plots/sklearn/prc_0.json
+      md5: c546323f0f66bfce3a4934fd3dcccb1d
+      size: 154561
+    - path: ../../plots/sklearn/prc_1.json
+      md5: 0910dd681c99638bf010411024a0f8c3
+      size: 156438
+    - path: ../../plots/sklearn/prc_2.json
+      md5: d0d1f6b790342185d2cf185c94699a2d
+      size: 160821
+    - path: ../../plots/sklearn/prc_3.json
+      md5: 248e1d54822eefec722bf986bdec6b9e
+      size: 157548
+    - path: ../../plots/sklearn/prc_4.json
+      md5: 836d822fa438771afb15e5b6dc3964dd
+      size: 160023
+    - path: ../../plots/sklearn/prc_5.json
+      md5: 800d0612f1eb8209a7e0aa05805bc418
+      size: 158974
+    - path: ../../plots/sklearn/prc_6.json
+      md5: 3e8b24a38ad4ee51196632d2970df165
+      size: 158385
+    - path: ../../plots/sklearn/prc_7.json
+      md5: d5571a8ac2a30c6372904b91c19741ac
+      size: 158042
+    - path: ../../plots/sklearn/prc_8.json
+      md5: 7fe1dc6a4972cc939e8b9076df8777db
+      size: 152735
+    - path: ../../plots/sklearn/roc_0.json
+      md5: 5608653a687c7c76f566f15c5eeb6c38
+      size: 1248261
+    - path: ../../plots/sklearn/roc_1.json
+      md5: eb4ee0a335d00bb194ff69f49d65cbf9
+      size: 637567
+    - path: ../../plots/sklearn/roc_2.json
+      md5: 81b10f664509fb746b327b339060010e
+      size: 8276
+    - path: ../../plots/sklearn/roc_3.json
+      md5: a089fa8b5be3f0ec6ba83cddde463ddf
+      size: 162020
+    - path: ../../plots/sklearn/roc_4.json
+      md5: ab3b93bba67f4e58be40427dcd3466a1
+      size: 36050
+    - path: ../../plots/sklearn/roc_5.json
+      md5: a1473912ccc27174424c2d60c6b556dc
+      size: 103393
+    - path: ../../plots/sklearn/roc_6.json
+      md5: b54078d33a359b23bb2cb3c43885d6dd
+      size: 263279
+    - path: ../../plots/sklearn/roc_7.json
+      md5: 4abed64e0c6097e143f20f7226e23466
+      size: 98389
+    - path: ../../plots/sklearn/roc_8.json
+      md5: 951253b95c5f2f06c95f87c7f6abd2c0
+      size: 1654697
+    - path: ../../scores/scores_sklearn.json
+      md5: 625911e6d625f85c16a7d6aee2b9113e
+      size: 201
