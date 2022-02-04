@@ -71,7 +71,7 @@ def fit():
             validation_batch_size=BATCH_SIZE,
             callbacks=[early_stopping, checkopoint, lr_scheduler])
         
-        model = load_model(checkpoint_filepath)
+        model.load_weights(checkpoint_filepath).expect_partial()
 
         val_pred_proba = squeeze_pred_proba(model.predict_proba(get_model_input(X_val)))
         oof_pred_proba.iloc[val_idx] = val_pred_proba

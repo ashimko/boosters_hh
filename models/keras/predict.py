@@ -12,7 +12,7 @@ from helper import save_predictions, get_checkpoint_path
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from model_config import MODEL_NAME
-from model import get_model_input
+from model import get_model_input, get_model
 
 
 def predict():
@@ -30,7 +30,8 @@ def predict():
         print(f'start predicting {MODEL_NAME}, fold {fold}...')
         
         checkpoint_filepath = get_checkpoint_path(MODEL_NAME, fold)
-        model = load_model(checkpoint_filepath)
+        model = get_model()
+        model.load_weights(checkpoint_filepath).expect_partial()
         test_pred_proba += squeeze_pred_proba(model.predict_proba(get_model_input(test)))
 
     test_pred_proba /= N_SPLITS
