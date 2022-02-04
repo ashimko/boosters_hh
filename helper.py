@@ -23,9 +23,6 @@ def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame, model_name:
     for col in true_labels.columns:
         precision, recall, prc_thresholds = precision_recall_curve(true_labels[col], pred_proba[col])
         fpr, tpr, roc_thresholds = roc_curve(true_labels[col], pred_proba[col])
-        
-        nth_point = len(prc_thresholds) // 1000
-        prc_points = list(zip(precision, recall, prc_thresholds))[::nth_point]
 
         path = os.path.join(PLOTS_PATH, model_name)
         create_folder(path)
@@ -34,7 +31,7 @@ def save_metric_plots(true_labels: DataFrame, pred_proba: DataFrame, model_name:
                 {
                     "prc": [
                         {"precision": float(p), "recall": float(r), "threshold": float(t)}
-                        for p, r, t in prc_points
+                        for p, r, t in zip(precision, recall, prc_thresholds)
                     ]
                 },
                 fd,
@@ -93,11 +90,22 @@ def save_predictions(
         raise NotImplementedError()
 
 
-def save_model(model: Model, model_name: str, fold: int = -1, target_col: str = None) -> None:
+def save_catboost_model(model, model_name: str, target_col: str=None, fold: int = -1):
+    file_name = f'fold_{fold}_{model_name}.cbm'
+    path = os.path.join(MODEL_PATH, model_name, f'col_{target_col}')
+    create_folder(path)
+    model.save_model(os.path.join(path, file_name), format='cbm')
+
+
+def load_catboost_model(model, model_name: str, target_col: str=None, fold: int = -1):
+    file_name = f'fold_{fold}_{model_name}.cbm'
+    path = os.path.join(MODEL_PATH, model_name, f'col_{target_col}')
+    return model.load_model(os.path.join(path, file_name), format='cbm')
+
+
+def save_model_to_pickle(model, model_name: str, fold: int = -1) -> None:
     file_name = f'fold_{fold}_{model_name}.pkl'
     path = os.path.join(MODEL_PATH, model_name)
-    if target_col:
-        path = os.path.join(path, f'col_{target_col}')
     create_folder(path)
     save_to_pickle(model, os.path.join(path, file_name))
 
@@ -109,7 +117,7 @@ def get_checkpoint_path(model_name: str, fold: int = -1) -> None:
     return os.path.join(path, file_name)
 
 
-def load_model(model_name: str, fold: int = -1) -> None:
+def load_model_from_pickle(model_name: str, fold: int = -1) -> None:
     file_name = f'fold_{fold}_{model_name}.pkl'
     path = os.path.join(MODEL_PATH, model_name)
     return load_pickle(os.path.join(path, file_name))

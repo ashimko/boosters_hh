@@ -60,7 +60,7 @@ def get_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
     }
 
     model = CatBoostClassifier(
-        n_estimators=500,
+        n_estimators=1000,
         cat_features=ORDERED_CATEGORIES+UNORDERED_CATEGORIES,
         text_features=TEXT_COLS+NORMALIZED_TEXT_COLS+MORPH_TAG_COLS,
         random_state=random_state,

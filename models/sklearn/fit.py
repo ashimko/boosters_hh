@@ -10,7 +10,7 @@ from sklearn.metrics import f1_score
 from config import *
 from utils import squeeze_pred_proba
 from evaluate import get_pred_labels, get_cv_results
-from helper import save_metric_plots, save_model, save_metrics, save_predictions
+from helper import save_metric_plots, save_model_to_pickle, save_metrics, save_predictions
 
 from model import get_model
 from model_config import MODEL_NAME
@@ -40,7 +40,7 @@ def fit():
         y_train, y_val = target.iloc[train_idx], target.iloc[val_idx]
 
         model.fit(X_train, y_train)
-        save_model(model, MODEL_NAME, fold)
+        save_model_to_pickle(model, MODEL_NAME, fold)
 
         val_pred_proba = squeeze_pred_proba(model.predict_proba(X_val))
         oof_pred_proba.iloc[val_idx] = val_pred_proba

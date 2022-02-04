@@ -8,12 +8,17 @@ import pandas as pd
 from config import *
 from utils import squeeze_pred_proba
 from evaluate import get_pred_labels
-from helper import save_predictions, load_model
+from helper import save_predictions, load_catboost_model
 from model_config import MODEL_NAME
+from model import get_model
 
 
 def predict():
-    test = pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'test.pkl'))
+    test = pd.concat([
+        pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'test.pkl')),
+        pd.read_pickle(os.path.join(MORPH_DATA_PATH, 'test.pkl')),
+        pd.read_pickle(os.path.join(HANDCRAFTED_DATA_PATH, 'test.pkl')),
+    ], axis=1)
 
     target_columns = pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'target.pkl')).columns
     test_pred_proba = pd.DataFrame(
@@ -27,8 +32,8 @@ def predict():
         print(f'start predicting {MODEL_NAME}, fold {fold}...')
         for target_col in target_columns:
             print(f'predicting target column {target_col}...')
-            model = load_model(f'{MODEL_NAME}_col{target_col}', fold)
-            test_pred_proba[int(target_col)] += squeeze_pred_proba(model.predict_proba(test)) 
+            model = load_catboost_model(get_model(), MODEL_NAME, target_col, fold)
+            test_pred_proba[target_col] += squeeze_pred_proba(model.predict_proba(test))
 
     test_pred_proba /= N_SPLITS
     save_predictions(test_pred_proba, 'test', MODEL_NAME, 'pred_proba')

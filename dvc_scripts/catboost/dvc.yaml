@@ -1,0 +1,64 @@
+stages:
+  fit_catboost:
+    cmd: python ../../models/catboost/fit.py
+    deps:
+    - ../../data/handcrafted
+    - ../../data/morph
+    - ../../data/prepared
+    outs:
+    - ../../model_checkopoints/catboost:
+        persist: true
+    - ../../oof_predictions/catboost:
+        cache: false
+        persist: true
+    metrics:
+    - ../../scores/scores_catboost.json:
+        cache: false
+    plots:
+    - ../../plots/catboost/prc_0.json:
+        cache: false
+    - ../../plots/catboost/prc_1.json:
+        cache: false
+    - ../../plots/catboost/prc_2.json:
+        cache: false
+    - ../../plots/catboost/prc_3.json:
+        cache: false
+    - ../../plots/catboost/prc_4.json:
+        cache: false
+    - ../../plots/catboost/prc_5.json:
+        cache: false
+    - ../../plots/catboost/prc_6.json:
+        cache: false
+    - ../../plots/catboost/prc_7.json:
+        cache: false
+    - ../../plots/catboost/prc_8.json:
+        cache: false
+    - ../../plots/catboost/roc_0.json:
+        cache: false
+    - ../../plots/catboost/roc_1.json:
+        cache: false
+    - ../../plots/catboost/roc_2.json:
+        cache: false
+    - ../../plots/catboost/roc_3.json:
+        cache: false
+    - ../../plots/catboost/roc_4.json:
+        cache: false
+    - ../../plots/catboost/roc_5.json:
+        cache: false
+    - ../../plots/catboost/roc_6.json:
+        cache: false
+    - ../../plots/catboost/roc_7.json:
+        cache: false
+    - ../../plots/catboost/roc_8.json:
+        cache: false
+  predict_catboost:
+    cmd: python ../../models/catboost/predict.py
+    deps:
+    - ../../data/handcrafted
+    - ../../data/morph
+    - ../../data/prepared
+    - ../../model_checkopoints/catboost
+    outs:
+    - ../../test_predictions/catboost:
+        cache: false
+        persist: true

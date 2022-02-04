@@ -5,15 +5,15 @@ sys.path.append(os.path.dirname(Path(__file__).parents[1]))
 
 import numpy as np
 import pandas as pd
-from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
+from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import f1_score
-from config import *
+from config import PREPARED_DATA_PATH, MORPH_DATA_PATH, HANDCRAFTED_DATA_PATH
 from utils import squeeze_pred_proba
 from evaluate import get_pred_labels, get_cv_results
-from helper import save_model, save_metrics, save_predictions, save_metric_plots
+from helper import save_metrics, save_predictions, save_metric_plots, save_catboost_model
 
 from model import get_model
-from model_config import MODEL_NAME
+from model_config import MODEL_NAME, N_SPLITS, RANDOM_STATE
 
 
 def fit():
@@ -24,19 +24,19 @@ def fit():
     ], axis=1)
 
     target = pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'target.pkl'))
-    cv = MultilabelStratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=RANDOM_STATE)
+    cv = StratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=RANDOM_STATE)
 
     oof_pred_proba = pd.DataFrame(
         data=np.zeros(shape=target.shape),
         columns=target.columns,
         index=target.index
     )
-    oof_pred_labels = oof_pred_proba.copy()
+    oof_pred_labels = oof_pred_proba.copy().astype(np.int8)
     
-    for fold, (train_idx, val_idx) in enumerate(cv.split(X=train, y=target)):
-        print(f'start training {MODEL_NAME}, fold {fold}...')
-        for target_col in target.columns:
-            print(f'train on target column {target_col}...')
+    for target_col in target.columns:
+        print(f'train on target column {target_col}...')
+        for fold, (train_idx, val_idx) in enumerate(cv.split(X=train, y=target[target_col])):
+            print(f'start training {MODEL_NAME}, fold {fold}...')
             model = get_model()
             X_train, X_val = train.iloc[train_idx], train.iloc[val_idx]
             y_train, y_val = target.iloc[train_idx, int(target_col)], target.iloc[val_idx, int(target_col)]
@@ -46,9 +46,9 @@ def fit():
                 y=y_train,
                 verbose=20,
                 eval_set=(X_val, y_val),
-                early_stopping_rounds=20
+                early_stopping_rounds=400
             )
-            save_model(model, MODEL_NAME, fold, target_col)
+            save_catboost_model(model, MODEL_NAME, target_col, fold)
 
             val_pred_proba = squeeze_pred_proba(model.predict_proba(X_val))
             oof_pred_proba.iloc[val_idx, int(target_col)] = val_pred_proba
@@ -56,7 +56,7 @@ def fit():
         val_pred_labels = get_pred_labels(oof_pred_proba.iloc[val_idx].values)
         oof_pred_labels.iloc[val_idx] = val_pred_labels
             
-        score = f1_score(y_val, val_pred_labels, average='samples', zero_division=0)
+        score = f1_score(target.iloc[val_idx], val_pred_labels, average='samples', zero_division=0)
         print(f'model name {MODEL_NAME}, fold {fold}, f1_score: {score}')
         
 
