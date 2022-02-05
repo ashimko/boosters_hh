@@ -33,40 +33,94 @@ stages:
     plots:
     - ../../plots/sklearn/prc_0.json:
         cache: false
+        x: recall
+        y: precision
+        title: PR_RC_0
     - ../../plots/sklearn/prc_1.json:
         cache: false
+        x: recall
+        y: precision
+        title: PR_RC_1
     - ../../plots/sklearn/prc_2.json:
         cache: false
+        x: recall
+        y: precision
+        title: PR_RC_2
     - ../../plots/sklearn/prc_3.json:
         cache: false
+        x: recall
+        y: precision
+        title: PR_RC_3
     - ../../plots/sklearn/prc_4.json:
         cache: false
+        x: recall
+        y: precision
+        title: PR_RC_4
     - ../../plots/sklearn/prc_5.json:
         cache: false
+        x: recall
+        y: precision
+        title: PR_RC_5
     - ../../plots/sklearn/prc_6.json:
         cache: false
+        x: recall
+        y: precision
+        title: PR_RC_6
     - ../../plots/sklearn/prc_7.json:
         cache: false
+        x: recall
+        y: precision
+        title: PR_RC_7
     - ../../plots/sklearn/prc_8.json:
         cache: false
+        x: recall
+        y: precision
+        title: PR_RC_8
     - ../../plots/sklearn/roc_0.json:
         cache: false
+        x: fpr
+        y: tpr
+        title: ROC_AUC_0
     - ../../plots/sklearn/roc_1.json:
         cache: false
+        x: fpr
+        y: tpr
+        title: ROC_AUC_1
     - ../../plots/sklearn/roc_2.json:
         cache: false
+        x: fpr
+        y: tpr
+        title: ROC_AUC_2
     - ../../plots/sklearn/roc_3.json:
         cache: false
+        x: fpr
+        y: tpr
+        title: ROC_AUC_3
     - ../../plots/sklearn/roc_4.json:
         cache: false
+        x: fpr
+        y: tpr
+        title: ROC_AUC_4
     - ../../plots/sklearn/roc_5.json:
         cache: false
+        x: fpr
+        y: tpr
+        title: ROC_AUC_5
     - ../../plots/sklearn/roc_6.json:
         cache: false
+        x: fpr
+        y: tpr
+        title: ROC_AUC_6
     - ../../plots/sklearn/roc_7.json:
         cache: false
+        x: fpr
+        y: tpr
+        title: ROC_AUC_7
     - ../../plots/sklearn/roc_8.json:
         cache: false
+        x: fpr
+        y: tpr
+        title: ROC_AUC_8
   predict_sklearn:
     cmd: python ../../models/sklearn/predict.py
     deps:

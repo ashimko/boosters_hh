@@ -46,18 +46,18 @@ def fit():
                 y=y_train,
                 verbose=20,
                 eval_set=(X_val, y_val),
-                early_stopping_rounds=400
+                early_stopping_rounds=600
             )
             save_catboost_model(model, MODEL_NAME, target_col, fold)
 
             val_pred_proba = squeeze_pred_proba(model.predict_proba(X_val))
             oof_pred_proba.iloc[val_idx, int(target_col)] = val_pred_proba
 
-        val_pred_labels = get_pred_labels(oof_pred_proba.iloc[val_idx].values)
-        oof_pred_labels.iloc[val_idx] = val_pred_labels
+    val_pred_labels = get_pred_labels(oof_pred_proba.iloc[val_idx].values)
+    oof_pred_labels.iloc[val_idx] = val_pred_labels
             
-        score = f1_score(target.iloc[val_idx], val_pred_labels, average='samples', zero_division=0)
-        print(f'model name {MODEL_NAME}, fold {fold}, f1_score: {score}')
+    score = f1_score(target, oof_pred_labels, average='samples', zero_division=0)
+    print(f'model name {MODEL_NAME}, f1_score: {score}')
         
 
     save_predictions(oof_pred_proba, 'oof', MODEL_NAME, 'pred_proba')
