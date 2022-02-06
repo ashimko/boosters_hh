@@ -1,0 +1,99 @@
+schema: '2.0'
+stages:
+  fit_catboost_sbert_large_nlu_ru:
+    cmd: python ../../models/catboost_sbert_large_nlu_ru/fit.py
+    deps:
+    - path: ../../data/prepared
+      md5: 4dd01e156f212618f130ba92bd63d80c.dir
+      size: 43444930
+      nfiles: 3
+    - path: ../../data/sbert_large_nlu_ru
+      md5: 5011411f8b3dfcb9b2e641f1746a9b74.dir
+      size: 1666988368
+      nfiles: 8
+    outs:
+    - path: ../../model_checkopoints/catboost_sbert_large_nlu_ru
+      md5: 600ef6ed68a5f395ebd187db9ccb7699.dir
+      size: 37749840
+      nfiles: 63
+    - path: ../../oof_predictions/catboost_sbert_large_nlu_ru
+      md5: a533ed877b0d6cf2f45c7c765a0f0401.dir
+      size: 10910767
+      nfiles: 2
+    - path: ../../plots/catboost_sbert_large_nlu_ru/prc_0.json
+      md5: 5c02bc736e49c6cb61a06c8bb02c7d7a
+      size: 7279813
+    - path: ../../plots/catboost_sbert_large_nlu_ru/prc_1.json
+      md5: 07504f0c6cbfdbd5283c36c7d2178e63
+      size: 7526042
+    - path: ../../plots/catboost_sbert_large_nlu_ru/prc_2.json
+      md5: 9c1c19fb9a7a3b4a5d20cda0d1d7a2d5
+      size: 16644
+    - path: ../../plots/catboost_sbert_large_nlu_ru/prc_3.json
+      md5: 1bc50e2369665057a6c2b84eded0a882
+      size: 7781710
+    - path: ../../plots/catboost_sbert_large_nlu_ru/prc_4.json
+      md5: f73c1fedf6be249fdd6a2d64896c2dfc
+      size: 689297
+    - path: ../../plots/catboost_sbert_large_nlu_ru/prc_5.json
+      md5: 522f5a96a069cb1418d516121cb49b6b
+      size: 7032371
+    - path: ../../plots/catboost_sbert_large_nlu_ru/prc_6.json
+      md5: f3936b39b0faa3a41bf739e3507d5bc1
+      size: 7380122
+    - path: ../../plots/catboost_sbert_large_nlu_ru/prc_7.json
+      md5: 0bafb61551de5d39e1e2c8ee71e08c4e
+      size: 7604374
+    - path: ../../plots/catboost_sbert_large_nlu_ru/prc_8.json
+      md5: ceb4415c443658c7763075b26ab1ebf1
+      size: 7566273
+    - path: ../../plots/catboost_sbert_large_nlu_ru/roc_0.json
+      md5: c88556c65a1c2fc87c623c458898afdd
+      size: 1374407
+    - path: ../../plots/catboost_sbert_large_nlu_ru/roc_1.json
+      md5: 87068b34f4f2c301d595ed9bb30e0a91
+      size: 637536
+    - path: ../../plots/catboost_sbert_large_nlu_ru/roc_2.json
+      md5: 38162832f0001fe15817798fcb79b9e2
+      size: 15772
+    - path: ../../plots/catboost_sbert_large_nlu_ru/roc_3.json
+      md5: c9d6f5e2f9b8223c9490f9bee825314f
+      size: 153745
+    - path: ../../plots/catboost_sbert_large_nlu_ru/roc_4.json
+      md5: afcdb9751ee6066341daa738370e2e6c
+      size: 21364
+    - path: ../../plots/catboost_sbert_large_nlu_ru/roc_5.json
+      md5: b3f061c23ad9c4852c76a1c44589769a
+      size: 119797
+    - path: ../../plots/catboost_sbert_large_nlu_ru/roc_6.json
+      md5: 8cc93fc2653f167106de17d6581f8cce
+      size: 299073
+    - path: ../../plots/catboost_sbert_large_nlu_ru/roc_7.json
+      md5: 12b5ff70134ea1d5ecbf52b0e62f96d0
+      size: 122609
+    - path: ../../plots/catboost_sbert_large_nlu_ru/roc_8.json
+      md5: 100721bca0505ffe3a30e8a79dd50aba
+      size: 1683119
+    - path: ../../scores/scores_catboost_sbert_large_nlu_ru.json
+      md5: ad3194e9e4ed5a9eb8efd1af8a1f079b
+      size: 205
+  predict_catboost_sbert_large_nlu_ru:
+    cmd: python ../../models/catboost_sbert_large_nlu_ru/predict.py
+    deps:
+    - path: ../../data/prepared
+      md5: 4dd01e156f212618f130ba92bd63d80c.dir
+      size: 43444930
+      nfiles: 3
+    - path: ../../data/sbert_large_nlu_ru
+      md5: 5011411f8b3dfcb9b2e641f1746a9b74.dir
+      size: 1666988368
+      nfiles: 8
+    - path: ../../model_checkopoints/catboost_sbert_large_nlu_ru
+      md5: 600ef6ed68a5f395ebd187db9ccb7699.dir
+      size: 37749840
+      nfiles: 63
+    outs:
+    - path: ../../test_predictions/catboost_sbert_large_nlu_ru
+      md5: 64e2d1c5257231e996fcb360627a7b37.dir
+      size: 10840934
+      nfiles: 2
