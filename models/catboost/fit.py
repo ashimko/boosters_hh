@@ -53,8 +53,8 @@ def fit():
             val_pred_proba = squeeze_pred_proba(model.predict_proba(X_val))
             oof_pred_proba.iloc[val_idx, int(target_col)] = val_pred_proba
 
-    val_pred_labels = get_pred_labels(oof_pred_proba.iloc[val_idx].values)
-    oof_pred_labels.iloc[val_idx] = val_pred_labels
+    val_pred_labels = get_pred_labels(oof_pred_proba.values)
+    oof_pred_labels.loc[:, :] = val_pred_labels
             
     score = f1_score(target, oof_pred_labels, average='samples', zero_division=0)
     print(f'model name {MODEL_NAME}, f1_score: {score}')

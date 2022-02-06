@@ -1,0 +1,66 @@
+stages:
+  feature_generation_catboost_rubert_tiny:
+    cmd: python ../../features/rubert_tiny.py
+    deps:
+    - ../../data/prepared
+  fit_catboost_rubert_tiny:
+    cmd: python ../../models/catboost_rubert_tiny/fit.py
+    deps:
+    - ../../data/prepared
+    - ../../data/rubert-tiny
+    outs:
+    - ../../model_checkopoints/catboost_rubert_tiny:
+        persist: true
+    - ../../oof_predictions/catboost_rubert_tiny:
+        cache: false
+        persist: true
+    metrics:
+    - ../../scores/scores_catboost_rubert_tiny.json:
+        cache: false
+    plots:
+    - ../../plots/catboost_rubert_tiny/prc_0.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/prc_1.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/prc_2.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/prc_3.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/prc_4.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/prc_5.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/prc_6.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/prc_7.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/prc_8.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/roc_0.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/roc_1.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/roc_2.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/roc_3.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/roc_4.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/roc_5.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/roc_6.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/roc_7.json:
+        cache: false
+    - ../../plots/catboost_rubert_tiny/roc_8.json:
+        cache: false
+  predict_catboost_rubert_tiny:
+    cmd: python ../../models/catboost_rubert_tiny/predict.py
+    deps:
+    - ../../data/prepared
+    - ../../data/rubert-tiny
+    - ../../model_checkopoints/catboost_rubert_tiny
+    outs:
+    - ../../test_predictions/catboost_rubert_tiny:
+        cache: false
+        persist: true

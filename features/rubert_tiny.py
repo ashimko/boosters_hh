@@ -16,7 +16,7 @@ from utils import create_folder
 from transformers import AutoModel, AutoTokenizer
 from tqdm import tqdm
 
-BATCH_SIZE = 1024
+BATCH_SIZE = 32
 EMB_DIM = 312
 EMB_NAME = 'rubert-tiny'  # 'sbert_large_nlu_ru'
 
