@@ -1,0 +1,66 @@
+stages:
+  feature_generation_catboost_labse_en_ru:
+    cmd: python ../../features/LaBSE-en-ru.py
+    deps:
+    - ../../data/prepared
+  fit_catboost_labse_en_ru:
+    cmd: python ../../models/catboost_labse_en_ru/fit.py
+    deps:
+    - ../../data/LaBSE-en-ru
+    - ../../data/prepared
+    outs:
+    - ../../model_checkopoints/catboost_labse_en_ru:
+        persist: true
+    - ../../oof_predictions/catboost_labse_en_ru:
+        cache: false
+        persist: true
+    metrics:
+    - ../../scores/scores_catboost_labse_en_ru.json:
+        cache: false
+    plots:
+    - ../../plots/catboost_labse_en_ru/prc_0.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/prc_1.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/prc_2.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/prc_3.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/prc_4.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/prc_5.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/prc_6.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/prc_7.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/prc_8.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/roc_0.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/roc_1.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/roc_2.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/roc_3.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/roc_4.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/roc_5.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/roc_6.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/roc_7.json:
+        cache: false
+    - ../../plots/catboost_labse_en_ru/roc_8.json:
+        cache: false
+  predict_catboost_labse_en_ru:
+    cmd: python ../../models/catboost_labse_en_ru/predict.py
+    deps:
+    - ../../data/LaBSE-en-ru
+    - ../../data/prepared
+    - ../../model_checkopoints/catboost_labse_en_ru
+    outs:
+    - ../../test_predictions/catboost_labse_en_ru:
+        cache: false
+        persist: true
