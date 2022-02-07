@@ -61,23 +61,22 @@ def fit():
                 return lr * tf.math.exp(-0.1)
         lr_scheduler = tf.keras.callbacks.LearningRateScheduler(scheduler)
 
-        print(X_train.shape)
-        model.fit(
-            x=get_model_input(X_train), 
-            y=y_train, 
-            epochs=N_EPOCHS, 
-            batch_size=BATCH_SIZE,
-            validation_split=0.15,
-            validation_batch_size=BATCH_SIZE,
-            callbacks=[early_stopping, checkopoint, lr_scheduler])
+        # model.fit(
+        #     x=get_model_input(X_train), 
+        #     y=y_train, 
+        #     epochs=N_EPOCHS, 
+        #     batch_size=BATCH_SIZE,
+        #     validation_split=0.15,
+        #     validation_batch_size=BATCH_SIZE,
+        #     callbacks=[early_stopping, checkopoint, lr_scheduler])
         
         model.load_weights(checkpoint_filepath).expect_partial()
 
-        val_pred_proba = squeeze_pred_proba(model.predict_proba(get_model_input(X_val)))
-        oof_pred_proba.iloc[val_idx] = val_pred_proba
+        val_pred_proba = model.predict(get_model_input(X_val))
+        oof_pred_proba.iloc[val_idx, :] = val_pred_proba
 
         val_pred_labels = get_pred_labels(val_pred_proba)
-        oof_pred_labels.iloc[val_idx] = val_pred_labels
+        oof_pred_labels.iloc[val_idx, :] = val_pred_labels
         
         score = f1_score(y_val, val_pred_labels, average='samples', zero_division=0)
         print(f'model name {MODEL_NAME}, fold {fold}, f1_score: {score}')

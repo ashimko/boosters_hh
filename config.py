@@ -17,7 +17,7 @@ CAREER_RATING = 'career_rating'
 WORKPLACE_RATING = 'workplace_rating'
 REST_RECOVERY_RATING = 'rest_recovery_rating'
 N_LABELS = 9
-N_SPLITS = 3
+N_SPLITS = 5
 RANDOM_STATE = 77
 
 # COLUMN SETS

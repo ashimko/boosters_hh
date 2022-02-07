@@ -1,0 +1,91 @@
+schema: '2.0'
+stages:
+  fit_keras:
+    cmd: python ../../models/keras/fit.py
+    deps:
+    - path: ../../data/prepared
+      md5: 46d59618160067e428a08daf6307a70c.dir
+      size: 43549600
+      nfiles: 3
+    outs:
+    - path: ../../model_checkopoints/keras
+      md5: 98c5cd0baa2f3346deead89b7506909c.dir
+      size: 13680009514
+      nfiles: 25
+    - path: ../../oof_predictions/keras
+      md5: 5b74abdf786236e9a4697fa6df117e88.dir
+      size: 12192256
+      nfiles: 2
+    - path: ../../plots/keras/prc_0.json
+      md5: 17b91ae1d71c77ad3011396bfab3fb82
+      size: 7039808
+    - path: ../../plots/keras/prc_1.json
+      md5: 5af62d1581b0ce6f42dbf5474cc93b06
+      size: 6102560
+    - path: ../../plots/keras/prc_2.json
+      md5: 5bc4aa553c2072203bc286e6fb5b5579
+      size: 7184558
+    - path: ../../plots/keras/prc_3.json
+      md5: 326501beed9bca5a77115fca7eee7c71
+      size: 7457539
+    - path: ../../plots/keras/prc_4.json
+      md5: 04a503776cf72f85d36071373bd01766
+      size: 5471547
+    - path: ../../plots/keras/prc_5.json
+      md5: 072f3ebe60eb637ff362dc6b8abb06b3
+      size: 7025142
+    - path: ../../plots/keras/prc_6.json
+      md5: e3596715f42ff2b31c223ae3abc8b5cd
+      size: 6584674
+    - path: ../../plots/keras/prc_7.json
+      md5: d504bf40e92c9415575e69215465b28e
+      size: 6858260
+    - path: ../../plots/keras/prc_8.json
+      md5: fff68f2d3897be70d4fd748c69caa9e6
+      size: 7380884
+    - path: ../../plots/keras/roc_0.json
+      md5: 576b45f70fadf517382c9743b9d6eccd
+      size: 1427589
+    - path: ../../plots/keras/roc_1.json
+      md5: c17536a27f1aca978a689d2e7e343200
+      size: 618781
+    - path: ../../plots/keras/roc_2.json
+      md5: a39a02369a793ef2220bf6521ea65760
+      size: 56169
+    - path: ../../plots/keras/roc_3.json
+      md5: d703b7a19757dfde01f00a8b7370f4fe
+      size: 183018
+    - path: ../../plots/keras/roc_4.json
+      md5: fc5fdd5e46f65648848864bf0dfff5d3
+      size: 70186
+    - path: ../../plots/keras/roc_5.json
+      md5: 67b19cdb9aa4c63710fd1bec2a8378e9
+      size: 120790
+    - path: ../../plots/keras/roc_6.json
+      md5: 9a373244ddc0116986d42bb8f7bbe1bf
+      size: 281221
+    - path: ../../plots/keras/roc_7.json
+      md5: 5d05808181e7926e762e9f43cdc46f68
+      size: 130218
+    - path: ../../plots/keras/roc_8.json
+      md5: 6f75d2b38c0baf6e628d45eff363bfdf
+      size: 1600234
+    - path: ../../scores/scores_keras.json
+      md5: 03f295690270a4d43d14a2319a6a8a6e
+      size: 201
+  predict_keras:
+    cmd: python ../../models/keras/predict.py
+    deps:
+    - path: ../../data/prepared
+      md5: 46d59618160067e428a08daf6307a70c.dir
+      size: 43549600
+      nfiles: 3
+    - path: ../../model_checkopoints/keras
+      md5: 98c5cd0baa2f3346deead89b7506909c.dir
+      size: 13680009514
+      nfiles: 25
+    outs:
+    - path: ../../test_predictions/keras
+      md5: 97dcbe6bb20deb89f4a3007a3d11a062.dir
+      size: 11150275
+      nfiles: 2

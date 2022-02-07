@@ -111,7 +111,7 @@ def save_model_to_pickle(model, model_name: str, fold: int = -1) -> None:
 
 
 def get_checkpoint_path(model_name: str, fold: int = -1) -> None:
-    file_name = f'fold_{fold}_{model_name}.pkl'
+    file_name = f'fold_{fold}_{model_name}'
     path = os.path.join(MODEL_PATH, model_name)
     create_folder(path)
     return os.path.join(path, file_name)

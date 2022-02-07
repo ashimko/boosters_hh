@@ -1,0 +1,60 @@
+stages:
+  fit_keras:
+    cmd: python ../../models/keras/fit.py
+    deps:
+    - ../../data/prepared
+    outs:
+    - ../../model_checkopoints/keras:
+        persist: true
+    - ../../oof_predictions/keras:
+        cache: false
+        persist: true
+    metrics:
+    - ../../scores/scores_keras.json:
+        cache: false
+    plots:
+    - ../../plots/keras/prc_0.json:
+        cache: false
+    - ../../plots/keras/prc_1.json:
+        cache: false
+    - ../../plots/keras/prc_2.json:
+        cache: false
+    - ../../plots/keras/prc_3.json:
+        cache: false
+    - ../../plots/keras/prc_4.json:
+        cache: false
+    - ../../plots/keras/prc_5.json:
+        cache: false
+    - ../../plots/keras/prc_6.json:
+        cache: false
+    - ../../plots/keras/prc_7.json:
+        cache: false
+    - ../../plots/keras/prc_8.json:
+        cache: false
+    - ../../plots/keras/roc_0.json:
+        cache: false
+    - ../../plots/keras/roc_1.json:
+        cache: false
+    - ../../plots/keras/roc_2.json:
+        cache: false
+    - ../../plots/keras/roc_3.json:
+        cache: false
+    - ../../plots/keras/roc_4.json:
+        cache: false
+    - ../../plots/keras/roc_5.json:
+        cache: false
+    - ../../plots/keras/roc_6.json:
+        cache: false
+    - ../../plots/keras/roc_7.json:
+        cache: false
+    - ../../plots/keras/roc_8.json:
+        cache: false
+  predict_keras:
+    cmd: python ../../models/keras/predict.py
+    deps:
+    - ../../data/prepared
+    - ../../model_checkopoints/keras
+    outs:
+    - ../../test_predictions/keras:
+        cache: false
+        persist: true
