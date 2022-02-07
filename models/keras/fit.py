@@ -9,13 +9,13 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.metrics import f1_score
-from config import *
+from config import PREPARED_DATA_PATH, TEXT_COLS, UNORDERED_CATEGORIES
 from utils import squeeze_pred_proba
 from evaluate import get_pred_labels, get_cv_results
 from helper import save_metric_plots, save_metrics, save_predictions, get_checkpoint_path
 
 from model import get_model, get_model_input, get_encoders
-from model_config import MODEL_NAME, N_EPOCHS, BATCH_SIZE
+from model_config import MODEL_NAME, N_EPOCHS, BATCH_SIZE, N_SPLITS, RANDOM_STATE
 
 
 def fit():
@@ -43,11 +43,12 @@ def fit():
         early_stopping = tf.keras.callbacks.EarlyStopping(
             monitor='val_soft_f1_samples_metric',
             mode='max',
-            patience=2)
+            patience=3)
             
         checkpoint_filepath = get_checkpoint_path(MODEL_NAME, fold)
         checkopoint = tf.keras.callbacks.ModelCheckpoint(
             filepath=checkpoint_filepath,
+            save_weights_only=True,
             save_best_only=True,
             monitor='val_soft_f1_samples_metric',
             mode='max',
@@ -61,14 +62,14 @@ def fit():
                 return lr * tf.math.exp(-0.1)
         lr_scheduler = tf.keras.callbacks.LearningRateScheduler(scheduler)
 
-        # model.fit(
-        #     x=get_model_input(X_train), 
-        #     y=y_train, 
-        #     epochs=N_EPOCHS, 
-        #     batch_size=BATCH_SIZE,
-        #     validation_split=0.15,
-        #     validation_batch_size=BATCH_SIZE,
-        #     callbacks=[early_stopping, checkopoint, lr_scheduler])
+        model.fit(
+            x=get_model_input(X_train), 
+            y=y_train, 
+            epochs=N_EPOCHS, 
+            batch_size=BATCH_SIZE,
+            validation_split=0.15,
+            validation_batch_size=BATCH_SIZE,
+            callbacks=[early_stopping, checkopoint, lr_scheduler])
         
         model.load_weights(checkpoint_filepath).expect_partial()
 
