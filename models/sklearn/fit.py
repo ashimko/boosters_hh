@@ -7,13 +7,13 @@ import numpy as np
 import pandas as pd
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.metrics import f1_score
-from config import *
+from config import PREPARED_DATA_PATH, MORPH_DATA_PATH, HANDCRAFTED_DATA_PATH
 from utils import squeeze_pred_proba
 from evaluate import get_pred_labels, get_cv_results
 from helper import save_metric_plots, save_model_to_pickle, save_metrics, save_predictions
 
 from model import get_model
-from model_config import MODEL_NAME
+from model_config import MODEL_NAME, N_SPLITS, RANDOM_STATE
 
 
 def fit():

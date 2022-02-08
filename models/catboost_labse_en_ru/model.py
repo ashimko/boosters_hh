@@ -10,9 +10,10 @@ def get_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
     
 
     model = CatBoostClassifier(
-        n_estimators=5000,
+        n_estimators=15000,
         random_state=random_state,
-        max_depth=4,
+        # cat_features=ORDERED_CATEGORIES,
+        max_depth=6,
         eval_metric='F1',
         task_type="GPU",
         devices='0:1',

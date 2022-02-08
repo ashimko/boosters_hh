@@ -5,17 +5,17 @@ sys.path.append(os.path.dirname(Path(__file__).parents[1]))
 
 import numpy as np
 import pandas as pd
-from config import *
+from config import RUBERT_TINY_PATH, PREPARED_DATA_PATH
 from utils import squeeze_pred_proba
 from evaluate import get_pred_labels
 from helper import save_predictions, load_catboost_model
-from model_config import MODEL_NAME
+from model_config import MODEL_NAME, N_SPLITS
 from model import get_model
 
 
 def predict():
-    test = pd.concat([pd.read_pickle(os.path.join(LABSE_PATH, path)) 
-                      for path in os.listdir(LABSE_PATH) if path.startswith('test')], axis=1)
+    test = pd.concat([pd.read_pickle(os.path.join(RUBERT_TINY_PATH, path)) 
+                      for path in os.listdir(RUBERT_TINY_PATH) if path.startswith('test')], axis=1)
 
     target_columns = pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'target.pkl')).columns
     test_pred_proba = pd.DataFrame(

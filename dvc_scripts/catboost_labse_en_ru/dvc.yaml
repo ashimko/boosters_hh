@@ -54,6 +54,7 @@ stages:
         cache: false
     - ../../plots/catboost_labse_en_ru/roc_8.json:
         cache: false
+    always_changed: true
   predict_catboost_labse_en_ru:
     cmd: python ../../models/catboost_labse_en_ru/predict.py
     deps:
@@ -64,3 +65,4 @@ stages:
     - ../../test_predictions/catboost_labse_en_ru:
         cache: false
         persist: true
+    always_changed: true

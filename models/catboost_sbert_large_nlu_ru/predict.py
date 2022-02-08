@@ -5,11 +5,11 @@ sys.path.append(os.path.dirname(Path(__file__).parents[1]))
 
 import numpy as np
 import pandas as pd
-from config import *
+from config import SBER_LARGE_NLU_RU_PATH, PREPARED_DATA_PATH
 from utils import squeeze_pred_proba
 from evaluate import get_pred_labels
 from helper import save_predictions, load_catboost_model
-from model_config import MODEL_NAME
+from model_config import MODEL_NAME, N_SPLITS
 from model import get_model
 
 

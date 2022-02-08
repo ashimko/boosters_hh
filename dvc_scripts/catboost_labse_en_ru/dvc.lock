@@ -20,70 +20,70 @@ stages:
       nfiles: 3
     outs:
     - path: ../../model_checkopoints/catboost_labse_en_ru
-      md5: 83ea0d489bbe38bab3faab531009f2f5.dir
-      size: 12932352
+      md5: 5b602d970bfead521c956e31b92b6faa.dir
+      size: 67477040
       nfiles: 27
     - path: ../../oof_predictions/catboost_labse_en_ru
-      md5: f444ef0bd51712adca0fc0948350f787.dir
-      size: 10907904
+      md5: 822fab04603d14e8a925faf1e35f3c53.dir
+      size: 10959053
       nfiles: 2
     - path: ../../plots/catboost_labse_en_ru/prc_0.json
-      md5: 8b213ef1dfd3619b82ee8fd978f2ddde
-      size: 7460526
+      md5: e011b4452a5e56c5b5b4ab46dccd2faa
+      size: 7289419
     - path: ../../plots/catboost_labse_en_ru/prc_1.json
-      md5: 8cb06d6892cc7b1309c52984be34e209
-      size: 7089521
+      md5: 6d65f949c04f54092fea3a8241dea4bc
+      size: 7737884
     - path: ../../plots/catboost_labse_en_ru/prc_2.json
-      md5: 6af3fb09d8550385e729444019fd33f4
-      size: 7323
+      md5: 9cc01548cb1eb06bf6c53e9525db8765
+      size: 3970
     - path: ../../plots/catboost_labse_en_ru/prc_3.json
-      md5: 1dcec1b2bf67b8274956d49129d6b64e
-      size: 7721620
+      md5: 0b822788815aa0b1b9882654c9df20fe
+      size: 7827112
     - path: ../../plots/catboost_labse_en_ru/prc_4.json
-      md5: 3b24f23274ac21bd5071ad8be14eb857
-      size: 7402
+      md5: e75c13b83e6e50a3c4eb37006c0cac2f
+      size: 5433
     - path: ../../plots/catboost_labse_en_ru/prc_5.json
-      md5: 777f041b71116cedeb3b354316a9fe76
-      size: 6248271
+      md5: 60bb020c9cb49cce1974ef28ba157563
+      size: 2872344
     - path: ../../plots/catboost_labse_en_ru/prc_6.json
-      md5: 2ad019caf37ee892235a789ffabd4678
-      size: 7224764
+      md5: 3824bf8fe09386f7235ea8045bb25959
+      size: 6474704
     - path: ../../plots/catboost_labse_en_ru/prc_7.json
-      md5: f5edf71895a628bc3eb1b397efffdfda
-      size: 7380860
+      md5: 4a90a321782f0ee9ce60d9df11912ca1
+      size: 7755815
     - path: ../../plots/catboost_labse_en_ru/prc_8.json
-      md5: 1426af54ff64a366735a4fca0051abc5
-      size: 7645254
+      md5: 9f888bbe9932c4d0ed014df9a5d51e35
+      size: 7687985
     - path: ../../plots/catboost_labse_en_ru/roc_0.json
-      md5: b57ef5db9d294bd8ae623f0ab6ecd9e6
-      size: 1393393
+      md5: 939c115ab88f3ca0394e4754c9ecb72e
+      size: 1230544
     - path: ../../plots/catboost_labse_en_ru/roc_1.json
-      md5: c216f1a04f4c8276393bb0ef564161d3
-      size: 694714
+      md5: 100ff1c3e0194162324bf41696941d32
+      size: 582519
     - path: ../../plots/catboost_labse_en_ru/roc_2.json
-      md5: f93b856ac1eca9056663bf991845a435
-      size: 6993
+      md5: 828b83dd617e5e386053f81d7b691213
+      size: 4259
     - path: ../../plots/catboost_labse_en_ru/roc_3.json
-      md5: 379b5178cb822bc18d6f69678f9d1b2c
-      size: 171866
+      md5: 091950d960aa768b9df5567227a4568b
+      size: 146895
     - path: ../../plots/catboost_labse_en_ru/roc_4.json
-      md5: a5b56e7a49f16390acdaf6e1b14e8b73
-      size: 6998
+      md5: 48ce933ebf0a1c5c89645938bb51de65
+      size: 5203
     - path: ../../plots/catboost_labse_en_ru/roc_5.json
-      md5: ae89af850b3e032e9597daf45ab55517
-      size: 114464
+      md5: 46ba1e18cdd233aeba22d95bbf5a0ec7
+      size: 68136
     - path: ../../plots/catboost_labse_en_ru/roc_6.json
-      md5: b2e73130db55aab9c1a071ad190c2733
-      size: 301542
+      md5: 18e1f73303b2a1d319f019182ea431df
+      size: 258856
     - path: ../../plots/catboost_labse_en_ru/roc_7.json
-      md5: 3533a98d0d98ab820468aa0898e8282a
-      size: 123111
+      md5: f93d25a23a16b3c6997604ca3d7fb6c2
+      size: 98017
     - path: ../../plots/catboost_labse_en_ru/roc_8.json
-      md5: c455b24949bab4e56e93835e74f9bfe5
-      size: 1695492
+      md5: aa95dd969181636d0b6372f196a5ac9d
+      size: 1596794
     - path: ../../scores/scores_catboost_labse_en_ru.json
-      md5: 131bb83eccd7f4de621af6b89fd62189
-      size: 203
+      md5: f4df4443974cd10c2e8331cfae35855c
+      size: 202
   predict_catboost_labse_en_ru:
     cmd: python ../../models/catboost_labse_en_ru/predict.py
     deps:
@@ -96,11 +96,11 @@ stages:
       size: 43444930
       nfiles: 3
     - path: ../../model_checkopoints/catboost_labse_en_ru
-      md5: 83ea0d489bbe38bab3faab531009f2f5.dir
-      size: 12932352
+      md5: 5b602d970bfead521c956e31b92b6faa.dir
+      size: 67477040
       nfiles: 27
     outs:
     - path: ../../test_predictions/catboost_labse_en_ru
-      md5: 8df08c32d1811960f8024d5900b459b7.dir
-      size: 10844454
+      md5: ffae68bc5671bf4bc0e3ac021a4c98e3.dir
+      size: 10829271
       nfiles: 2

@@ -60,7 +60,7 @@ def fit():
     save_predictions(oof_pred_proba, 'oof', MODEL_NAME, 'pred_proba')
     save_predictions(oof_pred_labels, 'oof', MODEL_NAME, 'pred_labels')
     
-    cv_results = get_cv_results(target, oof_pred_labels, oof_pred_labels)
+    cv_results = get_cv_results(target, oof_pred_labels, oof_pred_proba)
     save_metrics(cv_results, MODEL_NAME)
     save_metric_plots(target, oof_pred_proba, MODEL_NAME)
 

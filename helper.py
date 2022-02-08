@@ -138,3 +138,14 @@ def get_encoders(data: DataFrame, vocab_size: int, **keywords) -> Dict:
         encoder.adapt(data[col])
         encoders[col] = encoder
     return encoders
+
+
+def save_treshold(treshold: float, path: str ='.') -> None:
+    with open(os.path.join(path, 'opt_tresh.txt'), 'w') as f:
+        f.write(str(treshold))
+
+
+def load_treshold(path: str ='.') -> float:
+    with open(os.path.join(path, 'opt_tresh.txt'), 'r') as f:
+        treshold = float(f.read())
+    return treshold

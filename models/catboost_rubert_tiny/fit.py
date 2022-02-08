@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import f1_score
-from config import LABSE_PATH, PREPARED_DATA_PATH
+from config import RUBERT_TINY_PATH, PREPARED_DATA_PATH
 from utils import squeeze_pred_proba
 from evaluate import get_pred_labels, get_cv_results
 from helper import save_metrics, save_predictions, save_metric_plots, save_catboost_model
@@ -17,8 +17,8 @@ from model_config import MODEL_NAME, N_SPLITS, RANDOM_STATE
 
 
 def fit():
-    train = pd.concat([pd.read_pickle(os.path.join(LABSE_PATH, path)) 
-                       for path in os.listdir(LABSE_PATH) if path.startswith('train')], axis=1)
+    train = pd.concat([pd.read_pickle(os.path.join(RUBERT_TINY_PATH, path)) 
+                       for path in os.listdir(RUBERT_TINY_PATH) if path.startswith('train')], axis=1)
 
     target = pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'target.pkl'))
     cv = StratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=RANDOM_STATE)
@@ -60,7 +60,7 @@ def fit():
     save_predictions(oof_pred_proba, 'oof', MODEL_NAME, 'pred_proba')
     save_predictions(oof_pred_labels, 'oof', MODEL_NAME, 'pred_labels')
     
-    cv_results = get_cv_results(target, oof_pred_labels, oof_pred_labels)
+    cv_results = get_cv_results(target, oof_pred_labels, oof_pred_proba)
     save_metrics(cv_results, MODEL_NAME)
     save_metric_plots(target, oof_pred_proba, MODEL_NAME)
 

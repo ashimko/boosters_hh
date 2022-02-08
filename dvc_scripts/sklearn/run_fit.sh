@@ -7,8 +7,8 @@ dvc run \
 --deps ../../data/prepared \
 --deps ../../data/morph \
 --deps ../../data/handcrafted \
---outs-persist ../../model_checkopoints/$model_name \
---outs-persist-no-cache ../../oof_predictions/$model_name \
+--outs ../../model_checkopoints/$model_name \
+--outs-no-cache ../../oof_predictions/$model_name \
 --plots-no-cache ../../plots/$model_name/prc_0.json \
 --plots-no-cache ../../plots/$model_name/prc_1.json \
 --plots-no-cache ../../plots/$model_name/prc_2.json \

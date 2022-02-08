@@ -47,3 +47,15 @@ def get_pred_labels(pred_proba: np.ndarray) -> np.ndarray:
         thres, _ = optimal_threshold(pred_proba[:, col_idx])
         pred_labels[:, col_idx] = np.where(pred_proba[:, col_idx] > thres, 1, 0)
     return pred_labels
+
+
+def get_one_opt_treshold(y_true: DataFrame, y_pred: DataFrame) -> float:
+    candidates = sorted([0.0] + np.unique(y_pred.round(3).values).tolist() + [1.0])
+    scores = [f1_score(y_true.values, np.where(y_pred.values >= tresh, 1, 0), average='samples', zero_division=0)
+              for tresh in candidates]
+    idx = np.argmax(scores)
+    best_score = scores[idx]
+    best_treshold = candidates[idx]
+    print(f'best_score {best_score}, best_treshold {best_treshold}')
+
+    return best_treshold
