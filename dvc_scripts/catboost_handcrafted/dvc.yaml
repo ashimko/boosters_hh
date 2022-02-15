@@ -1,0 +1,64 @@
+stages:
+  fit_catboost_handcrafted:
+    cmd: python ../../models/catboost_handcrafted/fit.py
+    deps:
+    - ../../data/LaBSE-en-ru
+    - ../../data/prepared
+    outs:
+    - ../../model_checkopoints/catboost_handcrafted:
+        persist: true
+    - ../../oof_predictions/catboost_handcrafted:
+        cache: false
+        persist: true
+    metrics:
+    - ../../scores/scores_catboost_handcrafted.json:
+        cache: false
+    plots:
+    - ../../plots/catboost_handcrafted/prc_0.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/prc_1.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/prc_2.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/prc_3.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/prc_4.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/prc_5.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/prc_6.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/prc_7.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/prc_8.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/roc_0.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/roc_1.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/roc_2.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/roc_3.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/roc_4.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/roc_5.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/roc_6.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/roc_7.json:
+        cache: false
+    - ../../plots/catboost_handcrafted/roc_8.json:
+        cache: false
+    always_changed: true
+  predict_catboost_handcrafted:
+    cmd: python ../../models/catboost_handcrafted/predict.py
+    deps:
+    - ../../data/LaBSE-en-ru
+    - ../../data/prepared
+    - ../../model_checkopoints/catboost_handcrafted
+    outs:
+    - ../../test_predictions/catboost_handcrafted:
+        cache: false
+        persist: true
+    always_changed: true

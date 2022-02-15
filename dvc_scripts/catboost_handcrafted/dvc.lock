@@ -1,0 +1,99 @@
+schema: '2.0'
+stages:
+  fit_catboost_handcrafted:
+    cmd: python ../../models/catboost_handcrafted/fit.py
+    deps:
+    - path: ../../data/LaBSE-en-ru
+      md5: fac57a27fa28fb704ed09af96c84775a.dir
+      size: 625507392
+      nfiles: 4
+    - path: ../../data/prepared
+      md5: 4dd01e156f212618f130ba92bd63d80c.dir
+      size: 43444930
+      nfiles: 3
+    outs:
+    - path: ../../model_checkopoints/catboost_handcrafted
+      md5: 2887dc293f6e421b6bdcbced823f8204.dir
+      size: 14502392
+      nfiles: 27
+    - path: ../../oof_predictions/catboost_handcrafted
+      md5: 06b44c357c64cc749c4abd4e766f0e97.dir
+      size: 10631248
+      nfiles: 2
+    - path: ../../plots/catboost_handcrafted/prc_0.json
+      md5: 7fe9cbf63e8881e3e217f0850dbd4723
+      size: 7077952
+    - path: ../../plots/catboost_handcrafted/prc_1.json
+      md5: f1f881c4c9e25ce25d222b6fb0f4ec1d
+      size: 7270092
+    - path: ../../plots/catboost_handcrafted/prc_2.json
+      md5: 3da2f8fd077445b97c3daaf9d89dabee
+      size: 1226
+    - path: ../../plots/catboost_handcrafted/prc_3.json
+      md5: 753894fbcf98264b05a2a6850370d9c0
+      size: 6785801
+    - path: ../../plots/catboost_handcrafted/prc_4.json
+      md5: cae8defd47c4c65c8cde03a9110211d8
+      size: 752
+    - path: ../../plots/catboost_handcrafted/prc_5.json
+      md5: 3a11cf41575ad2d9f0cacaae2b9e2085
+      size: 1148
+    - path: ../../plots/catboost_handcrafted/prc_6.json
+      md5: 5ccc55d6a9b927f43fbd926aa9e9dbe6
+      size: 2136
+    - path: ../../plots/catboost_handcrafted/prc_7.json
+      md5: e52cbeaa175923ed361e58e548ca72e1
+      size: 2162540
+    - path: ../../plots/catboost_handcrafted/prc_8.json
+      md5: cc70c7f278d598225938abce04197aeb
+      size: 7117120
+    - path: ../../plots/catboost_handcrafted/roc_0.json
+      md5: 4c66c341acf41e4cd3139a14fff54eb2
+      size: 2035664
+    - path: ../../plots/catboost_handcrafted/roc_1.json
+      md5: 89f7ca56265b73dfcff6f85f98a352b7
+      size: 1144344
+    - path: ../../plots/catboost_handcrafted/roc_2.json
+      md5: 0bd24d1bd5bcde56207dbca6157379e6
+      size: 1311
+    - path: ../../plots/catboost_handcrafted/roc_3.json
+      md5: f85bedacb27d8ef331706199d9b3bdf7
+      size: 681137
+    - path: ../../plots/catboost_handcrafted/roc_4.json
+      md5: f7d6a7db3a80a2786513ef7ccd1ffd57
+      size: 815
+    - path: ../../plots/catboost_handcrafted/roc_5.json
+      md5: a2d418837e9b88e2c3295484eeb42bca
+      size: 1092
+    - path: ../../plots/catboost_handcrafted/roc_6.json
+      md5: d15154f45adad6b63a04dfa540ac47b4
+      size: 2129
+    - path: ../../plots/catboost_handcrafted/roc_7.json
+      md5: c91eb142f9a557f42ea0c00b28578cc7
+      size: 276524
+    - path: ../../plots/catboost_handcrafted/roc_8.json
+      md5: 890558a6054eda41e48d8001ef64414c
+      size: 2098756
+    - path: ../../scores/scores_catboost_handcrafted.json
+      md5: de4aac5e29d91f24b0e1fa1fce49c063
+      size: 202
+  predict_catboost_handcrafted:
+    cmd: python ../../models/catboost_handcrafted/predict.py
+    deps:
+    - path: ../../data/LaBSE-en-ru
+      md5: fac57a27fa28fb704ed09af96c84775a.dir
+      size: 625507392
+      nfiles: 4
+    - path: ../../data/prepared
+      md5: 4dd01e156f212618f130ba92bd63d80c.dir
+      size: 43444930
+      nfiles: 3
+    - path: ../../model_checkopoints/catboost_handcrafted
+      md5: 2887dc293f6e421b6bdcbced823f8204.dir
+      size: 14502392
+      nfiles: 27
+    outs:
+    - path: ../../test_predictions/catboost_handcrafted
+      md5: f44936cf9fdded56d122ef06621c8a8f.dir
+      size: 10508996
+      nfiles: 2

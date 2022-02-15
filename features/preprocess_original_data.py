@@ -46,6 +46,7 @@ def _process_text_cols(data: DataFrame, text_cols: List, make_lower: bool = Fals
     for text_col in text_cols:
         data[text_col] = data[text_col].str.replace('\xa0', ' ')
         data[text_col] = data[text_col].str.replace('\ufeff', '')
+        data[text_col] = data[text_col].str.replace('\u200d', '')
     if make_lower:
         for col in text_cols:
             data[col] = data[col].str.lower()
