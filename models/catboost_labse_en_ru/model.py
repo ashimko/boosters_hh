@@ -15,8 +15,8 @@ def get_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
         # cat_features=ORDERED_CATEGORIES,
         max_depth=6,
         eval_metric='F1',
-        task_type="GPU",
-        devices='0:1',
+        # task_type="GPU",
+        # devices='0:1',
         silent=True)
 
     return model
