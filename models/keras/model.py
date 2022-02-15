@@ -94,10 +94,10 @@ def get_model(encoders: Dict) -> keras.Model:
 
     def _get_text_model(text_input):
         preprocessor = hub.KerasLayer(
-            "https://tfhub.dev/jeongukjae/smaller_LaBSE_15lang_preprocess/1")
+            "https://tfhub.dev/google/universal-sentence-encoder-cmlm/multilingual-preprocess/2")
         encoder_inputs = preprocessor(text_input)
         encoder = hub.KerasLayer(
-            "https://tfhub.dev/jeongukjae/smaller_LaBSE_15lang/1",
+            "https://tfhub.dev/google/LaBSE/2",
             trainable=False)
         outputs = encoder(encoder_inputs)
         pooled_output = outputs["pooled_output"]      # [batch_size, 768].

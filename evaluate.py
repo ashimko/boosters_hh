@@ -41,6 +41,17 @@ def optimal_threshold(y_prob):
     return thres, f1s
 
 
+def get_one_treshold(y_true:DataFrame, y_pred: DataFrame) -> DataFrame:
+    candidates = np.unique(y_pred.round(4).values)
+    scores = [f1_score(y_true.values, np.where(y_pred.values >= tresh, 1, 0), average='samples', zero_division=0)
+              for tresh in candidates]
+    idx = np.argmax(scores)
+    best_score, best_treshold = scores[idx], candidates[idx]
+    print(f'best_score {best_score}, best_treshold {best_treshold}')
+
+    return best_treshold
+
+
 def get_pred_labels(pred_proba: np.ndarray) -> np.ndarray:
     pred_labels = np.zeros_like(pred_proba, dtype=np.int8)
     for col_idx in range(N_LABELS):
