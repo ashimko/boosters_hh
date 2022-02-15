@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Dict
+from typing import Union, Dict
 
 import matplotlib.pyplot as plt
 from pandas import DataFrame, Series
@@ -110,7 +110,7 @@ def save_model_to_pickle(model, model_name: str, fold: int = -1) -> None:
     save_to_pickle(model, os.path.join(path, file_name))
 
 
-def get_checkpoint_path(model_name: str, fold: int = -1) -> None:
+def get_checkpoint_path(model_name: str, fold: Union[int, str] = -1) -> None:
     file_name = f'fold_{fold}_{model_name}'
     path = os.path.join(MODEL_PATH, model_name)
     create_folder(path)

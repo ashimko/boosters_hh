@@ -1,5 +1,8 @@
 import os
 import sys
+import string
+
+from sqlalchemy import TEXT
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
@@ -38,6 +41,18 @@ def _get_num_unique_chars(data: pd.DataFrame, cols: List) -> pd.DataFrame:
         out[col_name] = data[col].apply(lambda x: len(set(x)))
     return out
 
+
+def _get_num_unique_words(data: pd.DataFrame, cols: List) -> pd.DataFrame:
+    out = pd.DataFrame(index=data.index)
+    for col in cols:
+        cnt_col = f'cnt_unique_words_{col}'
+        out[cnt_col] = data[col].apply(lambda comment: len(set(w for w in comment.split())))
+
+        shr_col = f'shr_unique_words_{col}'
+        out[shr_col] = out[cnt_col] / data[col].str.split().str.len()
+    return out
+
+
 def _get_num_repeated_words(data: pd.DataFrame, cols: List) -> pd.DataFrame:
     out = pd.DataFrame(index=data.index)
     for col in cols:
@@ -49,19 +64,43 @@ def _get_num_repeated_words(data: pd.DataFrame, cols: List) -> pd.DataFrame:
         shr_col = f'shr_repeated_words_{col}'
         out[shr_col] = out[cnt_col] / data[col].str.split().str.len()
     return out
-    
 
+
+def _get_share_english_letters(data: pd.DataFrame, cols: List) -> pd.DataFrame:
+    out = pd.DataFrame(index=data.index)
+    for col in cols:
+        cnt_col = f'cnt_english_chars_{col}'
+        out[cnt_col] = data[col].apply(lambda x: sum(char in string.ascii_letters for char in x))
+
+        shr_col = f'shr_english_chars_{col}'
+        out[shr_col] = out[cnt_col] / data[col].str.len()
+    return out
+
+
+def _get_share_upper_letters(data: pd.DataFrame, cols: List) -> pd.DataFrame:
+    out = pd.DataFrame(index=data.index)
+    for col in cols:
+        cnt_col = f'cnt_upper_chars_{col}'
+        out[cnt_col] = data[col].apply(lambda x: sum(1 for c in x if c.isupper()))
+
+        shr_col = f'shr_upper_chars_{col}'
+        out[shr_col] = out[cnt_col] / data[col].str.len()
+    return out
+    
 
 def get_features(data: pd.DataFrame) -> pd.DataFrame:
 
     punctuation = _get_punct_count(data, TEXT_COLS)
     len_review = _get_len_review(data, TEXT_COLS)
     unique_chars = _get_num_unique_chars(data, TEXT_COLS)
-    num_repeated_words = _get_num_repeated_words(data, TEXT_COLS)
+    repeated_words = _get_num_repeated_words(data, TEXT_COLS)
+    english_letters = _get_share_english_letters(data, TEXT_COLS)
+    upper_letters = _get_share_upper_letters(data, TEXT_COLS)
+    unique_words = _get_num_unique_words(data, TEXT_COLS)
 
     handcrafted = pd.concat([
-        punctuation, len_review, unique_chars,
-        num_repeated_words], 
+        punctuation, len_review, unique_chars, repeated_words, 
+        english_letters, upper_letters, unique_words], 
         axis=1)
 
     shr_cols = [col for col in handcrafted.columns if 'shr' in col]
