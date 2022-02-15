@@ -1,14 +1,18 @@
+from typing import Dict
+
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 import tensorflow_addons as tfa
+import tensorflow_hub as hub
+import tensorflow_text as text
+from config import (MORPH_TAG_COLS, NORMALIZED_TEXT_COLS, ORDERED_CATEGORIES,
+                    POSITION, TEXT_COLS, UNORDERED_CATEGORIES)
 from tensorflow import keras
 from tensorflow.keras import layers
-import tensorflow_text as text
-from typing import Dict
-import tensorflow_hub as hub
-from config import POSITION, TEXT_COLS, ORDERED_CATEGORIES, UNORDERED_CATEGORIES
-from model_config import VOCAB_SIZE, N_TARGETS
+
+from model_config import N_TARGETS, VOCAB_SIZE, TEXT_ENC_COLS
+
 
 def get_encoders(data: pd.DataFrame, **keywords) -> Dict:
     encoders = {}
@@ -20,7 +24,7 @@ def get_encoders(data: pd.DataFrame, **keywords) -> Dict:
 
 
 def get_model_input(data: pd.DataFrame) -> Dict:
-    x = {f'{col}_text': data[col] for col in TEXT_COLS + UNORDERED_CATEGORIES}
+    x = {f'{col}_text': data[col] for col in TEXT_ENC_COLS}
     x.update({f'{col}_unordered_cat': data[col] for col in UNORDERED_CATEGORIES})
     x.update({'ordered_cat_input': data[ORDERED_CATEGORIES]})
     return x
@@ -94,10 +98,10 @@ def get_model(encoders: Dict) -> keras.Model:
 
     def _get_text_model(text_input):
         preprocessor = hub.KerasLayer(
-            "https://tfhub.dev/google/universal-sentence-encoder-cmlm/multilingual-preprocess/2")
+           "https://tfhub.dev/jeongukjae/smaller_LaBSE_15lang_preprocess/1")
         encoder_inputs = preprocessor(text_input)
         encoder = hub.KerasLayer(
-            "https://tfhub.dev/google/LaBSE/2",
+            "https://tfhub.dev/jeongukjae/smaller_LaBSE_15lang/1",
             trainable=False)
         outputs = encoder(encoder_inputs)
         pooled_output = outputs["pooled_output"]      # [batch_size, 768].
@@ -135,12 +139,12 @@ def get_model(encoders: Dict) -> keras.Model:
         x = layers.Dense(N_TARGETS, activation='sigmoid')(x)
         return x
 
-    text_inputs = {col: keras.Input(shape=(), dtype=tf.string, name=f'{col}_text') for col in TEXT_COLS + UNORDERED_CATEGORIES}
+    text_inputs = {col: keras.Input(shape=(), dtype=tf.string, name=f'{col}_text') for col in TEXT_ENC_COLS}
     unordered_cat_inputs = {col: keras.Input(shape=(None,), dtype=tf.string, name=f'{col}_unordered_cat') for col in UNORDERED_CATEGORIES}
     ordered_cat_input = keras.Input(shape=(len(ORDERED_CATEGORIES)), name='ordered_cat_input')
 
     ordered_cat_features = [_get_ordered_category_model(ordered_cat_input)]
-    text_features = [_get_text_model(text_inputs[col]) for col in TEXT_COLS + [POSITION]]
+    text_features = [_get_text_model(text_inputs[col]) for col in TEXT_COLS + NORMALIZED_TEXT_COLS]
     unordered_cat_features = [_get_unordered_category_mode(unordered_cat_inputs[col], encoders[col]) for col in UNORDERED_CATEGORIES]
 
     features = layers.Concatenate()(ordered_cat_features + text_features + unordered_cat_features)

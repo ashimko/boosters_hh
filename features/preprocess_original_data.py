@@ -55,20 +55,16 @@ def _process_text_cols(data: DataFrame, text_cols: List, make_lower: bool = Fals
     for text_col in text_cols:
         data[text_col] = data[text_col].str.replace('\xa0', ' ')
         data[text_col] = data[text_col].str.replace('\ufeff', '')
-<<<<<<< HEAD
         data[text_col] = data[text_col].str.replace('\u200d', ' ')
         data[text_col] = data[text_col].str.replace('ё', 'е')
         data[text_col] = data[text_col].str.replace('…', ' ... ')
-        data[text_col] = data[text_col].apply(__clean_numbers)
         for quote in ["’", "‘", "´", "`"]:
             data[text_col] = data[text_col].str.replace(quote, "'")
-=======
-        data[text_col] = data[text_col].str.replace('\u200d', '')
->>>>>>> 54b0cedd6f21c22ad9df823add76eb4f134b8b32
+        data[text_col] = data[text_col].apply(__clean_numbers)
+        
     if make_lower:
         for col in text_cols:
             data[col] = data[col].str.lower()
-
     
     return data
         

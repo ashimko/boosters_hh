@@ -1,26 +1,27 @@
-import sys
 import os
+import sys
 from pathlib import Path
+
 sys.path.append(os.path.dirname(Path(__file__).parents[1]))
 
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from tensorflow.keras.models import load_model
+from config import PREPARED_DATA_PATH
+from evaluate import get_cv_results, get_pred_labels
+from helper import (get_checkpoint_path, save_metric_plots, save_metrics,
+                    save_predictions)
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.metrics import f1_score
-from config import PREPARED_DATA_PATH, TEXT_COLS, UNORDERED_CATEGORIES
-from utils import squeeze_pred_proba
-from evaluate import get_pred_labels, get_cv_results
-from helper import save_metric_plots, save_metrics, save_predictions, get_checkpoint_path
 
-from model import get_model, get_model_input, get_encoders
-from model_config import MODEL_NAME, N_EPOCHS, BATCH_SIZE, N_SPLITS, RANDOM_STATE
+from model import get_encoders, get_model, get_model_input
+from model_config import (BATCH_SIZE, MODEL_NAME, N_EPOCHS, N_SPLITS,
+                          RANDOM_STATE, TEXT_ENC_COLS)
+from data_tools import get_train
 
 
 def fit():
-    train = pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'train.pkl'))
-
+    train = get_train()
     target = pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'target.pkl'))
     cv = MultilabelStratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=RANDOM_STATE)
 
@@ -34,7 +35,7 @@ def fit():
     for fold, (train_idx, val_idx) in enumerate(cv.split(X=train, y=target)):
         print(f'start training {MODEL_NAME}, fold {fold}...')
         
-        encoders = get_encoders(train[TEXT_COLS+UNORDERED_CATEGORIES])
+        encoders = get_encoders(train[TEXT_ENC_COLS])
         model = get_model(encoders)
 
         X_train, X_val = train.iloc[train_idx], train.iloc[val_idx]
