@@ -8,6 +8,7 @@ from typing import List, Union
 
 import numpy as np
 import pandas as pd
+import re
 from pandas.core.frame import DataFrame
 from pandas.core.indexes.base import Index
 import tensorflow as tf
@@ -41,14 +42,30 @@ def _process_unorder_categories(
 
 
 def _process_text_cols(data: DataFrame, text_cols: List, make_lower: bool = False) -> DataFrame:
+    def __clean_numbers(x):
+        if bool(re.search(r'\d', x)):
+            x = re.sub('[0-9]{5,}', '#####', x)
+            x = re.sub('[0-9]{4}', '####', x)
+            x = re.sub('[0-9]{3}', '###', x)
+            x = re.sub('[0-9]{2}', '##', x)
+        return x
+    
     data[text_cols] = data[text_cols].fillna('NA').astype('str')
 
     for text_col in text_cols:
         data[text_col] = data[text_col].str.replace('\xa0', ' ')
         data[text_col] = data[text_col].str.replace('\ufeff', '')
+        data[text_col] = data[text_col].str.replace('\u200d', ' ')
+        data[text_col] = data[text_col].str.replace('ё', 'е')
+        data[text_col] = data[text_col].str.replace('…', ' ... ')
+        data[text_col] = data[text_col].apply(__clean_numbers)
+        for quote in ["’", "‘", "´", "`"]:
+            data[text_col] = data[text_col].str.replace(quote, "'")
     if make_lower:
         for col in text_cols:
             data[col] = data[col].str.lower()
+
+    
     return data
         
 
