@@ -97,9 +97,9 @@ def main() -> None:
         )
     )
 
-    train.to_pickle(os.path.join(PREPARED_DATA_PATH, 'train.pkl'))
-    test.to_pickle(os.path.join(PREPARED_DATA_PATH, 'test.pkl'))
-    target.to_pickle(os.path.join(PREPARED_DATA_PATH, 'target.pkl'))
+    train.to_pickle(os.path.join(PREPARED_DATA_PATH, 'train.pkl'), protocol=4)
+    test.to_pickle(os.path.join(PREPARED_DATA_PATH, 'test.pkl'), protocol=4)
+    target.to_pickle(os.path.join(PREPARED_DATA_PATH, 'target.pkl'), protocol=4)
 
 
 if __name__ == '__main__':

@@ -71,7 +71,7 @@ def save_embedding(embed, index, prefix, text_col):
     path = os.path.join(DATA_PATH, EMB_NAME)
     create_folder(path)
 
-    embed.to_pickle(os.path.join(path, f'{prefix}_{text_col}_{EMB_NAME}.pkl'))
+    embed.to_pickle(os.path.join(path, f'{prefix}_{text_col}_{EMB_NAME}.pkl'), protocol=4)
 
 
 def main():

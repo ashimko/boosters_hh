@@ -63,8 +63,8 @@ def main():
     train_morph_features = pd.concat([get_morph_features(train[col], morph) for col in TEXT_COLS], axis=1)
     test_morph_features = pd.concat([get_morph_features(test[col], morph) for col in TEXT_COLS], axis=1)
 
-    train_morph_features.to_pickle(os.path.join(MORPH_DATA_PATH, 'train.pkl'))
-    test_morph_features.to_pickle(os.path.join(MORPH_DATA_PATH, 'test.pkl'))
+    train_morph_features.to_pickle(os.path.join(MORPH_DATA_PATH, 'train.pkl'), protocol=4)
+    test_morph_features.to_pickle(os.path.join(MORPH_DATA_PATH, 'test.pkl'), protocol=4)
 
 
 

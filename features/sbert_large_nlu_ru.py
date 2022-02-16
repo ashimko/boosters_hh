@@ -84,8 +84,8 @@ def save_embedding(mean_pool_embed, max_pool_embed, index, prefix, text_col):
     path = os.path.join(DATA_PATH, EMB_NAME)
     create_folder(path)
 
-    mean_pool_embed.to_pickle(os.path.join(path, f'{prefix}_{text_col}_mean_pool_embed.pkl'))
-    max_pool_embed.to_pickle(os.path.join(path, f'{prefix}_{text_col}_max_pool_embed.pkl'))
+    mean_pool_embed.to_pickle(os.path.join(path, f'{prefix}_{text_col}_mean_pool_embed.pkl'), protocol=4)
+    max_pool_embed.to_pickle(os.path.join(path, f'{prefix}_{text_col}_max_pool_embed.pkl'), protocol=4)
 
 
 def main():

@@ -118,8 +118,8 @@ def main():
     train_handcrafted = get_features(train)
     test_handcrafted = get_features(test)
 
-    train_handcrafted.to_pickle(os.path.join(HANDCRAFTED_DATA_PATH, 'train.pkl'))
-    test_handcrafted.to_pickle(os.path.join(HANDCRAFTED_DATA_PATH, 'test.pkl'))
+    train_handcrafted.to_pickle(os.path.join(HANDCRAFTED_DATA_PATH, 'train.pkl'), protocol=4)
+    test_handcrafted.to_pickle(os.path.join(HANDCRAFTED_DATA_PATH, 'test.pkl'), protocol=4)
 
 
 
