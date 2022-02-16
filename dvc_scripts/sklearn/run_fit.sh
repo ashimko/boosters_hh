@@ -28,4 +28,6 @@ dvc run \
 --plots-no-cache ../../plots/$model_name/roc_7.json \
 --plots-no-cache ../../plots/$model_name/roc_8.json \
 --metrics-no-cache ../../scores/"scores_${model_name}.json" \
+--force \
+--always-changed \
 python ../../models/$model_name/fit.py

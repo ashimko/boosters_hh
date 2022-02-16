@@ -9,8 +9,8 @@ from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.metrics import f1_score
 from config import PREPARED_DATA_PATH, MORPH_DATA_PATH, HANDCRAFTED_DATA_PATH
 from utils import squeeze_pred_proba
-from evaluate import get_pred_labels, get_cv_results
-from helper import save_metric_plots, save_model_to_pickle, save_metrics, save_predictions
+from evaluate import get_one_opt_treshold, get_pred_labels, get_cv_results
+from helper import save_metric_plots, save_model_to_pickle, save_metrics, save_predictions, save_treshold
 
 from model import get_model
 from model_config import MODEL_NAME, N_SPLITS, RANDOM_STATE
@@ -45,12 +45,14 @@ def fit():
         val_pred_proba = squeeze_pred_proba(model.predict_proba(X_val))
         oof_pred_proba.iloc[val_idx] = val_pred_proba
 
-        val_pred_labels = get_pred_labels(val_pred_proba)
-        oof_pred_labels.iloc[val_idx] = val_pred_labels
         
-        score = f1_score(y_val, val_pred_labels, average='samples', zero_division=0)
-        print(f'model name {MODEL_NAME}, fold {fold}, f1_score: {score}')
+    model.fit(train, target)
+    save_model_to_pickle(model, MODEL_NAME, -1)
         
+    print('getting best treshold...')
+    opt_treshold = get_one_opt_treshold(target, oof_pred_proba)
+    save_treshold(opt_treshold)
+    oof_pred_labels.loc[:, :] = np.where(oof_pred_proba.values >= opt_treshold, 1, 0)
 
     save_predictions(oof_pred_proba, 'oof', MODEL_NAME, 'pred_proba')
     save_predictions(oof_pred_labels, 'oof', MODEL_NAME, 'pred_labels')

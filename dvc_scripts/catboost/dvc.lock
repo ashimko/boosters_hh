@@ -21,66 +21,66 @@ stages:
       size: 2813569382
       nfiles: 63
     - path: ../../oof_predictions/catboost
-      md5: 22cc7f9aa09bf1c25fdf19b5a064640c.dir
-      size: 10881323
+      md5: 1abb8c0b72615a1090c94d1cf6d8d4a7.dir
+      size: 10881333
       nfiles: 2
     - path: ../../plots/catboost/prc_0.json
-      md5: df0aab91fc4b685f9346ab9745b9e024
-      size: 7460360
+      md5: bc62ceef437ccb4976026adeba404aa6
+      size: 7460323
     - path: ../../plots/catboost/prc_1.json
-      md5: b21e12bb27691493ff39fd0dcc70d733
-      size: 6750640
+      md5: 295dc5aa11ebabb73e4d7e21bbaff898
+      size: 6750559
     - path: ../../plots/catboost/prc_2.json
       md5: c3c9ddbf4a28fd3c0ac9559402a477de
       size: 4048
     - path: ../../plots/catboost/prc_3.json
-      md5: c84e3807a9e02458f7d1afc5c37be02b
-      size: 6685072
+      md5: 5c132b9281b0f465fb60864223fefcf5
+      size: 6685084
     - path: ../../plots/catboost/prc_4.json
       md5: b623fcfe9c7c09d5f92bff5e3e8917af
       size: 5541
     - path: ../../plots/catboost/prc_5.json
-      md5: 806e9e9172a69d546573d9641d35db7c
-      size: 5197958
+      md5: 4810a8e68c7f218951ce4f20b3c3f2be
+      size: 5198284
     - path: ../../plots/catboost/prc_6.json
-      md5: e103c134d2ed3929053c046a339d0f57
-      size: 3898431
+      md5: 6a9c86b420eaff7abdc5c9125393d661
+      size: 3898572
     - path: ../../plots/catboost/prc_7.json
-      md5: a627c79e8860f08de504a8ef252ec1e8
-      size: 7303876
+      md5: 637021066496100abeff69b01fc65b1c
+      size: 7303873
     - path: ../../plots/catboost/prc_8.json
-      md5: effe55a94f4afefa5004cd1cd6ca60eb
-      size: 7467028
+      md5: c124d4ecbb106cf50b211f197a43251d
+      size: 7467238
     - path: ../../plots/catboost/roc_0.json
-      md5: 5543b949f6f0daffeac6544db0cdbc05
-      size: 1148862
+      md5: 75b5f8d1688a52c38cb4af15c8bc0c94
+      size: 1148529
     - path: ../../plots/catboost/roc_1.json
-      md5: 48a9398ff1f8677293c746ca8385b399
-      size: 569373
+      md5: 93ec3afd8b483c84be11070429b0ef56
+      size: 568203
     - path: ../../plots/catboost/roc_2.json
       md5: 0adaefddde0116c104c8ec629801a572
       size: 4327
     - path: ../../plots/catboost/roc_3.json
-      md5: 9a971d0ad72545ef8e82fd7b485b083a
-      size: 130473
+      md5: 11f654e47a16cceac648679ebe570cf1
+      size: 130453
     - path: ../../plots/catboost/roc_4.json
       md5: 9e5c4bf302c33fb8fe30540a3aae78c1
       size: 5827
     - path: ../../plots/catboost/roc_5.json
-      md5: e402c431fd9da17e6ca55f5475eeaf78
-      size: 94091
+      md5: d1bf7201d7b0de01de4a0905344d2729
+      size: 94368
     - path: ../../plots/catboost/roc_6.json
-      md5: fc1cee1a191733b76f60e08c695e4a89
-      size: 207400
+      md5: 2f3db59c0cc00c52c2f0fe9c7512dd53
+      size: 207380
     - path: ../../plots/catboost/roc_7.json
-      md5: c9f1a138a7e8400ffcde65c9b5e15f87
-      size: 89736
+      md5: bc8c08af78bd7dfb6dfa6069e2122bcb
+      size: 89749
     - path: ../../plots/catboost/roc_8.json
-      md5: 1b7d61dd23701db80162685636a8f64f
-      size: 1575315
+      md5: 1b8d59e34b86855e515f921d1947e406
+      size: 1574763
     - path: ../../scores/scores_catboost.json
-      md5: 93e19c73361c42e7b484c4379e4315f3
-      size: 204
+      md5: 96b1e82f47a6205c8157aa8796787b67
+      size: 200
   predict_catboost:
     cmd: python ../../models/catboost/predict.py
     deps:
@@ -102,6 +102,6 @@ stages:
       nfiles: 63
     outs:
     - path: ../../test_predictions/catboost
-      md5: 0f563b3db1a9271b52341338432369bb.dir
-      size: 10705041
+      md5: b43b2889c469b3c8fdc10e61a9319dd2.dir
+      size: 10717438
       nfiles: 2

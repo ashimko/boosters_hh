@@ -5,11 +5,10 @@ sys.path.append(os.path.dirname(Path(__file__).parents[1]))
 
 import numpy as np
 import pandas as pd
-from config import *
+from config import PREPARED_DATA_PATH, MORPH_DATA_PATH, HANDCRAFTED_DATA_PATH
 from utils import squeeze_pred_proba
-from evaluate import get_pred_labels
-from helper import save_predictions, load_catboost_model
-from model_config import MODEL_NAME
+from helper import _process_pred_labels, load_treshold, save_predictions, load_catboost_model
+from model_config import MODEL_NAME, N_SPLITS
 from model import get_model
 
 
@@ -38,9 +37,13 @@ def predict():
     test_pred_proba /= N_SPLITS
     save_predictions(test_pred_proba, 'test', MODEL_NAME, 'pred_proba')
     
-    test_pred_labels = get_pred_labels(test_pred_proba.values)
+    opt_treshold = load_treshold()
+    test_pred_labels = np.where(test_pred_proba.values >= opt_treshold, 1, 0)
     test_pred_labels = pd.DataFrame(data=test_pred_labels, index=test.index, columns=target_columns)
     save_predictions(test_pred_labels, 'test', MODEL_NAME, 'pred_labels')
+
+    submition = test_pred_proba.apply(_process_pred_labels, axis=1).rename('target')
+    save_predictions(submition, 'submit', MODEL_NAME, 'submit')
 
 
 if __name__ == '__main__':

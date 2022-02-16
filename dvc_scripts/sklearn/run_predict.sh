@@ -9,4 +9,6 @@ dvc run \
 --deps ../../data/handcrafted \
 --deps ../../model_checkopoints/$model_name \
 --outs-no-cache ../../test_predictions/$model_name \
+--force \
+--always-changed \
 python ../../models/$model_name/predict.py

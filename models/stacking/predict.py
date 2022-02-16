@@ -32,10 +32,11 @@ def predict():
         
         model = load_model_from_pickle(MODEL_NAME, fold)
         test_pred_proba += squeeze_pred_proba(model.predict_proba(test))
+    
     model = load_model_from_pickle(MODEL_NAME, -1)
     test_pred_proba += squeeze_pred_proba(model.predict_proba(test))
 
-    test_pred_proba /= N_SPLITS + 1
+    test_pred_proba /= (N_SPLITS + 1)
     save_predictions(test_pred_proba, 'test', MODEL_NAME, 'pred_proba')
     
     opt_treshold = load_treshold()

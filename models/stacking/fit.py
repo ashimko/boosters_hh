@@ -44,6 +44,7 @@ def fit():
 
         val_pred_proba = squeeze_pred_proba(model.predict_proba(X_val))
         oof_pred_proba.iloc[val_idx] = val_pred_proba
+    
     model.fit(train, target)
     save_model_to_pickle(model, MODEL_NAME, -1)
         
