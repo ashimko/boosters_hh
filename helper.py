@@ -72,7 +72,7 @@ def save_predicted_labels(pred_labels: DataFrame, mode: str = 'test') -> None:
 
 
 def save_predictions(
-        predictions: DataFrame, 
+        predictions: Union[DataFrame, Series], 
         mode: str = 'test', 
         model_name: str = 'default',
         pred_type: str = 'pred_proba') -> None:
@@ -86,6 +86,8 @@ def save_predictions(
         predictions.to_csv(os.path.join(test_path, file_name))
     elif mode == 'oof':
         predictions.to_csv(os.path.join(oof_path, file_name))
+    elif mode == 'submit':
+        predictions.to_csv(os.path.join(SUBMITIONS_PATH, file_name))
     else:
         raise NotImplementedError()
 

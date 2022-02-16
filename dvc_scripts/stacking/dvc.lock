@@ -1,0 +1,82 @@
+schema: '2.0'
+stages:
+  fit_stacking:
+    cmd: python ../../models/stacking/fit.py
+    outs:
+    - path: ../../model_checkopoints/stacking
+      md5: dadcfc309e752c2e52697339684ed120.dir
+      size: 108732
+      nfiles: 6
+    - path: ../../oof_predictions/stacking
+      md5: f59ce922227a5a9f376c3c5044ed9382.dir
+      size: 12085726
+      nfiles: 2
+    - path: ../../plots/stacking/prc_0.json
+      md5: 44f31d4e4d2555c080fe425f0aaff898
+      size: 7594660
+    - path: ../../plots/stacking/prc_1.json
+      md5: 51e66d43c5331ec8adfaccf7d94c8e14
+      size: 7696767
+    - path: ../../plots/stacking/prc_2.json
+      md5: 69765a7102fa674ba4143bc629a1eabf
+      size: 7559402
+    - path: ../../plots/stacking/prc_3.json
+      md5: 63d88e79f564f370954b3e61bfa4226b
+      size: 7848645
+    - path: ../../plots/stacking/prc_4.json
+      md5: ea3f23fcf9b1fb77d69518de84302e67
+      size: 5650076
+    - path: ../../plots/stacking/prc_5.json
+      md5: 3a6d772132084c56aed843aacce6930b
+      size: 7911835
+    - path: ../../plots/stacking/prc_6.json
+      md5: 27b60cfba0306e356362f6640753b3ba
+      size: 6354490
+    - path: ../../plots/stacking/prc_7.json
+      md5: 0219c4bee667ef3b75f59d09cecbc451
+      size: 7889962
+    - path: ../../plots/stacking/prc_8.json
+      md5: 44266501125a552e0446430a38af5d01
+      size: 7742203
+    - path: ../../plots/stacking/roc_0.json
+      md5: 5eb295f67e7978f003093c0614d292d6
+      size: 1114318
+    - path: ../../plots/stacking/roc_1.json
+      md5: 8907ab0b426957081deb94ffbdce6068
+      size: 543532
+    - path: ../../plots/stacking/roc_2.json
+      md5: 5c3b51463c8aea0d0c99a67233c5091d
+      size: 4172
+    - path: ../../plots/stacking/roc_3.json
+      md5: 6a73f226230fcbbf515286ae64237509
+      size: 144590
+    - path: ../../plots/stacking/roc_4.json
+      md5: fc287a31fa3ef6e3ae85bd87aa2aebd6
+      size: 32644
+    - path: ../../plots/stacking/roc_5.json
+      md5: 12d1d1f68abca2d1be2fe98bd35689da
+      size: 82455
+    - path: ../../plots/stacking/roc_6.json
+      md5: 62cca68412b071665517ef99e557923b
+      size: 252052
+    - path: ../../plots/stacking/roc_7.json
+      md5: 846606718d959ed7d9ade9a2ed25968d
+      size: 86708
+    - path: ../../plots/stacking/roc_8.json
+      md5: 1c5f8739ccfbd1a07fdfbf0eb12cbcf3
+      size: 1485661
+    - path: ../../scores/scores_stacking.json
+      md5: 9c8ad6cc127208c0314cc3b2f96d84d4
+      size: 202
+  predict_stacking:
+    cmd: python ../../models/stacking/predict.py
+    deps:
+    - path: ../../model_checkopoints/stacking
+      md5: dadcfc309e752c2e52697339684ed120.dir
+      size: 108732
+      nfiles: 6
+    outs:
+    - path: ../../test_predictions/stacking
+      md5: f8a1de394de5b1ef0ab2832a1d59d7a3.dir
+      size: 11113129
+      nfiles: 2
