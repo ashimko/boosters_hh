@@ -2,6 +2,8 @@ stages:
   fit_keras:
     cmd: python ../../models/keras/fit.py
     deps:
+    - ../../data/handcrafted
+    - ../../data/morph
     - ../../data/prepared
     outs:
     - ../../model_checkopoints/keras:
@@ -52,6 +54,8 @@ stages:
   predict_keras:
     cmd: python ../../models/keras/predict.py
     deps:
+    - ../../data/handcrafted
+    - ../../data/morph
     - ../../data/prepared
     - ../../model_checkopoints/keras
     outs:

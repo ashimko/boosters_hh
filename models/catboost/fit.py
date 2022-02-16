@@ -55,14 +55,10 @@ def fit():
             oof_pred_proba.iloc[val_idx, int(target_col)] = val_pred_proba
 
     print('getting best treshold...')
+    
     opt_treshold = get_one_opt_treshold(target, oof_pred_proba)
     save_treshold(opt_treshold)
-    val_pred_labels = np.where(oof_pred_proba.values >= opt_treshold, 1, 0)
-    oof_pred_labels.loc[:, :] = val_pred_labels
-            
-    score = f1_score(target, oof_pred_labels, average='samples', zero_division=0)
-    print(f'model name {MODEL_NAME}, f1_score: {score}')
-        
+    oof_pred_labels.loc[:, :] = np.where(oof_pred_proba.values >= opt_treshold, 1, 0)
 
     save_predictions(oof_pred_proba, 'oof', MODEL_NAME, 'pred_proba')
     save_predictions(oof_pred_labels, 'oof', MODEL_NAME, 'pred_labels')

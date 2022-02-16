@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+import pickle5 as pickle
 
 sys.path.append(os.path.dirname(Path(__file__).parents[1]))
 import pandas as pd

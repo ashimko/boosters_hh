@@ -1,0 +1,56 @@
+stages:
+  fit_stacking:
+    cmd: python ../../models/stacking/fit.py
+    outs:
+    - ../../model_checkopoints/stacking
+    - ../../oof_predictions/stacking:
+        cache: false
+    metrics:
+    - ../../scores/scores_stacking.json:
+        cache: false
+    plots:
+    - ../../plots/stacking/prc_0.json:
+        cache: false
+    - ../../plots/stacking/prc_1.json:
+        cache: false
+    - ../../plots/stacking/prc_2.json:
+        cache: false
+    - ../../plots/stacking/prc_3.json:
+        cache: false
+    - ../../plots/stacking/prc_4.json:
+        cache: false
+    - ../../plots/stacking/prc_5.json:
+        cache: false
+    - ../../plots/stacking/prc_6.json:
+        cache: false
+    - ../../plots/stacking/prc_7.json:
+        cache: false
+    - ../../plots/stacking/prc_8.json:
+        cache: false
+    - ../../plots/stacking/roc_0.json:
+        cache: false
+    - ../../plots/stacking/roc_1.json:
+        cache: false
+    - ../../plots/stacking/roc_2.json:
+        cache: false
+    - ../../plots/stacking/roc_3.json:
+        cache: false
+    - ../../plots/stacking/roc_4.json:
+        cache: false
+    - ../../plots/stacking/roc_5.json:
+        cache: false
+    - ../../plots/stacking/roc_6.json:
+        cache: false
+    - ../../plots/stacking/roc_7.json:
+        cache: false
+    - ../../plots/stacking/roc_8.json:
+        cache: false
+    always_changed: true
+  predict_stacking:
+    cmd: python ../../models/stacking/predict.py
+    deps:
+    - ../../model_checkopoints/stacking
+    outs:
+    - ../../test_predictions/stacking:
+        cache: false
+    always_changed: true

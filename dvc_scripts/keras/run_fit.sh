@@ -5,6 +5,8 @@ model_name=${PWD##*/}
 dvc run \
 --name "fit_${model_name}" \
 --deps ../../data/prepared \
+--deps ../../data/handcrafted \
+--deps ../../data/morph \
 --outs-persist ../../model_checkopoints/$model_name \
 --outs-persist-no-cache ../../oof_predictions/$model_name \
 --plots-no-cache ../../plots/$model_name/prc_0.json \
