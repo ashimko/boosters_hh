@@ -1,5 +1,5 @@
 from typing import Dict
-
+import os
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -7,12 +7,14 @@ import tensorflow_addons as tfa
 import tensorflow_hub as hub
 import tensorflow_text as text
 from config import (MORPH_TAG_COLS, NORMALIZED_TEXT_COLS, ORDERED_CATEGORIES,
-                    POSITION, TEXT_COLS, UNORDERED_CATEGORIES)
+                    POSITION, TEXT_COLS, UNORDERED_CATEGORIES, HANDCRAFTED_DATA_PATH)
 from tensorflow import keras
 from tensorflow.keras import layers
 
 from model_config import N_TARGETS, VOCAB_SIZE, TEXT_ENC_COLS
 
+HADCRAFTED_COLS = pd.read_pickle(os.path.join(HANDCRAFTED_DATA_PATH, 'train.pkl')).columns.tolist()
+REAL_FEATURES = ORDERED_CATEGORIES + HADCRAFTED_COLS
 
 def get_encoders(data: pd.DataFrame, **keywords) -> Dict:
     encoders = {}
@@ -26,7 +28,7 @@ def get_encoders(data: pd.DataFrame, **keywords) -> Dict:
 def get_model_input(data: pd.DataFrame) -> Dict:
     x = {f'{col}_text': data[col] for col in TEXT_ENC_COLS}
     x.update({f'{col}_unordered_cat': data[col] for col in UNORDERED_CATEGORIES})
-    x.update({'ordered_cat_input': data[ORDERED_CATEGORIES]})
+    x.update({'real_features': data[REAL_FEATURES]})
     return x
 
 
@@ -141,17 +143,17 @@ def get_model(encoders: Dict) -> keras.Model:
 
     text_inputs = {col: keras.Input(shape=(), dtype=tf.string, name=f'{col}_text') for col in TEXT_ENC_COLS}
     unordered_cat_inputs = {col: keras.Input(shape=(None,), dtype=tf.string, name=f'{col}_unordered_cat') for col in UNORDERED_CATEGORIES}
-    ordered_cat_input = keras.Input(shape=(len(ORDERED_CATEGORIES)), name='ordered_cat_input')
+    real_features_input = keras.Input(shape=(len(REAL_FEATURES)), name='real_features')
 
-    ordered_cat_features = [_get_ordered_category_model(ordered_cat_input)]
-    text_features = [_get_text_model(text_inputs[col]) for col in TEXT_COLS + NORMALIZED_TEXT_COLS]
+    ordered_cat_features = [_get_ordered_category_model(real_features_input)]
+    text_features = [_get_text_model(text_inputs[col]) for col in TEXT_COLS + NORMALIZED_TEXT_COLS + [POSITION]]
     unordered_cat_features = [_get_unordered_category_mode(unordered_cat_inputs[col], encoders[col]) for col in UNORDERED_CATEGORIES]
 
     features = layers.Concatenate()(ordered_cat_features + text_features + unordered_cat_features)
     out = _get_final_classifier(features)
 
     model = keras.Model(
-        inputs=[ordered_cat_input] + list(text_inputs.values()) + list(unordered_cat_inputs.values()),
+        inputs=[real_features_input] + list(text_inputs.values()) + list(unordered_cat_inputs.values()),
         outputs=out
     )
 
