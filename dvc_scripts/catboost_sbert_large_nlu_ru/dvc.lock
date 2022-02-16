@@ -4,8 +4,8 @@ stages:
     cmd: python ../../models/catboost_sbert_large_nlu_ru/fit.py
     deps:
     - path: ../../data/prepared
-      md5: 4dd01e156f212618f130ba92bd63d80c.dir
-      size: 43444930
+      md5: c5303dc7909107198e855ec920d7be46.dir
+      size: 43519344
       nfiles: 3
     - path: ../../data/sbert_large_nlu_ru
       md5: 5011411f8b3dfcb9b2e641f1746a9b74.dir
@@ -17,7 +17,7 @@ stages:
       size: 37749840
       nfiles: 63
     - path: ../../oof_predictions/catboost_sbert_large_nlu_ru
-      md5: a533ed877b0d6cf2f45c7c765a0f0401.dir
+      md5: 31d4081ceeab5d89f80fa963bc7e55c4.dir
       size: 10910767
       nfiles: 2
     - path: ../../plots/catboost_sbert_large_nlu_ru/prc_0.json
@@ -75,14 +75,14 @@ stages:
       md5: 100721bca0505ffe3a30e8a79dd50aba
       size: 1683119
     - path: ../../scores/scores_catboost_sbert_large_nlu_ru.json
-      md5: ad3194e9e4ed5a9eb8efd1af8a1f079b
-      size: 205
+      md5: dbd7b7993accab8e9ecb573d23ad7ebf
+      size: 202
   predict_catboost_sbert_large_nlu_ru:
     cmd: python ../../models/catboost_sbert_large_nlu_ru/predict.py
     deps:
     - path: ../../data/prepared
-      md5: 4dd01e156f212618f130ba92bd63d80c.dir
-      size: 43444930
+      md5: c5303dc7909107198e855ec920d7be46.dir
+      size: 43519344
       nfiles: 3
     - path: ../../data/sbert_large_nlu_ru
       md5: 5011411f8b3dfcb9b2e641f1746a9b74.dir
@@ -94,6 +94,6 @@ stages:
       nfiles: 63
     outs:
     - path: ../../test_predictions/catboost_sbert_large_nlu_ru
-      md5: 64e2d1c5257231e996fcb360627a7b37.dir
-      size: 10840934
+      md5: 89089ac3d839a4dfa4be91743ade9e32.dir
+      size: 10837721
       nfiles: 2

@@ -54,6 +54,7 @@ stages:
         cache: false
     - ../../plots/catboost_rubert_tiny/roc_8.json:
         cache: false
+    always_changed: true
   predict_catboost_rubert_tiny:
     cmd: python ../../models/catboost_rubert_tiny/predict.py
     deps:

@@ -38,15 +38,15 @@ def fit():
             X_train, X_val = train.iloc[train_idx], train.iloc[val_idx]
             y_train, y_val = target.iloc[train_idx, int(target_col)], target.iloc[val_idx, int(target_col)]
 
-            # model.fit(
-            #     X=X_train, 
-            #     y=y_train,
-            #     verbose=50,
-            #     eval_set=(X_val, y_val),
-            #     early_stopping_rounds=1000
-            # )
-            # save_catboost_model(model, MODEL_NAME, target_col, fold)
-            model = load_catboost_model(get_model(), MODEL_NAME, target_col, fold)
+            model.fit(
+                X=X_train, 
+                y=y_train,
+                verbose=50,
+                eval_set=(X_val, y_val),
+                early_stopping_rounds=1000
+            )
+            save_catboost_model(model, MODEL_NAME, target_col, fold)
+            # model = load_catboost_model(get_model(), MODEL_NAME, target_col, fold)
 
             val_pred_proba = squeeze_pred_proba(model.predict_proba(X_val))
             oof_pred_proba.iloc[val_idx, int(target_col)] = val_pred_proba

@@ -50,6 +50,7 @@ stages:
         cache: false
     - ../../plots/catboost_sbert_large_nlu_ru/roc_8.json:
         cache: false
+    always_changed: true
   predict_catboost_sbert_large_nlu_ru:
     cmd: python ../../models/catboost_sbert_large_nlu_ru/predict.py
     deps:
@@ -60,3 +61,4 @@ stages:
     - ../../test_predictions/catboost_sbert_large_nlu_ru:
         cache: false
         persist: true
+    always_changed: true

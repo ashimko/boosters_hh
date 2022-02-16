@@ -11,8 +11,8 @@ stages:
     cmd: python ../../models/catboost_rubert_tiny/fit.py
     deps:
     - path: ../../data/prepared
-      md5: 4dd01e156f212618f130ba92bd63d80c.dir
-      size: 43444930
+      md5: c5303dc7909107198e855ec920d7be46.dir
+      size: 43519344
       nfiles: 3
     - path: ../../data/rubert-tiny
       md5: 99bc920cd31e96339c67dd4365ee9d72.dir
@@ -24,7 +24,7 @@ stages:
       size: 19027632
       nfiles: 36
     - path: ../../oof_predictions/catboost_rubert_tiny
-      md5: 113cd10356dda0e95ee55f31494d31d9.dir
+      md5: 3576096b3ef7f6874406dde5b9c8b3c7.dir
       size: 10905525
       nfiles: 2
     - path: ../../plots/catboost_rubert_tiny/prc_0.json
@@ -82,8 +82,8 @@ stages:
       md5: 7c4ba0de978b6b0b762e8e81e16714c8
       size: 1695505
     - path: ../../scores/scores_catboost_rubert_tiny.json
-      md5: 37b549fc34f748fb14c4ed3642518e91
-      size: 202
+      md5: 0b45a056b2fc3cbf1ca1787c1cca23d3
+      size: 201
   predict_catboost_rubert_tiny:
     cmd: python ../../models/catboost_rubert_tiny/predict.py
     deps:
