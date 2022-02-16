@@ -1,8 +1,11 @@
 stages:
   feature_generation_catboost_rubert_tiny:
-    cmd: python ../../features/rubert_tiny.py
+    cmd: echo pass
     deps:
     - ../../data/prepared
+    outs:
+    - ../../data/rubert-tiny:
+        persist: true
   fit_catboost_rubert_tiny:
     cmd: python ../../models/catboost_rubert_tiny/fit.py
     deps:

@@ -1,12 +1,17 @@
 schema: '2.0'
 stages:
   feature_generation_catboost_rubert_tiny:
-    cmd: python ../../features/rubert_tiny.py
+    cmd: echo pass
     deps:
     - path: ../../data/prepared
       md5: 4dd01e156f212618f130ba92bd63d80c.dir
       size: 43444930
       nfiles: 3
+    outs:
+    - path: ../../data/rubert-tiny
+      md5: 99bc920cd31e96339c67dd4365ee9d72.dir
+      size: 255078528
+      nfiles: 4
   fit_catboost_rubert_tiny:
     cmd: python ../../models/catboost_rubert_tiny/fit.py
     deps:

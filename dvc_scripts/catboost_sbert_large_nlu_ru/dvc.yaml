@@ -62,3 +62,10 @@ stages:
         cache: false
         persist: true
     always_changed: true
+  feature_generation_catboost_sbert_large_nlu_ru:
+    cmd: echo pass
+    deps:
+    - ../../data/prepared
+    outs:
+    - ../../data/sbert_large_nlu_ru:
+        persist: true
