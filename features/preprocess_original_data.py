@@ -44,10 +44,12 @@ def _process_unorder_categories(
 def _process_text_cols(data: DataFrame, text_cols: List, make_lower: bool = False) -> DataFrame:
     def __clean_numbers(x):
         if bool(re.search(r'\d', x)):
-            x = re.sub('[0-9]{5,}', '#####', x)
-            x = re.sub('[0-9]{4}', '####', x)
-            x = re.sub('[0-9]{3}', '###', x)
-            x = re.sub('[0-9]{2}', '##', x)
+            x = re.sub('[0-9]{9,10}', '9201234567', x)
+            x = re.sub('[0-9]{5,8}', '11111', x)
+            x = re.sub('[0-9]{4}', '1111', x)
+            x = re.sub('[0-9]{3}', '111', x)
+            x = re.sub('[0-9]{2}', '11', x)
+            x = re.sub('[0-9]{1}', '1', x)
         return x
     
     data[text_cols] = data[text_cols].fillna('NA').astype('str')

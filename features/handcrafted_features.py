@@ -86,7 +86,7 @@ def _get_share_upper_letters(data: pd.DataFrame, cols: List) -> pd.DataFrame:
         shr_col = f'shr_upper_chars_{col}'
         out[shr_col] = out[cnt_col] / data[col].str.len()
     return out
-    
+
 
 def get_features(data: pd.DataFrame) -> pd.DataFrame:
 
