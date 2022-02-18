@@ -9,7 +9,7 @@ from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.metrics import f1_score
 from config import PREPARED_DATA_PATH
 from utils import squeeze_pred_proba
-from evaluate import get_one_opt_treshold, get_pred_labels, get_cv_results
+from evaluate import get_one_opt_treshold, get_cv_results
 from helper import save_metric_plots, save_model_to_pickle, save_metrics, save_predictions, save_treshold
 
 from model import get_model
@@ -24,7 +24,6 @@ def fit():
         for model_name in MODEL_NAMES], axis=1)
 
     target = pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'target.pkl'))
-    cv = MultilabelStratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=RANDOM_STATE)
 
     oof_pred_proba = pd.DataFrame(
         data=np.zeros(shape=target.shape),
@@ -32,10 +31,19 @@ def fit():
         index=target.index
     )
     oof_pred_labels = oof_pred_proba.copy()
+
+    cv = MultilabelStratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=RANDOM_STATE)
+    model, gscv = get_model()
     
+    gscv.fit(X=train, y=target)
+    save_model_to_pickle(gscv, MODEL_NAME, 'gscv')
+    print('gscv best scores', gscv.best_score_)
+    print('gscv best params', gscv.best_params_)
+    model = gscv.best_estimator_
+
     for fold, (train_idx, val_idx) in enumerate(cv.split(X=train, y=target)):
         print(f'start training {MODEL_NAME}, fold {fold}...')
-        model = get_model()
+        
         X_train, X_val = train.iloc[train_idx], train.iloc[val_idx]
         y_train = target.iloc[train_idx]
 
@@ -47,7 +55,7 @@ def fit():
     
     model.fit(train, target)
     save_model_to_pickle(model, MODEL_NAME, -1)
-        
+    
     print('getting best treshold...')
     opt_treshold = get_one_opt_treshold(target, oof_pred_proba)
     save_treshold(opt_treshold)

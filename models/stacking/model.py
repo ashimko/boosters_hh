@@ -12,12 +12,12 @@ from model_config import N_SPLITS, RANDOM_STATE
 def get_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
 
     base_model = LogisticRegression(solver='liblinear', max_iter=1000, random_state=random_state)
-    multiout_model = MultiOutputClassifier(estimator=base_model, n_jobs=-1)
+    model = MultiOutputClassifier(estimator=base_model, n_jobs=-1)
     
     params = {'estimator__C': np.random.uniform(0.1, 25, 10)}
     cv = MultilabelStratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=RANDOM_STATE)
-    model = GridSearchCV(
-        estimator=multiout_model, 
+    gscv = GridSearchCV(
+        estimator=model, 
         param_grid=params,
         scoring='f1_samples',
         cv=cv,
@@ -25,4 +25,4 @@ def get_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
         n_jobs=-1,
         refit=True)
 
-    return model
+    return model, gscv

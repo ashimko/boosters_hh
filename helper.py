@@ -105,7 +105,7 @@ def load_catboost_model(model, model_name: str, target_col: str=None, fold: int 
     return model.load_model(os.path.join(path, file_name), format='cbm')
 
 
-def save_model_to_pickle(model, model_name: str, fold: int = -1) -> None:
+def save_model_to_pickle(model, model_name: str, fold: Union[int, str] = -1) -> None:
     file_name = f'fold_{fold}_{model_name}.pkl'
     path = os.path.join(MODEL_PATH, model_name)
     create_folder(path)
