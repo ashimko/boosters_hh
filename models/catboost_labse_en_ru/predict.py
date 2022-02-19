@@ -44,7 +44,7 @@ def predict():
     test_pred_labels = pd.DataFrame(data=test_pred_labels, index=test.index, columns=target_columns)
     save_predictions(test_pred_labels, 'test', MODEL_NAME, 'pred_labels')
 
-    submition = test_pred_proba.apply(_process_pred_labels, axis=1).rename('target')
+    submition = test_pred_labels.apply(_process_pred_labels, axis=1).rename('target')
     save_predictions(submition, 'submit', MODEL_NAME, 'submit')
 
 if __name__ == '__main__':

@@ -77,6 +77,6 @@ stages:
       nfiles: 5
     outs:
     - path: ../../test_predictions/stacking
-      md5: 444fe1771db39a1b3d24a09af448e6da.dir
-      size: 11118291
+      md5: 6dcbee08a1230805ca6bfb2666edbc3e.dir
+      size: 11115173
       nfiles: 2

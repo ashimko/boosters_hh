@@ -27,17 +27,16 @@ def predict():
     )
     test_pred_labels = test_pred_proba.copy()
     
-    # for fold in range(N_SPLITS):
-    #     print(f'start predicting {MODEL_NAME}, fold {fold}...')
+    for fold in range(N_SPLITS):
+        print(f'start predicting {MODEL_NAME}, fold {fold}...')
         
-    #     model = load_model_from_pickle(MODEL_NAME, fold)
-    #     test_pred_proba += squeeze_pred_proba(model.predict_proba(test))
+        model = load_model_from_pickle(MODEL_NAME, fold)
+        test_pred_proba += squeeze_pred_proba(model.predict_proba(test))
     
     model = load_model_from_pickle(MODEL_NAME, -1)
-    # test_pred_proba += squeeze_pred_proba(model.predict_proba(test))
-    test_pred_proba.loc[:, :] = squeeze_pred_proba(model.predict_proba(test))
+    test_pred_proba += squeeze_pred_proba(model.predict_proba(test))
 
-    # test_pred_proba /= (N_SPLITS + 1)
+    test_pred_proba /= (N_SPLITS + 1)
     save_predictions(test_pred_proba, 'test', MODEL_NAME, 'pred_proba')
     
     opt_treshold = load_treshold()
@@ -45,7 +44,7 @@ def predict():
     test_pred_labels = pd.DataFrame(data=test_pred_labels, index=test.index, columns=target_columns)
     save_predictions(test_pred_labels, 'test', MODEL_NAME, 'pred_labels')
 
-    submition = test_pred_proba.apply(_process_pred_labels, axis=1).rename('target')
+    submition = test_pred_labels.apply(_process_pred_labels, axis=1).rename('target')
     save_predictions(submition, 'submit', MODEL_NAME, 'submit')
 
 

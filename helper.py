@@ -112,8 +112,10 @@ def save_model_to_pickle(model, model_name: str, fold: Union[int, str] = -1) -> 
     save_to_pickle(model, os.path.join(path, file_name))
 
 
-def get_checkpoint_path(model_name: str, fold: Union[int, str] = -1) -> None:
+def get_checkpoint_path(model_name: str, fold: Union[int, str] = -1, ext: str = '') -> None:
     file_name = f'fold_{fold}_{model_name}'
+    if ext:
+        file_name += f'.{ext}'
     path = os.path.join(MODEL_PATH, model_name)
     create_folder(path)
     return os.path.join(path, file_name)

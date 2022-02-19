@@ -8,7 +8,7 @@ import pandas as pd
 from config import LABSE_PATH, ORDERED_CATEGORIES, PREPARED_DATA_PATH, HANDCRAFTED_DATA_PATH
 from utils import squeeze_pred_proba
 from evaluate import get_pred_labels
-from helper import save_predictions, load_catboost_model, load_treshold
+from helper import _process_pred_labels, save_predictions, load_catboost_model, load_treshold
 from model_config import MODEL_NAME, N_SPLITS
 from model import get_model
 
@@ -39,6 +39,7 @@ def predict():
     test_pred_labels = pd.DataFrame(data=test_pred_labels, index=test.index, columns=target_columns)
     save_predictions(test_pred_labels, 'test', MODEL_NAME, 'pred_labels')
 
-
+    submition = test_pred_labels.apply(_process_pred_labels, axis=1).rename('target')
+    save_predictions(submition, 'submit', MODEL_NAME, 'submit')
 if __name__ == '__main__':
     predict()

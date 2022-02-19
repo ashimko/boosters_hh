@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 sys.path.append(os.path.dirname(Path(__file__).parents[1]))
-from config import (MORPH_TAG_COLS, NORMALIZED_TEXT_COLS, TEXT_COLS,
+from config import (NORMALIZED_TEXT_COLS, TEXT_COLS,
                     UNORDERED_CATEGORIES)
 
 MODEL_NAME = os.path.basename(os.path.dirname(__file__))
