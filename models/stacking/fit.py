@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.metrics import f1_score
-from config import PREPARED_DATA_PATH
+from config import HANDCRAFTED_DATA_PATH, PREPARED_DATA_PATH
 from utils import squeeze_pred_proba
 from evaluate import get_one_opt_treshold, get_cv_results
 from helper import save_metric_plots, save_model_to_pickle, save_metrics, save_predictions, save_treshold
@@ -22,6 +22,8 @@ def fit():
         (pd.read_csv(get_oof_pred_proba_path(model_name), index_col='review_id')
            .rename(columns={c: f'{model_name}_{c}' for c in map(str, range(9))}))
         for model_name in MODEL_NAMES], axis=1)
+    # handcrafted = pd.read_pickle(os.path.join(HANDCRAFTED_DATA_PATH, 'train.pkl'))
+    # train = train.join(handcrafted)
 
     target = pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'target.pkl'))
 

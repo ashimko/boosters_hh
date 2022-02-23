@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(Path(__file__).parents[1]))
 
 import numpy as np
 import pandas as pd
-from config import PREPARED_DATA_PATH
+from config import HANDCRAFTED_DATA_PATH, PREPARED_DATA_PATH
 from utils import squeeze_pred_proba
 from evaluate import get_pred_labels
 from helper import _process_pred_labels, save_predictions, load_model_from_pickle, load_treshold
@@ -18,6 +18,9 @@ def predict():
         (pd.read_csv(get_test_pred_proba_path(model_name), index_col='review_id')
            .rename(columns={c: f'{model_name}_{c}' for c in map(str, range(9))}))
         for model_name in MODEL_NAMES], axis=1)
+
+    # handcrafted = pd.read_pickle(os.path.join(HANDCRAFTED_DATA_PATH, 'test.pkl'))
+    # test = test.join(handcrafted)
     
     target_columns = pd.read_pickle(os.path.join(PREPARED_DATA_PATH, 'target.pkl')).columns
     test_pred_proba = pd.DataFrame(

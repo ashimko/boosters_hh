@@ -93,8 +93,8 @@ stages:
     cmd: python ../../models/catboost_rubert_tiny/predict.py
     deps:
     - path: ../../data/prepared
-      md5: 4dd01e156f212618f130ba92bd63d80c.dir
-      size: 43444930
+      md5: 3386c010014fdc2ea7b8cbba63d8b6a6.dir
+      size: 43531897
       nfiles: 3
     - path: ../../data/rubert-tiny
       md5: 99bc920cd31e96339c67dd4365ee9d72.dir
@@ -106,6 +106,6 @@ stages:
       nfiles: 36
     outs:
     - path: ../../test_predictions/catboost_rubert_tiny
-      md5: 08fa9c6b79e513b467cb0f3437770f7e.dir
-      size: 10842552
+      md5: 6b00b78135dcee7c278e3306f171e197.dir
+      size: 10842536
       nfiles: 2

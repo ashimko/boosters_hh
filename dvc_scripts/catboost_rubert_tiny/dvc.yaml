@@ -68,3 +68,4 @@ stages:
     - ../../test_predictions/catboost_rubert_tiny:
         cache: false
         persist: true
+    always_changed: true

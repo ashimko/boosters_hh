@@ -8,9 +8,9 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from config import PREPARED_DATA_PATH
-from evaluate import get_cv_results, get_pred_labels
+from evaluate import get_cv_results, get_one_opt_treshold, get_pred_labels
 from helper import (get_checkpoint_path, save_metric_plots, save_metrics,
-                    save_predictions)
+                    save_predictions, save_treshold)
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.metrics import f1_score
 
@@ -80,9 +80,10 @@ def fit():
         val_pred_labels = get_pred_labels(val_pred_proba)
         oof_pred_labels.iloc[val_idx, :] = val_pred_labels
         
-        score = f1_score(y_val, val_pred_labels, average='samples', zero_division=0)
-        print(f'model name {MODEL_NAME}, fold {fold}, f1_score: {score}')
-        
+    print('getting best treshold...')
+    opt_treshold = get_one_opt_treshold(target, oof_pred_proba)
+    save_treshold(opt_treshold)
+    oof_pred_labels.loc[:, :] = np.where(oof_pred_proba.values >= opt_treshold, 1, 0)    
 
     save_predictions(oof_pred_proba, 'oof', MODEL_NAME, 'pred_proba')
     save_predictions(oof_pred_labels, 'oof', MODEL_NAME, 'pred_labels')
