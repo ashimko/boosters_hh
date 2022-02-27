@@ -99,22 +99,19 @@ def soft_f1_samples_loss(y, y_hat):
 def get_model(encoders: Dict) -> keras.Model:
 
     def _get_text_model(text_input):
-        preprocessor = hub.KerasLayer(
-           "https://tfhub.dev/jeongukjae/smaller_LaBSE_15lang_preprocess/1")
-        encoder_inputs = preprocessor(text_input)
+        # preprocessor = hub.KerasLayer(
+        #    "https://tfhub.dev/jeongukjae/smaller_LaBSE_15lang_preprocess/1")
+        # encoder_inputs = preprocessor(text_input)
         encoder = hub.KerasLayer(
-            "https://tfhub.dev/jeongukjae/smaller_LaBSE_15lang/1",
+            "https://hub.tensorflow.google.cn/google/universal-sentence-encoder-multilingual/3",
             trainable=False)
-        outputs = encoder(encoder_inputs)
-        pooled_output = outputs["pooled_output"]      # [batch_size, 768].
-        sequence_output = outputs["sequence_output"]  # [batch_size, seq_length, 768].
-        rnn_out = layers.LSTM(32, return_sequences=True)(sequence_output)
-        max_pool_transformer = layers.GlobalMaxPool1D()(sequence_output)
-        max_pool_rnn = layers.GlobalMaxPool1D()(rnn_out)
-        avg_pool_rnn = layers.GlobalAveragePooling1D()(rnn_out)
-        text_features = layers.Concatenate()(
-            [pooled_output, max_pool_transformer, max_pool_rnn, avg_pool_rnn])
-        return text_features
+        outputs = encoder(text_input)
+        # pooled_output = outputs["pooled_output"]      # [batch_size, 768].
+        # sequence_output = outputs["sequence_output"]  # [batch_size, seq_length, 768].
+        # max_pool_transformer = layers.GlobalMaxPool1D()(sequence_output)
+        # text_features = layers.Concatenate()(
+        #     [pooled_output, max_pool_transformer])
+        return outputs
 
     def _get_ordered_category_model(input):
         x = layers.Dense(128)(input)
@@ -129,10 +126,7 @@ def get_model(encoders: Dict) -> keras.Model:
         return x
 
     def _get_final_classifier(features):
-        x = layers.Dense(512)(features)
-        x = keras.activations.relu(x, alpha=0.1)
-        x = layers.Dropout(0.1)(x)
-        x = layers.Dense(256)(x)
+        x = layers.Dense(256)(features)
         x = keras.activations.relu(x, alpha=0.1)
         x = layers.Dropout(0.1)(x)
         x = layers.Dense(128)(x)
@@ -149,7 +143,7 @@ def get_model(encoders: Dict) -> keras.Model:
     text_features = [_get_text_model(text_inputs[col]) for col in TEXT_COLS + NORMALIZED_TEXT_COLS + [POSITION]]
     unordered_cat_features = [_get_unordered_category_mode(unordered_cat_inputs[col], encoders[col]) for col in UNORDERED_CATEGORIES]
 
-    features = layers.Concatenate()(ordered_cat_features + text_features + unordered_cat_features)
+    features = layers.Concatenate()(ordered_cat_features + text_features +  unordered_cat_features)
     out = _get_final_classifier(features)
 
     model = keras.Model(

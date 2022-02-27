@@ -92,6 +92,39 @@ def fit():
     save_metrics(cv_results, MODEL_NAME)
     save_metric_plots(target, oof_pred_proba, MODEL_NAME)
 
+    print('start fiting on whole train...')
+
+    early_stopping = tf.keras.callbacks.EarlyStopping(
+            monitor='val_soft_f1_samples_metric',
+            mode='max',
+            patience=3)
+            
+    checkpoint_filepath = get_checkpoint_path(MODEL_NAME, -1)
+    checkopoint = tf.keras.callbacks.ModelCheckpoint(
+        filepath=checkpoint_filepath,
+        save_weights_only=True,
+        save_best_only=True,
+        monitor='val_soft_f1_samples_metric',
+        mode='max',
+        verbose=1
+    )
+
+    def scheduler(epoch, lr):
+        if epoch < 1:
+            return lr
+        else:
+            return lr * tf.math.exp(-0.1)
+    lr_scheduler = tf.keras.callbacks.LearningRateScheduler(scheduler)
+
+    model.fit(
+        x=get_model_input(train), 
+        y=target, 
+        epochs=N_EPOCHS, 
+        batch_size=BATCH_SIZE,
+        validation_split=0.15,
+        validation_batch_size=BATCH_SIZE,
+        callbacks=[early_stopping, checkopoint, lr_scheduler])
+
 
 if __name__ == '__main__':
     fit()

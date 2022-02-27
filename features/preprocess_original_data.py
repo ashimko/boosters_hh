@@ -55,7 +55,7 @@ def _process_text_cols(data: DataFrame, text_cols: List, make_lower: bool = Fals
     data[text_cols] = data[text_cols].fillna('NA').astype('str')
 
     for text_col in text_cols:
-        data[text_col] = data[text_col].str.replace('\xa0', ' ')
+        data[text_col] = data[text_col].str.replace('\xa0', 'SMTH_SPECIAL')
         data[text_col] = data[text_col].str.replace('\ufeff', '')
         data[text_col] = data[text_col].str.replace('\u200d', ' ')
         data[text_col] = data[text_col].str.replace('ё', 'е')
@@ -88,13 +88,16 @@ def prepare_data(train: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
         data, UNORDERED_CATEGORIES, train_idx, test_idx, keep_only_common_categories=False
     )
     
-    return data.loc[train_idx], data.loc[test_idx], target
+    return data.iloc[:len(train)], data.iloc[len(train):], target
 
 def main() -> None:
 
     train, test, target = (
         prepare_data(
-            train=pd.read_csv(os.path.join(ORIGINAL_DATA_PATH, 'train.csv')),
+            train=pd.concat([
+                pd.read_csv(os.path.join(ORIGINAL_DATA_PATH, 'train.csv')),
+                pd.read_csv(os.path.join(ORIGINAL_DATA_PATH, 'HeadHunter_new_train.csv'))
+                ]),
             test=pd.read_csv(os.path.join(ORIGINAL_DATA_PATH, 'test.csv'))
         )
     )

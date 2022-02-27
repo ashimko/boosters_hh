@@ -57,8 +57,6 @@ def fit():
         checkpoint_path = get_checkpoint_path(MODEL_NAME, fold, ext='pt')
         best_model_path = get_checkpoint_path(MODEL_NAME, 'best_model', ext='pt')
 
-        val_targets=[]
-        val_outputs=[] 
         model, val_pred_proba = train_model(
             start_epochs=1, 
             n_epochs=EPOCHS, 
@@ -69,12 +67,12 @@ def fit():
             optimizer=optimizer,
             checkpoint_path=checkpoint_path,
             best_model_path=best_model_path,
-            val_targets=val_targets,
-            val_outputs=val_outputs,
+            val_targets=[],
+            val_outputs=[],
             device=device,
             tokenizer=tokenizer
         )
-
+        
         oof_pred_proba.iloc[val_idx, :] = val_pred_proba
 
     print('getting best treshold...')
