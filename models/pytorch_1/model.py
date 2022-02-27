@@ -3,14 +3,11 @@ import torch
 import numpy as np
 from torch.utils.data import Dataset, DataLoader, RandomSampler, SequentialSampler
 from transformers import BertTokenizer, BertModel, BertConfig
-from model_config import TOKENIZER_NAME, MAX_SEQ_LEN, MODEL_NAME
+from model_config import TOKENIZER_NAME, MAX_SEQ_LEN, MODEL_NAME, EMB_DIM
 from config import TEXT_COLS
 from my_torch_utils import save_ckp
 from sklearn.metrics import f1_score
-
-
-def loss_fn(outputs, targets):
-    return torch.nn.BCEWithLogitsLoss()(outputs, targets)
+from transformers import AutoModel
 
 
 class CustomDataset(Dataset):
@@ -21,53 +18,54 @@ class CustomDataset(Dataset):
         self.targets = target
         self.text_cols_idx = [i for i, c in enumerate(data.columns) if c in TEXT_COLS]
 
+
     def __len__(self):
         return len(self.data)
 
+
     def __getitem__(self, index):
-        
         text = ' '.join(self.data.iloc[index, self.text_cols_idx])
-
-        inputs = self.tokenizer.encode_plus(
-            text,
-            None,
-            add_special_tokens=True,
-            max_length=MAX_SEQ_LEN,
-            padding='max_length',
-            return_token_type_ids=True,
-            truncation=True
-        )
-        ids = inputs['input_ids']
-        mask = inputs['attention_mask']
-        token_type_ids = inputs["token_type_ids"]
+        labels = torch.tensor(self.targets.iloc[index], dtype=torch.float)
+        return text, labels
 
 
-        return {
-            'ids': torch.tensor(ids, dtype=torch.long),
-            'mask': torch.tensor(mask, dtype=torch.long),
-            'token_type_ids': torch.tensor(token_type_ids, dtype=torch.long),
-            'targets': torch.tensor(self.targets.iloc[index], dtype=torch.float)
-        }
+def loss_fn(outputs, targets):
+    return torch.nn.BCEWithLogitsLoss()(outputs, targets)
+
+
+def mean_pooling(model_output, attention_mask):
+    token_embeddings = model_output[0] #First element of model_output contains all token embeddings
+    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+    sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, 1)
+    sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+    return sum_embeddings / sum_mask
+
+
+def max_pooling(model_output, attention_mask):
+    token_embeddings = model_output[0] #First element of model_output contains all token embeddings
+    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+    max_embeddings, _ = torch.max(token_embeddings * input_mask_expanded, 1)
+    return max_embeddings
 
 
 class Classifier(torch.nn.Module):
     def __init__(self):
         super(Classifier, self).__init__()
-        self.encoder = transformers.BertModel.from_pretrained(MODEL_NAME)
+        self.encoder = AutoModel.from_pretrained(f"cointegrated/{MODEL_NAME}")
         self.dropout = torch.nn.Dropout(0.3)
-        self.out = torch.nn.Linear(768, 9)
+        self.out = torch.nn.Linear(EMB_DIM, 9)
     
-    def forward(self, ids, mask, token_type_ids):
-        _, output_1= self.encoder(ids, attention_mask = mask, token_type_ids = token_type_ids)
-        output_2 = self.dropout(output_1)
-        output = self.out(output_2)
+    def forward(self, encoded_input):
+        model_output = self.encoder(**encoded_input)
+        mean_pool = mean_pooling(model_output, encoded_input['attention_mask'])
+        output = self.out(mean_pool)
         return output
 
 
 def train_model(start_epochs,  n_epochs, val_loss_min_input, 
           train_loader, val_loader, model, 
           optimizer, checkpoint_path, best_model_path,
-          device, val_targets, val_outputs):
+          device, val_targets, val_outputs, tokenizer):
    
   # initialize tracker for minimum validation loss
   valid_loss_min = val_loss_min_input 
@@ -79,26 +77,23 @@ def train_model(start_epochs,  n_epochs, val_loss_min_input,
 
     model.train()
     print('############# Epoch {}: Training Start   #############'.format(epoch))
-    for batch_idx, data in enumerate(train_loader):
+    for batch_idx, (sentences, targets) in enumerate(train_loader):
         #print('yyy epoch', batch_idx)
-        ids = data['ids'].to(device, dtype = torch.long)
-        mask = data['mask'].to(device, dtype = torch.long)
-        token_type_ids = data['token_type_ids'].to(device, dtype = torch.long)
-        targets = data['targets'].to(device, dtype = torch.float)
-
-        outputs = model(ids, mask, token_type_ids)
+        encoded_input = tokenizer(list(sentences), padding=True, truncation=True, max_length=64, return_tensors='pt')
+        encoded_input.to(device)
+        outputs = model(encoded_input)
 
         optimizer.zero_grad()
         loss = loss_fn(outputs, targets)
-        #if batch_idx%5000==0:
-         #   print(f'Epoch: {epoch}, Training Loss:  {loss.item()}')
+        if batch_idx%1000==0:
+           print(f'Epoch: {epoch}, Training Loss:  {loss.item()}')
         
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        #print('before loss data in training', loss.item(), train_loss)
+        print('before loss data in training', loss.item(), train_loss)
         train_loss = train_loss + ((1 / (batch_idx + 1)) * (loss.item() - train_loss))
-        #print('after loss data in training', loss.item(), train_loss)
+        print('after loss data in training', loss.item(), train_loss)
     
     print('############# Epoch {}: Training End     #############'.format(epoch))
     
@@ -110,12 +105,10 @@ def train_model(start_epochs,  n_epochs, val_loss_min_input,
     model.eval()
    
     with torch.no_grad():
-      for batch_idx, data in enumerate(val_loader, 0):
-            ids = data['ids'].to(device, dtype = torch.long)
-            mask = data['mask'].to(device, dtype = torch.long)
-            token_type_ids = data['token_type_ids'].to(device, dtype = torch.long)
-            targets = data['targets'].to(device, dtype = torch.float)
-            outputs = model(ids, mask, token_type_ids)
+      for batch_idx, (sentences, targets) in enumerate(val_loader, 0):
+            encoded_input = tokenizer(list(sentences), padding=True, truncation=True, max_length=64, return_tensors='pt')
+            encoded_input.to(device)
+            outputs = model(encoded_input)
 
             loss = loss_fn(outputs, targets)
             valid_loss = valid_loss + ((1 / (batch_idx + 1)) * (loss.item() - valid_loss))
@@ -146,10 +139,10 @@ def train_model(start_epochs,  n_epochs, val_loss_min_input,
             'optimizer': optimizer.state_dict()
       }
         
-        # save checkpoint
+      # save checkpoint
       save_ckp(checkpoint, False, checkpoint_path, best_model_path)
         
-      ## TODO: save the model if validation loss has decreased
+      
       if valid_loss <= valid_loss_min:
         print('Validation loss decreased ({:.6f} --> {:.6f}).  Saving model ...'.format(valid_loss_min,valid_loss))
         # save checkpoint as best model

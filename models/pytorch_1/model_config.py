@@ -1,11 +1,12 @@
 import os
 
 MODEL_NAME = os.path.basename(os.path.dirname(__file__))
-TOKENIZER_NAME = 'bert-base-uncased'
-MODEL_NAME = 'bert-base-cased'
+TOKENIZER_NAME = 'LaBSE-en-ru'
+MODEL_NAME = 'LaBSE-en-ru'
 MAX_SEQ_LEN = 669
 RANDOM_STATE = 92
 N_SPLITS = 3
-BATCH_SIZE = 128
 LR = 1e-6
 EPOCHS = 5
+BATCH_SIZE = 32
+EMB_DIM = 768

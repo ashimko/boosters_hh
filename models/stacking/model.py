@@ -7,16 +7,12 @@ from sklearn.multioutput import MultiOutputClassifier
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.pipeline import Pipeline
-from sklearn.ensemble import StackingClassifier
 from model_config import N_SPLITS, RANDOM_STATE
 
 
 def get_model(random_state: int = 42) -> Tuple[Pipeline, bool]:
 
-    lr = LogisticRegression(solver='liblinear', max_iter=1000, random_state=random_state)
-    base_model = StackingClassifier(estimators=[
-        ('lr', LogisticRegression())
-    ])
+    base_model = LogisticRegression(solver='liblinear', max_iter=1000, random_state=random_state)
     calibrated_model = CalibratedClassifierCV(base_model, cv=N_SPLITS, n_jobs=-1, ensemble=True)
     model = MultiOutputClassifier(estimator=calibrated_model, n_jobs=-1)
     

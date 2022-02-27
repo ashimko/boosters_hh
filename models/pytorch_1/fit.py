@@ -11,7 +11,7 @@ from torch import nn
 
 from tqdm import tqdm
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
-from transformers import BertTokenizer
+from transformers import AutoTokenizer
 from torch.utils.data import DataLoader
 from config import PREPARED_DATA_PATH
 from model_config import RANDOM_STATE, N_SPLITS, MODEL_NAME, BATCH_SIZE, LR, TOKENIZER_NAME
@@ -19,6 +19,7 @@ from model import CustomDataset, Classifier, train_model
 from my_torch_utils import get_device
 from helper import get_checkpoint_path, save_metric_plots, save_metrics, save_predictions, save_treshold
 from evaluate import get_cv_results, get_one_opt_treshold
+
 from models.pytorch_1.model_config import EPOCHS
 
 def fit():
@@ -39,10 +40,12 @@ def fit():
         X_train, X_val = train.iloc[train_idx], train.iloc[val_idx]
         y_train, y_val = target.iloc[train_idx], target.iloc[val_idx]
 
-        tokenizer = BertTokenizer.from_pretrained(TOKENIZER_NAME)
+        tokenizer = AutoTokenizer.from_pretrained(f"cointegrated/{TOKENIZER_NAME}")
+
         train_set = CustomDataset(data=X_train, target=y_train, tokenizer=tokenizer)
-        val_set = CustomDataset(data=X_val, target=y_val, tokenizer=tokenizer)
         train_loader = DataLoader(train_set, batch_size=BATCH_SIZE, shuffle = True)
+        
+        val_set = CustomDataset(data=X_val, target=y_val, tokenizer=tokenizer)
         val_loader = DataLoader(val_set, batch_size=BATCH_SIZE, shuffle = False)
 
         device = get_device()
@@ -68,7 +71,8 @@ def fit():
             best_model_path=best_model_path,
             val_targets=val_targets,
             val_outputs=val_outputs,
-            device=device
+            device=device,
+            tokenizer=tokenizer
         )
 
         oof_pred_proba.iloc[val_idx, :] = val_pred_proba

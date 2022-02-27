@@ -48,7 +48,7 @@ def get_batch_embedding(sentences: List, tokenizer, model, device) -> Tuple[np.n
     mean_pool = mean_pooling(model_output, encoded_input['attention_mask'])
     max_pool = max_pooling(model_output, encoded_input['attention_mask'])
     return mean_pool, max_pool
-g 
+
 
 def get_embedding(text: pd.Series, tokenizer, model, device) -> Tuple[np.ndarray]:
     n = len(text)
