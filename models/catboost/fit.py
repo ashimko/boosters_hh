@@ -35,24 +35,36 @@ def fit():
     
     for target_col in target.columns:
         print(f'train on target column {target_col}...')
+        best_iter = 0
         for fold, (train_idx, val_idx) in enumerate(cv.split(X=train, y=target[target_col])):
             print(f'start training {MODEL_NAME}, fold {fold}...')
             model = get_model()
             X_train, X_val = train.iloc[train_idx], train.iloc[val_idx]
             y_train, y_val = target.iloc[train_idx, int(target_col)], target.iloc[val_idx, int(target_col)]
 
-            # model.fit(
-            #     X=X_train, 
-            #     y=y_train,
-            #     verbose=20,
-            #     eval_set=(X_val, y_val),
-            #     early_stopping_rounds=600
-            # )
-            # save_catboost_model(model, MODEL_NAME, target_col, fold)
+            model.fit(
+                X=X_train, 
+                y=y_train,
+                verbose=20,
+                eval_set=(X_val, y_val),
+                early_stopping_rounds=150
+            )
+            best_iter += model.get_best_iteration()
+            save_catboost_model(model, MODEL_NAME, target_col, fold)
             model = load_catboost_model(get_model(), MODEL_NAME, target_col, fold)
 
             val_pred_proba = squeeze_pred_proba(model.predict_proba(X_val))
             oof_pred_proba.iloc[val_idx, int(target_col)] = val_pred_proba
+        
+        print('start fitting whole train...')
+        best_iter = best_iter // N_SPLITS
+        model = get_model(best_iter)
+        model.fit(
+        X=train, 
+        y=target[target_col],
+        silent=True
+    )
+        save_catboost_model(model, MODEL_NAME, target_col, -1)
 
     print('getting best treshold...')
     
@@ -66,6 +78,7 @@ def fit():
     cv_results = get_cv_results(target, oof_pred_labels, oof_pred_proba)
     save_metrics(cv_results, MODEL_NAME)
     save_metric_plots(target, oof_pred_proba, MODEL_NAME)
+
 
 
 if __name__ == '__main__':
