@@ -12,6 +12,8 @@ from helper import _process_pred_labels, save_predictions, load_model_from_pickl
 from model_config import MODEL_NAME, N_SPLITS, MODEL_NAMES
 
 
+ANSWERS_PATH = '../../answers.csv'
+
 def predict():
     get_test_pred_proba_path = lambda model_name: f'../../test_predictions/{model_name}/{model_name}_pred_proba.csv'
     test = pd.concat([
@@ -49,6 +51,7 @@ def predict():
 
     submition = test_pred_labels.apply(_process_pred_labels, axis=1).rename('target')
     save_predictions(submition, 'submit', MODEL_NAME, 'submit')
+    submition.to_csv(os.path.join(ANSWERS_PATH))
 
 
 if __name__ == '__main__':

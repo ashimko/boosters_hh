@@ -6,7 +6,7 @@ from config import (MORPH_TAG_COLS, NORMALIZED_TEXT_COLS, ORDERED_CATEGORIES,
 from sklearn.pipeline import Pipeline
 
 
-def get_model(n_estimators: int = 10000, random_state: int = 42) -> Tuple[Pipeline, bool]:
+def get_model(n_estimators: int = 3000, random_state: int = 42) -> Tuple[Pipeline, bool]:
     text_processing_options = {
         "tokenizers" : [{
             "tokenizer_id" : "Sense",
@@ -60,15 +60,15 @@ def get_model(n_estimators: int = 10000, random_state: int = 42) -> Tuple[Pipeli
     }
 
     model = CatBoostClassifier(
-        n_estimators=n_estimators,
+        n_estimators=n_estimators if n_estimators > 0 else 3000,
         cat_features=ORDERED_CATEGORIES+UNORDERED_CATEGORIES,
         text_features=TEXT_COLS+NORMALIZED_TEXT_COLS+MORPH_TAG_COLS,
         random_state=random_state,
-        max_depth=7,
+        max_depth=6,
         text_processing=text_processing_options,
         eval_metric='F1',
-        # task_type="GPU",
-        # devices='0:1',
+        task_type="GPU",
+        devices='0:1',
         silent=True)
 
     return model

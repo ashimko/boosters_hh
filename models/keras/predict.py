@@ -26,16 +26,14 @@ def predict():
     )
     test_pred_labels = test_pred_proba.copy()
     
-    for fold in range(N_SPLITS):
-        print(f'start predicting {MODEL_NAME}, fold {fold}...')
-        
-        checkpoint_filepath = get_checkpoint_path(MODEL_NAME, fold)
-        encoders = get_encoders(train[TEXT_COLS+UNORDERED_CATEGORIES])
-        model = get_model(encoders)
-        model.load_weights(checkpoint_filepath).expect_partial()
-        test_pred_proba += model.predict(get_model_input(test))
+    print(f'start predicting {MODEL_NAME}...')
+    
+    checkpoint_filepath = get_checkpoint_path(MODEL_NAME, -1)
+    encoders = get_encoders(train[TEXT_COLS+UNORDERED_CATEGORIES])
+    model = get_model(encoders)
+    model.load_weights(checkpoint_filepath).expect_partial()
+    test_pred_proba.loc[:, :] = model.predict(get_model_input(test))
 
-    test_pred_proba /= N_SPLITS
     save_predictions(test_pred_proba, 'test', MODEL_NAME, 'pred_proba')
     
     opt_treshold = load_treshold()

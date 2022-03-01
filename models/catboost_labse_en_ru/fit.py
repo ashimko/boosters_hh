@@ -36,6 +36,7 @@ def fit():
     
     for target_col in target.columns:
         print(f'train on target column {target_col}...')
+        best_iter = 0
         for fold, (train_idx, val_idx) in enumerate(cv.split(X=train, y=target[target_col])):
             print(f'start training {MODEL_NAME}, fold {fold}...')
             model = get_model()
@@ -53,6 +54,16 @@ def fit():
 
             val_pred_proba = squeeze_pred_proba(model.predict_proba(X_val))
             oof_pred_proba.iloc[val_idx, int(target_col)] = val_pred_proba
+        
+        print('fit on whole train...')
+        best_iter = max(3000, best_iter // N_SPLITS)
+        model = get_model(n_estimators=best_iter)
+        model.fit(
+            X=train, 
+            y=target[target_col],
+            silent=True
+        )
+        save_catboost_model(model, MODEL_NAME, target_col, -1)
 
     print('getting best treshold...')
     opt_treshold = get_one_opt_treshold(target, oof_pred_proba)

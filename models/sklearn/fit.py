@@ -37,7 +37,7 @@ def fit():
         print(f'start training {MODEL_NAME}, fold {fold}...')
         model = get_model()
         X_train, X_val = train.iloc[train_idx], train.iloc[val_idx]
-        y_train, y_val = target.iloc[train_idx], target.iloc[val_idx]
+        y_train, _ = target.iloc[train_idx], target.iloc[val_idx]
 
         model.fit(X_train, y_train)
         save_model_to_pickle(model, MODEL_NAME, fold)

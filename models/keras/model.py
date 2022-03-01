@@ -140,7 +140,7 @@ def get_model(encoders: Dict) -> keras.Model:
     real_features_input = keras.Input(shape=(len(REAL_FEATURES)), name='real_features')
 
     ordered_cat_features = [_get_ordered_category_model(real_features_input)]
-    text_features = [_get_text_model(text_inputs[col]) for col in TEXT_COLS + NORMALIZED_TEXT_COLS + [POSITION]]
+    text_features = [_get_text_model(text_inputs[col]) for col in TEXT_COLS]
     unordered_cat_features = [_get_unordered_category_mode(unordered_cat_inputs[col], encoders[col]) for col in UNORDERED_CATEGORIES]
 
     features = layers.Concatenate()(ordered_cat_features + text_features +  unordered_cat_features)

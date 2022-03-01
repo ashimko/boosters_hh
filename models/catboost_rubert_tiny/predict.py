@@ -25,12 +25,11 @@ def predict():
     )
     test_pred_labels = test_pred_proba.copy()
     
-    for fold in range(N_SPLITS):
-        print(f'start predicting {MODEL_NAME}, fold {fold}...')
-        for target_col in target_columns:
-            print(f'predicting target column {target_col}...')
-            model = load_catboost_model(get_model(), MODEL_NAME, target_col, fold)
-            test_pred_proba[target_col] += squeeze_pred_proba(model.predict_proba(test))
+    print(f'start predicting {MODEL_NAME}...')
+    for target_col in target_columns:
+        print(f'predicting target column {target_col}...')
+        model = load_catboost_model(get_model(), MODEL_NAME, target_col, -1)
+        test_pred_proba[target_col] += squeeze_pred_proba(model.predict_proba(test))
 
     test_pred_proba /= N_SPLITS
     save_predictions(test_pred_proba, 'test', MODEL_NAME, 'pred_proba')
